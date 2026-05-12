@@ -1,28 +1,45 @@
-/* Rincón de Humanidades — JS principal */
+/* Rincón de Humanidades — JS v2 */
 
-// ── Mobile nav toggle ─────────────────────────────────────────
-const toggle = document.getElementById('nav-toggle');
-const nav    = document.getElementById('main-nav');
+// ── Mobile nav ────────────────────────────────────────────────
+const navToggle = document.getElementById('nav-toggle');
+const nav = document.getElementById('main-nav');
 
-if (toggle && nav) {
-  toggle.addEventListener('click', () => {
+if (navToggle && nav) {
+  navToggle.addEventListener('click', () => {
     const open = nav.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', open);
-    toggle.textContent = open ? '✕' : '☰';
+    navToggle.setAttribute('aria-expanded', String(open));
+    navToggle.textContent = open ? '✕' : '☰';
     document.body.style.overflow = open ? 'hidden' : '';
   });
-
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && nav.classList.contains('open')) {
       nav.classList.remove('open');
-      toggle.setAttribute('aria-expanded', false);
-      toggle.textContent = '☰';
+      navToggle.setAttribute('aria-expanded', 'false');
+      navToggle.textContent = '☰';
       document.body.style.overflow = '';
     }
   });
 }
 
-// ── Rotating weekly quote ─────────────────────────────────────
+// ── FAQ accordion ─────────────────────────────────────────────
+document.querySelectorAll('.faq-question').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    // Close all
+    document.querySelectorAll('.faq-item.open').forEach(el => {
+      el.classList.remove('open');
+      el.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+    });
+    // Open clicked if it wasn't open
+    if (!isOpen) {
+      item.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+    }
+  });
+});
+
+// ── Weekly rotating quote ─────────────────────────────────────
 const quotes = [
   {
     greek: '«ὁ ἀνεξέταστος βίος οὐ βιωτὸς ἀνθρώπῳ»',
@@ -48,103 +65,114 @@ const quotes = [
     greek: '«arma virumque cano»',
     trans: '«Canto las armas y al varón.»',
     author: '— Virgilio (<cite>Eneida</cite>, I.1)'
+  },
+  {
+    greek: '«ἓν οἶδα ὅτι οὐδὲν οἶδα»',
+    trans: '«Sólo sé que no sé nada.»',
+    author: '— Atribuido a Sócrates'
+  },
+  {
+    greek: '«ὁ βίος βραχύς, ἡ δὲ τέχνη μακρή»',
+    trans: '«La vida es breve, el arte es largo.»',
+    author: '— Hipócrates, <cite>Aforismos</cite>'
   }
 ];
 
-function setWeeklyQuote() {
-  const el = document.querySelector('.quote-block');
-  if (!el) return;
+function applyWeeklyQuote() {
+  const qGreek = document.getElementById('quote-greek');
+  const qTrans = document.getElementById('quote-trans');
+  const qAuth  = document.getElementById('quote-author');
+  if (!qGreek) return;
   const week = Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 7));
   const q = quotes[week % quotes.length];
-  const gt = el.querySelector('.greek-text');
-  const qt = el.querySelector('.quote-translation');
-  const ft = el.querySelector('footer');
-  if (gt) gt.textContent = q.greek;
-  if (qt) qt.textContent = q.trans;
-  if (ft) ft.innerHTML = q.author;
+  qGreek.textContent = q.greek;
+  qTrans.textContent = q.trans;
+  qAuth.innerHTML = q.author;
 }
 
-setWeeklyQuote();
-
-// ── Rotating word of the week ─────────────────────────────────
+// ── Weekly rotating word ──────────────────────────────────────
 const words = [
   {
-    word: 'φιλοσοφία', trans: 'philosophía',
-    meaning: '<strong>Amor a la sabiduría</strong> — de <em>philos</em> (amigo) + <em>sophía</em> (sabiduría). Término acuñado por Pitágoras para describir el impulso humano de buscar el saber no por utilidad sino por el puro amor al conocimiento.'
+    greek: 'φιλοσοφία', trans: 'philosophía',
+    meaning: '<strong>Amor a la sabiduría</strong> — de <em>philos</em> (amigo) + <em>sophía</em> (sabiduría). Pitágoras acuñó este término para describir el impulso de buscar el saber por amor al conocimiento, no por utilidad.'
   },
   {
-    word: 'ἀρετή', trans: 'aretḗ',
-    meaning: '<strong>Virtud / excelencia</strong> — La máxima realización de las capacidades de un ser. Para Aristóteles, la <em>aretḗ</em> humana consiste en vivir conforme a la razón y desarrollar el carácter a través del hábito.'
+    greek: 'ἀρετή', trans: 'aretḗ',
+    meaning: '<strong>Virtud / excelencia</strong> — La máxima realización de las capacidades de un ser. Para Aristóteles, la <em>aretḗ</em> humana es vivir conforme a la razón y desarrollar el carácter mediante el hábito.'
   },
   {
-    word: 'παιδεία', trans: 'paidéia',
-    meaning: '<strong>Educación integral</strong> — El proceso de formación completo del ser humano: cuerpo, mente y carácter. Concepto central de la civilización griega que influyó en todo el humanismo occidental.'
+    greek: 'παιδεία', trans: 'paidéia',
+    meaning: '<strong>Educación integral</strong> — Formación completa del ser humano: cuerpo, mente y carácter. Concepto central de la civilización griega que influyó en todo el humanismo occidental.'
   },
   {
-    word: 'λόγος', trans: 'lógos',
-    meaning: '<strong>Razón / palabra / discurso</strong> — Una de las palabras más ricas del griego. En Heráclito es el principio ordenador del universo; en el Evangelio de Juan, el Verbo divino; en la filosofía, la razón que nos diferencia de los animales.'
+    greek: 'λόγος', trans: 'lógos',
+    meaning: '<strong>Razón / palabra / discurso</strong> — Una de las palabras más ricas del griego. En Heráclito, principio ordenador del universo; en el Evangelio de Juan, el Verbo divino; en filosofía, la razón que nos distingue.'
   },
   {
-    word: 'κάλλος', trans: 'kállos',
-    meaning: '<strong>Belleza</strong> — Para los griegos, la belleza no era sólo estética: lo bello era también bueno y verdadero. El ideal de <em>kalokagathía</em> (bello y bueno) unía la excelencia física y moral.'
+    greek: 'κάλλος', trans: 'kállos',
+    meaning: '<strong>Belleza</strong> — Para los griegos, lo bello era también bueno y verdadero. El ideal de <em>kalokagathía</em> (bello y bueno) unía excelencia física y moral en una sola virtud.'
   },
   {
-    word: 'ἀγάπη', trans: 'agápē',
+    greek: 'ἀγάπη', trans: 'agápē',
     meaning: '<strong>Amor incondicional</strong> — Distinta del <em>eros</em> (amor pasional) y la <em>philía</em> (amistad), la <em>ágape</em> designa el amor desinteresado que se da sin esperar nada a cambio.'
   },
   {
-    word: 'κόσμος', trans: 'kósmos',
-    meaning: '<strong>Orden / mundo</strong> — Los griegos llamaron <em>kósmos</em> al universo porque lo veían como un orden bello y racional, opuesto al caos. De esta palabra derivamos "cosmético", "cosmopolita" y "cosmos".'
+    greek: 'κόσμος', trans: 'kósmos',
+    meaning: '<strong>Orden / mundo / universo</strong> — Los griegos llamaron <em>kósmos</em> al universo porque lo veían como un orden bello y racional. De esta palabra derivan «cosmético», «cosmopolita» y «cosmos».'
   }
 ];
 
-function setWeeklyWord() {
-  const el = document.querySelector('.greek-word-card');
-  if (!el) return;
+function applyWeeklyWord() {
+  const wGreek = document.getElementById('word-greek');
+  const wTrans = document.getElementById('word-trans');
+  const wMean  = document.getElementById('word-meaning');
+  if (!wGreek) return;
   const week = Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 7));
   const w = words[week % words.length];
-  const wd = el.querySelector('.greek-word');
-  const tr = el.querySelector('.greek-transliteration');
-  const mn = el.querySelector('.greek-meaning');
-  if (wd) wd.textContent = w.word;
-  if (tr) tr.textContent = w.trans;
-  if (mn) mn.innerHTML = w.meaning;
+  wGreek.textContent = w.greek;
+  wTrans.textContent = w.trans;
+  wMean.innerHTML = w.meaning;
 }
 
-setWeeklyWord();
+applyWeeklyQuote();
+applyWeeklyWord();
 
-// ── Smooth active nav on scroll ───────────────────────────────
-const sections = document.querySelectorAll('section[id], main[id]');
-const navLinks  = document.querySelectorAll('.main-nav a[href^="#"]');
-
-if (sections.length && navLinks.length) {
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        navLinks.forEach(l => l.classList.remove('active'));
-        const link = document.querySelector(`.main-nav a[href="#${e.target.id}"]`);
-        if (link) link.classList.add('active');
-      }
-    });
-  }, { threshold: 0.35 });
-  sections.forEach(s => observer.observe(s));
-}
-
-// ── Newsletter form feedback ──────────────────────────────────
-document.querySelectorAll('.newsletter-form').forEach(form => {
+// ── Newsletter feedback ───────────────────────────────────────
+document.querySelectorAll('[data-form="newsletter"]').forEach(form => {
   form.addEventListener('submit', e => {
     e.preventDefault();
     const input = form.querySelector('input[type="email"]');
-    const btn   = form.querySelector('button');
-    if (!input || !btn) return;
+    const btn   = form.querySelector('button[type="submit"]');
+    if (!btn) return;
+    const orig = btn.textContent;
     btn.textContent = '¡Suscrito! ✓';
     btn.style.background = '#4a6741';
     btn.disabled = true;
-    input.value = '';
+    if (input) input.value = '';
     setTimeout(() => {
-      btn.textContent = 'Suscribirme';
+      btn.textContent = orig;
       btn.style.background = '';
       btn.disabled = false;
-    }, 4000);
+    }, 4500);
   });
 });
+
+// ── Animate on scroll (Intersection Observer) ─────────────────
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.post-card, .post-card-featured, .forum-card, .group-card, .hd-example, .brand-pill, .upcoming-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(18px)';
+    el.style.transition = 'opacity .5s ease, transform .5s ease';
+    io.observe(el);
+  });
+}

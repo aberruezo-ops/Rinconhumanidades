@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Contribuye a Rincón de Humanidades: envía tu artículo, reflexión o propuesta de tema por correo electrónico." />
+  <title>Contribuir — Rincón de Humanidades</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="../index.html" class="brand">
+      <div class="brand-phi">Φ</div>
+      <div class="brand-text">
+        <span class="site-title">Rincón de Humanidades</span>
+        <span class="site-tagline">Γνῶθι σεαυτόν · Conócete a ti mismo</span>
+      </div>
+    </a>
+    <nav class="main-nav" id="main-nav">
+      <ul>
+        <li><a href="../index.html">Inicio</a></li>
+        <li><a href="cultura-clasica.html">Cultura Clásica</a></li>
+        <li><a href="filosofia.html">Filosofía</a></li>
+        <li><a href="griego.html">Griego</a></li>
+        <li><a href="huella-digital.html">Huella Digital</a></li>
+        <li><a href="comunidad.html">Comunidad</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="recursos.html">Recursos</a></li>
+      </ul>
+    </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú">&#9776;</button>
+  </div>
+</header>
+
+<div class="page-header">
+  <div class="container">
+    <h1>Contribuir</h1>
+    <p>Este blog crece con la comunidad. Envía tu artículo, reflexión o propuesta de tema y lo estudiaremos con atención.</p>
+  </div>
+</div>
+
+<main class="container" style="padding:4rem 0">
+  <div style="display:grid;grid-template-columns:1fr 360px;gap:4rem;align-items:start">
+
+    <!-- FORMULARIO -->
+    <div>
+      <h2 class="section-heading">Envía tu contribución</h2>
+      <p style="color:var(--text-soft);margin-bottom:2rem;line-height:1.8">
+        Puedes enviar un artículo completo, un borrador, una propuesta de tema o simplemente una reflexión que quieras compartir con la comunidad. El equipo editorial responderá en un plazo de 10 días hábiles.
+      </p>
+
+      <form id="contrib-form" action="mailto:hola@rinconhumanidades.es" method="get" enctype="text/plain">
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+          <div class="form-group">
+            <label for="cf-nombre" class="form-label">Nombre <span style="color:var(--crimson)">*</span></label>
+            <input type="text" id="cf-nombre" name="nombre" class="form-input" placeholder="Tu nombre" required />
+          </div>
+          <div class="form-group">
+            <label for="cf-email" class="form-label">Correo electrónico <span style="color:var(--crimson)">*</span></label>
+            <input type="email" id="cf-email" name="email" class="form-input" placeholder="tu@correo.es" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="cf-tipo" class="form-label">Tipo de contribución <span style="color:var(--crimson)">*</span></label>
+          <select id="cf-tipo" name="tipo" class="form-select" required>
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="articulo">Artículo completo</option>
+            <option value="propuesta">Propuesta de tema</option>
+            <option value="reflexion">Reflexión breve</option>
+            <option value="huella">Huella Digital (ejemplo de lo clásico en la vida actual)</option>
+            <option value="recurso">Recurso educativo</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="cf-categoria" class="form-label">Categoría temática</label>
+          <select id="cf-categoria" name="categoria" class="form-select">
+            <option value="">Selecciona (opcional)</option>
+            <option>Cultura Clásica</option>
+            <option>Filosofía</option>
+            <option>Griego Clásico</option>
+            <option>Literatura</option>
+            <option>Arte e Historia</option>
+            <option>Huella Digital</option>
+            <option>Recursos para docentes</option>
+            <option>Otro</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="cf-titulo" class="form-label">Título o asunto <span style="color:var(--crimson)">*</span></label>
+          <input type="text" id="cf-titulo" name="titulo" class="form-input" placeholder="Título del artículo o descripción breve de la propuesta" required />
+        </div>
+
+        <div class="form-group">
+          <label for="cf-contenido" class="form-label">Contenido o descripción <span style="color:var(--crimson)">*</span></label>
+          <textarea id="cf-contenido" name="contenido" class="form-textarea" placeholder="Escribe aquí tu artículo, reflexión o descripción de la propuesta. Para artículos completos, puedes pegar el texto directamente o incluir un enlace a un documento de Google Docs o similar." required style="min-height:220px"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="cf-bio" class="form-label">Breve bio del autor (opcional)</label>
+          <input type="text" id="cf-bio" name="bio" class="form-input" placeholder="Docente, investigador, estudiante… en 1-2 frases" />
+        </div>
+
+        <div style="display:flex;align-items:flex-start;gap:.75rem;padding:1rem;background:var(--cream);border-radius:var(--r-sm);margin-bottom:1.5rem;border:1px solid var(--border)">
+          <input type="checkbox" id="cf-terminos" name="terminos" required style="margin-top:.2rem;accent-color:var(--crimson);flex-shrink:0" />
+          <label for="cf-terminos" style="font-family:var(--font-ui);font-size:.85rem;color:var(--text-soft)">
+            Acepto que el contenido enviado puede ser publicado en Rincón de Humanidades con mi nombre y bajo licencia Creative Commons BY-NC, y que el equipo editorial puede sugerir modificaciones editoriales.
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%;padding:.9rem">
+          Enviar contribución →
+        </button>
+
+        <p style="font-family:var(--font-ui);font-size:.76rem;color:var(--text-muted);text-align:center;margin-top:.8rem">
+          Al pulsar «Enviar» se abrirá tu cliente de correo con el formulario pre-rellenado.
+        </p>
+      </form>
+    </div>
+
+    <!-- SIDEBAR INFO -->
+    <aside style="display:flex;flex-direction:column;gap:1.5rem;position:sticky;top:80px">
+
+      <div class="widget">
+        <div class="widget-header">
+          <span style="font-size:1.1rem">📋</span>
+          <h3 class="widget-title">¿Qué valoramos?</h3>
+        </div>
+        <div class="widget-body">
+          <ul style="display:flex;flex-direction:column;gap:.65rem">
+            <li style="display:flex;align-items:flex-start;gap:.6rem;font-size:.88rem;color:var(--text-soft)">
+              <span style="color:var(--gold);font-weight:700;flex-shrink:0">✦</span>
+              <span>Artículos que conecten la antigüedad clásica con temas de <strong>actualidad</strong></span>
+            </li>
+            <li style="display:flex;align-items:flex-start;gap:.6rem;font-size:.88rem;color:var(--text-soft)">
+              <span style="color:var(--gold);font-weight:700;flex-shrink:0">✦</span>
+              <span>Análisis de textos griegos o latinos con <strong>traducción propia</strong></span>
+            </li>
+            <li style="display:flex;align-items:flex-start;gap:.6rem;font-size:.88rem;color:var(--text-soft)">
+              <span style="color:var(--gold);font-weight:700;flex-shrink:0">✦</span>
+              <span>Reflexiones sobre la <strong>enseñanza de las humanidades</strong></span>
+            </li>
+            <li style="display:flex;align-items:flex-start;gap:.6rem;font-size:.88rem;color:var(--text-soft)">
+              <span style="color:var(--gold);font-weight:700;flex-shrink:0">✦</span>
+              <span>Ejemplos de <strong>Huella Digital</strong> (lo clásico en la vida contemporánea)</span>
+            </li>
+            <li style="display:flex;align-items:flex-start;gap:.6rem;font-size:.88rem;color:var(--text-soft)">
+              <span style="color:var(--gold);font-weight:700;flex-shrink:0">✦</span>
+              <span>Rigor académico con <strong>lenguaje accesible</strong></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="widget">
+        <div class="widget-header">
+          <span style="font-size:1.1rem">⏱️</span>
+          <h3 class="widget-title">Proceso editorial</h3>
+        </div>
+        <div class="widget-body">
+          <ol style="display:flex;flex-direction:column;gap:.75rem;counter-reset:steps">
+            <li style="display:flex;align-items:flex-start;gap:.7rem;font-size:.85rem;color:var(--text-soft)">
+              <span style="background:var(--crimson);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-family:var(--font-ui);font-size:.72rem;font-weight:700;flex-shrink:0">1</span>
+              <span><strong>Envío</strong> — A través del formulario o directamente a hola@rinconhumanidades.es</span>
+            </li>
+            <li style="display:flex;align-items:flex-start;gap:.7rem;font-size:.85rem;color:var(--text-soft)">
+              <span style="background:var(--crimson);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-family:var(--font-ui);font-size:.72rem;font-weight:700;flex-shrink:0">2</span>
+              <span><strong>Revisión</strong> — El equipo editorial evalúa en 10 días hábiles</span>
+            </li>
+            <li style="display:flex;align-items:flex-start;gap:.7rem;font-size:.85rem;color:var(--text-soft)">
+              <span style="background:var(--crimson);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-family:var(--font-ui);font-size:.72rem;font-weight:700;flex-shrink:0">3</span>
+              <span><strong>Respuesta</strong> — Aceptación, sugerencias o rechazo razonado</span>
+            </li>
+            <li style="display:flex;align-items:flex-start;gap:.7rem;font-size:.85rem;color:var(--text-soft)">
+              <span style="background:var(--crimson);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-family:var(--font-ui);font-size:.72rem;font-weight:700;flex-shrink:0">4</span>
+              <span><strong>Publicación</strong> — Con tu nombre, bio y, si quieres, enlace a tu perfil</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="widget">
+        <div class="widget-header">
+          <span style="font-size:1.1rem">📧</span>
+          <h3 class="widget-title">Contacto directo</h3>
+        </div>
+        <div class="widget-body">
+          <p style="font-size:.88rem;color:var(--text-soft);margin-bottom:.75rem">Para consultas editoriales, colaboraciones o cualquier otra comunicación:</p>
+          <a href="mailto:hola@rinconhumanidades.es" style="font-family:var(--font-ui);font-size:.9rem;font-weight:600;color:var(--crimson)">hola@rinconhumanidades.es</a>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner container">
+    <div class="footer-brand">
+      <span class="footer-phi">Φ</span>
+      <span class="footer-name">Rincón de Humanidades</span>
+      <span class="footer-tagline">Cultura clásica y humanidades para la vida</span>
+    </div>
+    <div class="footer-links">
+      <h4>Secciones</h4>
+      <ul>
+        <li><a href="cultura-clasica.html">Cultura Clásica</a></li>
+        <li><a href="filosofia.html">Filosofía</a></li>
+        <li><a href="griego.html">Griego Clásico</a></li>
+        <li><a href="recursos.html">Recursos</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Comunidad</h4>
+      <ul>
+        <li><a href="comunidad.html">Comunidad</a></li>
+        <li><a href="contribuir.html">Contribuir</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="acerca.html">Acerca de</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Rincón de Humanidades · Hecho con <em>φιλοσοφία</em></p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script>
+  // Prefill mailto on submit
+  document.getElementById('contrib-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const nombre   = document.getElementById('cf-nombre').value;
+    const email    = document.getElementById('cf-email').value;
+    const tipo     = document.getElementById('cf-tipo').value;
+    const titulo   = document.getElementById('cf-titulo').value;
+    const contenido= document.getElementById('cf-contenido').value;
+    const bio      = document.getElementById('cf-bio').value;
+    const subject  = encodeURIComponent(`[Contribución] ${tipo}: ${titulo}`);
+    const body     = encodeURIComponent(
+      `Nombre: ${nombre}\nEmail: ${email}\nTipo: ${tipo}\nTítulo: ${titulo}\n\n${contenido}${bio ? '\n\nBio del autor: ' + bio : ''}`
+    );
+    window.location.href = `mailto:hola@rinconhumanidades.es?subject=${subject}&body=${body}`;
+  });
+</script>
+</body>
+</html>

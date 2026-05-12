@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Proyecto Huella Digital: cómo las culturas clásicas griega y romana están presentes en nuestra vida cotidiana, el lenguaje, la política, la ciencia y la cultura popular." />
+  <title>Huella Digital — Rincón de Humanidades</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    .hd-hero {
+      background: linear-gradient(160deg,#050d0d 0%,#0a1818 50%,#071212 100%);
+      padding: clamp(4rem,10vw,8rem) 0 clamp(3rem,6vw,5rem);
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .hd-hero::before {
+      content:'ΔΙΓ';
+      position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+      font-family:var(--font-display);font-size:clamp(120px,25vw,320px);
+      font-weight:900;color:rgba(78,205,196,.04);line-height:1;
+      user-select:none;pointer-events:none;white-space:nowrap;
+    }
+    .hd-tag {
+      display:inline-flex;align-items:center;gap:.5rem;
+      font-family:var(--font-ui);font-size:.72rem;font-weight:700;
+      letter-spacing:.15em;text-transform:uppercase;color:#4ecdc4;
+      margin-bottom:1.2rem;
+    }
+    .hd-tag::before{content:'◆';font-size:.5rem;}
+    .hd-hero h1 {
+      font-family:var(--font-display);font-size:clamp(2.2rem,6vw,4.5rem);
+      font-weight:900;line-height:1.05;color:#fff;margin-bottom:1.2rem;
+    }
+    .hd-hero h1 em{color:#4ecdc4;font-style:italic;}
+    .hd-hero p {
+      max-width:680px;margin-inline:auto;
+      color:rgba(255,255,255,.65);font-size:1.1rem;line-height:1.78;
+      margin-bottom:2rem;
+    }
+    /* Category blocks */
+    .hd-section{padding:clamp(3rem,6vw,5rem) 0;}
+    .hd-section:nth-child(even){background:var(--paper);}
+    .hd-section:nth-child(odd){background:var(--cream);}
+    .hd-cat-header{
+      display:flex;align-items:center;gap:1.2rem;
+      margin-bottom:2.5rem;
+    }
+    .hd-cat-icon{
+      width:60px;height:60px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.8rem;flex-shrink:0;
+    }
+    .hd-cat-icon-teal{background:linear-gradient(135deg,#0d3333,#1a5a5a);}
+    .hd-cat-icon-amber{background:linear-gradient(135deg,#3a2000,#7a5000);}
+    .hd-cat-icon-crimson{background:linear-gradient(135deg,#3a0000,#7a1010);}
+    .hd-cat-icon-navy{background:linear-gradient(135deg,#001a3a,#0d3a6a);}
+    .hd-cat-icon-purple{background:linear-gradient(135deg,#200a3a,#4a1a7a);}
+    .hd-cat-title{
+      font-family:var(--font-display);font-size:1.8rem;
+      font-weight:700;color:var(--text);line-height:1.1;
+    }
+    .hd-cat-title span{display:block;font-size:1rem;font-weight:400;color:var(--text-soft);margin-top:.2rem;}
+
+    .hd-examples-grid{
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+      gap:1rem;margin-bottom:2rem;
+    }
+    .hd-example{
+      background:var(--paper);border:1px solid var(--border);
+      border-radius:var(--r-md);padding:1.25rem;
+      transition:all var(--t) var(--ease);
+      position:relative;overflow:hidden;
+    }
+    .hd-example:hover{
+      border-color:var(--gold);
+      box-shadow:var(--shadow-md);transform:translateY(-2px);
+    }
+    .hd-example-modern{
+      font-family:var(--font-ui);font-size:.68rem;font-weight:700;
+      text-transform:uppercase;letter-spacing:.08em;
+      color:var(--text-muted);margin-bottom:.3rem;
+    }
+    .hd-example-word{
+      font-family:var(--font-display);font-size:1.1rem;font-weight:700;
+      color:var(--text);margin-bottom:.3rem;
+    }
+    .hd-example-greek{
+      font-family:var(--font-display);font-style:italic;
+      font-size:.85rem;color:var(--crimson);margin-bottom:.4rem;
+    }
+    .hd-example-desc{font-size:.8rem;color:var(--text-soft);line-height:1.5;}
+
+    .hd-highlight{
+      background:linear-gradient(135deg,#050d0d,#0a1a1a);
+      border-radius:var(--r-lg);padding:2.5rem;
+      display:flex;align-items:flex-start;gap:1.5rem;
+      margin-top:2rem;
+    }
+    .hd-highlight-icon{font-size:2.5rem;flex-shrink:0;line-height:1;}
+    .hd-highlight h3{
+      font-family:var(--font-display);font-size:1.2rem;
+      font-weight:700;color:#fff;margin-bottom:.5rem;
+    }
+    .hd-highlight p{font-size:.92rem;color:rgba(255,255,255,.65);line-height:1.7;}
+
+    /* Brands grid */
+    .brands-grid{
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+      gap:.85rem;
+    }
+    .brand-pill{
+      background:var(--paper);border:1px solid var(--border);
+      border-radius:var(--r-md);padding:.85rem 1rem;
+      text-align:center;transition:all var(--t) var(--ease);
+    }
+    .brand-pill:hover{border-color:var(--gold);box-shadow:var(--shadow-sm);}
+    .brand-pill .bp-name{
+      font-family:var(--font-ui);font-size:.88rem;font-weight:700;
+      color:var(--text);margin-bottom:.25rem;
+    }
+    .brand-pill .bp-origin{font-size:.75rem;color:var(--crimson);font-style:italic;}
+    .brand-pill .bp-meaning{font-size:.72rem;color:var(--text-muted);margin-top:.2rem;}
+
+    /* Stats bar */
+    .stats-bar{
+      background:linear-gradient(135deg,#1a0f05,#2c1a08);
+      padding:3rem 0;
+    }
+    .stats-row{
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+      gap:2rem;text-align:center;
+    }
+    .big-stat{
+      display:flex;flex-direction:column;align-items:center;gap:.3rem;
+    }
+    .big-stat-num{
+      font-family:var(--font-display);font-size:2.5rem;font-weight:900;
+      color:var(--gold);line-height:1;
+    }
+    .big-stat-label{
+      font-family:var(--font-ui);font-size:.8rem;
+      color:rgba(255,255,255,.55);letter-spacing:.04em;
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="../index.html" class="brand">
+      <div class="brand-phi">Φ</div>
+      <div class="brand-text">
+        <span class="site-title">Rincón de Humanidades</span>
+        <span class="site-tagline">Γνῶθι σεαυτόν · Conócete a ti mismo</span>
+      </div>
+    </a>
+    <nav class="main-nav" id="main-nav">
+      <ul>
+        <li><a href="../index.html">Inicio</a></li>
+        <li><a href="cultura-clasica.html">Cultura Clásica</a></li>
+        <li><a href="filosofia.html">Filosofía</a></li>
+        <li><a href="griego.html">Griego</a></li>
+        <li><a href="huella-digital.html" class="active">Huella Digital</a></li>
+        <li><a href="comunidad.html">Comunidad</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="recursos.html">Recursos</a></li>
+      </ul>
+    </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú">&#9776;</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hd-hero">
+  <div class="container" style="position:relative;z-index:2">
+    <p class="hd-tag">Proyecto especial</p>
+    <h1>Las culturas clásicas<br>en tu <em>vida actual</em></h1>
+    <p>Crees que Grecia y Roma son historia. Pero cada vez que dices «democracia», firmas un contrato, tomas un medicamento o abres una aplicación llamada Nike o Amazon, estás usando herramientas forjadas hace 2.500 años.</p>
+    <a href="#vocabulario" class="btn btn-gold">Explorar la huella →</a>
+  </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="container">
+    <div class="stats-row">
+      <div class="big-stat">
+        <span class="big-stat-num">60%</span>
+        <span class="big-stat-label">del vocabulario científico tiene raíces griegas o latinas</span>
+      </div>
+      <div class="big-stat">
+        <span class="big-stat-num">500+</span>
+        <span class="big-stat-label">palabras cotidianas de origen griego clásico</span>
+      </div>
+      <div class="big-stat">
+        <span class="big-stat-num">12</span>
+        <span class="big-stat-label">constituciones democráticas directamente influidas por Atenas</span>
+      </div>
+      <div class="big-stat">
+        <span class="big-stat-num">2.500</span>
+        <span class="big-stat-label">años de influencia ininterrumpida en Occidente</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VOCABULARIO -->
+<section class="hd-section" id="vocabulario">
+  <div class="container">
+    <div class="hd-cat-header">
+      <div class="hd-cat-icon hd-cat-icon-teal">🔤</div>
+      <div>
+        <h2 class="hd-cat-title">Vocabulario del día a día<span>Palabras griegas y latinas que usas cada día sin saberlo</span></h2>
+      </div>
+    </div>
+    <div class="hd-examples-grid">
+      <div class="hd-example">
+        <p class="hd-example-modern">política</p>
+        <p class="hd-example-word">Democracia</p>
+        <p class="hd-example-greek">δῆμος + κράτος</p>
+        <p class="hd-example-desc">«Poder del pueblo». Inventada en Atenas, siglo V a.C.</p>
+      </div>
+      <div class="hd-example">
+        <p class="hd-example-modern">filosofía</p>
+        <p class="hd-example-word">Ética</p>
+        <p class="hd-example-greek">ἦθος — êthos</p>
+        <p class="hd-example-desc">Carácter, costumbre. Aristoteles la convirtió en ciencia.</p>
+      </div>
+      <div class="hd-example">
+        <p class="hd-example-modern">medicina</p>
+        <p class="hd-example-word">Farmacia</p>
+        <p class="hd-example-greek">φάρμακον — phármakon</p>
+        <p class="hd-example-desc">Medicina, veneno, remedio. La ambigüedad original.</p>
+      </div>
+      <div class="hd-example">
+        <p class="hd-example-modern">tecnología</p>
+        <p class="hd-example-word">Tecnología</p>
+        <p class="hd-example-greek">τέχνη + λόγος</p>
+        <p class="hd-example-desc">Arte/habilidad + razón/discurso. Pura etimología griega.</p>
+      </div>
+      <div class="hd-example">
+        <p class="hd-example-modern">psicología</p>
+        <p class="hd-example-word">Psicología</p>
+        <p class="hd-example-greek">ψυχή + λόγος</p>
+        <p class="hd-example-desc">Alma + estudio. Psique era la diosa del alma.</p>
+      </div>
+      <div class="hd-example">
+        <p class="hd-example-modern">astronomía</p>
+        <p class="hd-example-word">Astronomía</p>
+        <p class="hd-example-greek">ἄστρον + νόμος</p>
+        <p class="hd-example-desc">Estrella + ley. Los griegos codificaron el cielo.</p>
+      </div>
+      <div class="hd-example">
+        <p class="hd-example-modern">biología</p>
+        <p class="hd-example-word">Biología</p>
+        <p class="hd-example-greek">βίος + λόγος</p>
+        <p class="hd-example-desc">Vida + estudio. Aristóteles fue el primer biólogo.</p>
+      </div>
+      <div class="hd-example">
+        <p class="hd-example-modern">matemáticas</p>
+        <p class="hd-example-word">Geometría</p>
+        <p class="hd-example-greek">γῆ + μέτρον</p>
+        <p class="hd-example-desc">Tierra + medida. De la agrimensura al álgebra.</p>
+      </div>
+    </div>
+    <div class="hd-highlight">
+      <span class="hd-highlight-icon">💡</span>
+      <div>
+        <h3>¿Lo sabías?</h3>
+        <p>En español médico, palabras como <em>arteriosclerosis</em>, <em>hepatitis</em>, <em>dermatología</em>, <em>neurología</em> o <em>oftalmología</em> son compuestos griegos que un estudiante de griego entiende literalmente. Conocer las raíces griegas te convierte en mejor lector de cualquier texto especializado.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POLÍTICA Y DERECHO -->
+<section class="hd-section" id="politica">
+  <div class="container">
+    <div class="hd-cat-header">
+      <div class="hd-cat-icon hd-cat-icon-crimson">⚖️</div>
+      <div>
+        <h2 class="hd-cat-title">Política y Derecho<span>Las instituciones modernas tienen pasaporte griego y romano</span></h2>
+      </div>
+    </div>
+    <div class="hd-examples-grid">
+      <div class="hd-example">
+        <p class="hd-example-modern">latín</p>
+        <p class="hd-example-word">República</p>
+        <p class="hd-example-greek">res publica</p>
+        <p class="hd-example-desc">«La cosa pública». El modelo de gobierno romano.</p>
+      </div>
+      <div class="hd-example">
+        <p class="hd-example-modern">latín</p>
+        <p class="hd-example-word">Senado</p>
+        <p class="hd-example-greek">senatus — senex</p>
+        <p class="hd-example-desc">De «anciano». Asamblea de patricios romanos.</p>
+      </div>
+      <div class="hd-example">
+        <p class="hd-example-modern">latín</p>
+        <p class="hd-example-word">Constitución</p>
+        <p class="hd-example-greek">constitutio</p>
+        <p class="hd-example-desc">«Lo establecido». Edicto imperial romano, hoy ley fundamental.</p>
+      </div>
+      <div class="hd-example">
+        <p class="hd-example-modern">griego</p>
+        <p class="hd-example-word">Política</p>
+        <p class="hd-example-greek">πολιτεία — politéia</p>
+        <p class="hd-example-desc">El arte de gobernar la polis. Aristóteles la sistematizó.</p>
+      </div>
+      <div class="hd-example">
+        <p class="hd-example-modern">latín</p>
+        <p class="hd-example-word">Tribunal</p>
+        <p class="hd-example-greek">tribunal — tribunus</p>
+        <p class="hd-example-desc">La plataforma del tribuno romano, hoy órgano judicial.</p>
+      </div>
+      <div class="hd-example">
+        <p class="hd-example-modern">latín</p>
+        <p class="hd-example-word">Ciudadano</p>
+        <p class="hd-example-greek">civis — civitas</p>
+        <p class="hd-example-desc">El concepto romano de ciudadanía como derecho universal.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARQUITECTURA -->
+<section class="hd-section" id="arquitectura">
+  <div class="container">
+    <div class="hd-cat-header">
+      <div class="hd-cat-icon hd-cat-icon-amber">🏛️</div>
+      <div>
+        <h2 class="hd-cat-title">Arquitectura<span>Las columnas griegas sostienen el poder moderno</span></h2>
+      </div>
+    </div>
+    <p style="max-width:760px;margin-bottom:2rem;color:var(--text-soft);line-height:1.8">
+      Los tres órdenes arquitectónicos griegos —dórico, jónico y corintio— están presentes en los edificios que simbolizan el poder en todo el mundo occidental: parlamentos, bancos, museos, universidades, juzgados. El Partenón definió la gramática visual de la autoridad y la dignidad institucional.
+    </p>
+    <div class="hd-examples-grid">
+      <div class="hd-example">
+        <p class="hd-example-modern">España</p>
+        <p class="hd-example-word">Congreso de los Diputados</p>
+        <p class="hd-example-greek">Madrid, 1850</p>
+        <p class="hd-example-desc">Frontón triangular y columnas corintias directamente inspirados en el templo griego.</p>
+      </div>
+      <div class="hd-example">
+        <p class="hd-example-modern">EEUU</p>
+        <p class="hd-example-word">Capitolio de Washington</p>
+        <p class="hd-example-greek">Washington D.C., 1800</p>
+        <p class="hd-example-desc">La democracia americana se «vistió» con la arquitectura ateniense.</p>
+      </div>
+      <div class="hd-example">
+        <p class="hd-example-modern">Reino Unido</p>
+        <p class="hd-example-word">British Museum</p>
+        <p class="hd-example-greek">Londres, 1847</p>
+        <p class="hd-example-desc">Columnata jónica que replica el Erecteión de la Acrópolis.</p>
+      </div>
+      <div class="hd-example">
+        <p class="hd-example-modern">Francia</p>
+        <p class="hd-example-word">La Madeleine</p>
+        <p class="hd-example-greek">París, 1842</p>
+        <p class="hd-example-desc">Templo griego en el corazón de París, con 52 columnas corintias.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARCAS Y CULTURA POP -->
+<section class="hd-section" id="marcas">
+  <div class="container">
+    <div class="hd-cat-header">
+      <div class="hd-cat-icon hd-cat-icon-navy">🌍</div>
+      <div>
+        <h2 class="hd-cat-title">Marcas y Cultura Pop<span>Los dioses griegos conquistan el mercado global</span></h2>
+      </div>
+    </div>
+    <p style="max-width:760px;margin-bottom:2rem;color:var(--text-soft);line-height:1.8">
+      Las empresas más reconocibles del planeta llevan nombres de dioses, héroes y conceptos griegos. La mitología clásica sigue siendo el sistema de símbolos más potente para la cultura de masas.
+    </p>
+    <div class="brands-grid">
+      <div class="brand-pill"><p class="bp-name">Nike</p><p class="bp-origin">Νίκη — Niké</p><p class="bp-meaning">Diosa griega de la victoria</p></div>
+      <div class="brand-pill"><p class="bp-name">Amazon</p><p class="bp-origin">Ἀμαζών</p><p class="bp-meaning">Guerreras míticas de gran poder</p></div>
+      <div class="brand-pill"><p class="bp-name">Apollo (NASA)</p><p class="bp-origin">Ἀπόλλων</p><p class="bp-meaning">Dios del sol y la razón</p></div>
+      <div class="brand-pill"><p class="bp-name">Hermes</p><p class="bp-origin">Ἑρμῆς</p><p class="bp-meaning">Dios mensajero y del comercio</p></div>
+      <div class="brand-pill"><p class="bp-name">Ajax</p><p class="bp-origin">Αἴας</p><p class="bp-meaning">Héroe de la guerra de Troya</p></div>
+      <div class="brand-pill"><p class="bp-name">Olympus</p><p class="bp-origin">Ὄλυμπος</p><p class="bp-meaning">Montaña morada de los dioses</p></div>
+      <div class="brand-pill"><p class="bp-name">Minerva</p><p class="bp-origin">Minerva (lat.)</p><p class="bp-meaning">Diosa romana de la sabiduría</p></div>
+      <div class="brand-pill"><p class="bp-name">Pandora</p><p class="bp-origin">Πανδώρα</p><p class="bp-meaning">«La que tiene todos los dones»</p></div>
+      <div class="brand-pill"><p class="bp-name">Mars</p><p class="bp-origin">Mars (lat.)</p><p class="bp-meaning">Dios romano de la guerra</p></div>
+      <div class="brand-pill"><p class="bp-name">Atlas</p><p class="bp-origin">Ἄτλας</p><p class="bp-meaning">Titán que soporta el mundo</p></div>
+      <div class="brand-pill"><p class="bp-name">Titan</p><p class="bp-origin">Τιτάν</p><p class="bp-meaning">Dioses primordiales griegos</p></div>
+      <div class="brand-pill"><p class="bp-name">Phoenix</p><p class="bp-origin">Φοῖνιξ</p><p class="bp-meaning">Ave mítica que renace de sus cenizas</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTRIBUYE -->
+<section style="background:linear-gradient(135deg,#060f0f,#0a1a1a);padding:clamp(3rem,6vw,5rem) 0">
+  <div class="container" style="text-align:center">
+    <p class="hd-tag" style="justify-content:center">Proyecto abierto</p>
+    <h2 style="font-family:var(--font-display);font-size:clamp(1.6rem,3.5vw,2.5rem);font-weight:700;color:#fff;margin-bottom:1rem;line-height:1.15">
+      ¿Has encontrado otra <em>huella</em>?
+    </h2>
+    <p style="color:rgba(255,255,255,.65);max-width:560px;margin:0 auto 2rem;line-height:1.8">
+      Este proyecto crece con la comunidad. Si has descubierto una palabra, un edificio, una marca o un concepto de origen clásico que no está aquí, escríbenos y lo añadimos con tu crédito.
+    </p>
+    <a href="contribuir.html" class="btn btn-gold">Enviar una huella →</a>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-inner container">
+    <div class="footer-brand">
+      <span class="footer-phi">Φ</span>
+      <span class="footer-name">Rincón de Humanidades</span>
+      <span class="footer-tagline">Cultura clásica y humanidades para la vida</span>
+    </div>
+    <div class="footer-links">
+      <h4>Secciones</h4>
+      <ul>
+        <li><a href="cultura-clasica.html">Cultura Clásica</a></li>
+        <li><a href="filosofia.html">Filosofía</a></li>
+        <li><a href="griego.html">Griego Clásico</a></li>
+        <li><a href="recursos.html">Recursos</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Comunidad</h4>
+      <ul>
+        <li><a href="comunidad.html">Comunidad</a></li>
+        <li><a href="contribuir.html">Contribuir</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Rincón de Humanidades · Hecho con <em>φιλοσοφία</em></p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>
