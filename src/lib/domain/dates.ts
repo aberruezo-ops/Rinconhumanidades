@@ -43,6 +43,22 @@ export function todayYmd(): string {
   return ymd(now.getUTCFullYear(), now.getUTCMonth() + 1, now.getUTCDate());
 }
 
+export function addDays(dateStr: string, delta: number): string {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d + delta));
+  return ymd(dt.getUTCFullYear(), dt.getUTCMonth() + 1, dt.getUTCDate());
+}
+
+export function startOfWeek(dateStr: string): string {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return addDays(dateStr, -(isoWeekday(y, m, d) - 1));
+}
+
+export function weekDates(dateStr: string): string[] {
+  const monday = startOfWeek(dateStr);
+  return Array.from({ length: 7 }, (_, i) => addDays(monday, i));
+}
+
 const MONTH_NAMES_ES = [
   "enero",
   "febrero",
