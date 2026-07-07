@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { signInAction, type SignInState } from "@/lib/actions/auth";
 
-export function LoginForm({ redirectTo }: { redirectTo: string }) {
+export function LoginForm({ redirectTo, demoHint }: { redirectTo: string; demoHint: string | null }) {
   const [state, formAction, pending] = useActionState<SignInState, FormData>(signInAction, undefined);
 
   return (
@@ -16,6 +16,8 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
           <h1 className="text-xl font-semibold text-slate-900">Dante</h1>
           <p className="text-sm text-slate-500">Agenda de la consulta de traumatología</p>
         </div>
+
+        {demoHint && <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">{demoHint}</p>}
 
         <input type="hidden" name="redirectTo" value={redirectTo} />
 

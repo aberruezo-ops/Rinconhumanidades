@@ -25,43 +25,36 @@ export async function MonthView({ agenda, year, month }: { agenda: AgendaType; y
   return (
     <div className="space-y-3">
       <p className="text-center font-medium capitalize text-slate-900">{monthLabelEs(year, month)}</p>
-      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white p-3">
-        <table className="w-full min-w-[560px] table-fixed border-collapse text-center">
-          <thead>
-            <tr>
-              {["L", "M", "X", "J", "V", "S", "D"].map((d) => (
-                <th key={d} className="pb-2 text-xs font-medium text-slate-500">
-                  {d}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {weeks.map((week, weekIndex) => (
-              <tr key={weekIndex}>
-                {week.map((cell, cellIndex) => {
-                  if (!cell) return <td key={cellIndex} className="p-1" />;
-                  const isOpen = openByDate.get(cell.date) ?? false;
-                  const count = countByDate.get(cell.date) ?? 0;
-                  const isToday = cell.date === today;
-                  return (
-                    <td key={cellIndex} className="p-1">
-                      <Link
-                        href={`/agenda/${agenda}?vista=dia&fecha=${cell.date}`}
-                        className={`flex aspect-square w-full flex-col items-center justify-center rounded-lg text-sm font-medium ${
-                          isOpen ? "bg-emerald-50 text-emerald-800 hover:bg-emerald-100" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
-                        } ${isToday ? "ring-2 ring-offset-1 ring-slate-900" : ""}`}
-                      >
-                        <span>{cell.day}</span>
-                        {count > 0 && <span className="text-[10px] text-slate-500">{count}</span>}
-                      </Link>
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="rounded-xl border border-slate-200 bg-white p-2 sm:p-3">
+        <div className="grid grid-cols-7 gap-1 pb-1 text-center">
+          {["L", "M", "X", "J", "V", "S", "D"].map((d) => (
+            <span key={d} className="text-xs font-medium text-slate-500">
+              {d}
+            </span>
+          ))}
+        </div>
+        {weeks.map((week, weekIndex) => (
+          <div key={weekIndex} className="grid grid-cols-7 gap-1 py-0.5">
+            {week.map((cell, cellIndex) => {
+              if (!cell) return <div key={cellIndex} />;
+              const isOpen = openByDate.get(cell.date) ?? false;
+              const count = countByDate.get(cell.date) ?? 0;
+              const isToday = cell.date === today;
+              return (
+                <Link
+                  key={cellIndex}
+                  href={`/agenda/${agenda}?vista=dia&fecha=${cell.date}`}
+                  className={`flex aspect-square flex-col items-center justify-center rounded-lg text-sm font-medium ${
+                    isOpen ? "bg-emerald-50 text-emerald-800 hover:bg-emerald-100" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
+                  } ${isToday ? "ring-2 ring-offset-1 ring-slate-900" : ""}`}
+                >
+                  <span>{cell.day}</span>
+                  {count > 0 && <span className="text-[10px] text-slate-500">{count}</span>}
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </div>
     </div>
   );

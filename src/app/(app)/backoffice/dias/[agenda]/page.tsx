@@ -86,45 +86,35 @@ export default async function BackofficeAgendaDaysPage({
         </form>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white p-3">
-        <table className="w-full min-w-[560px] table-fixed border-collapse text-center">
-          <thead>
-            <tr>
-              {["L", "M", "X", "J", "V", "S", "D"].map((d) => (
-                <th key={d} className="pb-2 text-xs font-medium text-slate-500">
-                  {d}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {weeks.map((week, weekIndex) => (
-              <tr key={weekIndex}>
-                {week.map((cell, cellIndex) => {
-                  if (!cell) return <td key={cellIndex} className="p-1" />;
-                  const isOpen = dayState.get(cell.date) ?? false;
-                  const isToday = cell.date === today;
-                  return (
-                    <td key={cellIndex} className="p-1">
-                      <form action={toggleAgendaDayAction.bind(null, agenda, cell.date, !isOpen)}>
-                        <button
-                          type="submit"
-                          className={`aspect-square w-full rounded-lg text-sm font-medium ${
-                            isOpen
-                              ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
-                              : "bg-slate-100 text-slate-400 hover:bg-slate-200"
-                          } ${isToday ? "ring-2 ring-offset-1 ring-slate-900" : ""}`}
-                        >
-                          {cell.day}
-                        </button>
-                      </form>
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="rounded-xl border border-slate-200 bg-white p-2 sm:p-3">
+        <div className="grid grid-cols-7 gap-1 pb-1 text-center">
+          {["L", "M", "X", "J", "V", "S", "D"].map((d) => (
+            <span key={d} className="text-xs font-medium text-slate-500">
+              {d}
+            </span>
+          ))}
+        </div>
+        {weeks.map((week, weekIndex) => (
+          <div key={weekIndex} className="grid grid-cols-7 gap-1 py-0.5">
+            {week.map((cell, cellIndex) => {
+              if (!cell) return <div key={cellIndex} />;
+              const isOpen = dayState.get(cell.date) ?? false;
+              const isToday = cell.date === today;
+              return (
+                <form key={cellIndex} action={toggleAgendaDayAction.bind(null, agenda, cell.date, !isOpen)}>
+                  <button
+                    type="submit"
+                    className={`aspect-square w-full rounded-lg text-sm font-medium ${
+                      isOpen ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200" : "bg-slate-100 text-slate-400 hover:bg-slate-200"
+                    } ${isToday ? "ring-2 ring-offset-1 ring-slate-900" : ""}`}
+                  >
+                    {cell.day}
+                  </button>
+                </form>
+              );
+            })}
+          </div>
+        ))}
       </div>
 
       <div className="flex gap-4 text-sm text-slate-500">
