@@ -18,7 +18,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="border-b border-slate-200 bg-white">
+      <header className="border-b border-slate-200 bg-white print:hidden">
         <div className="flex items-center justify-between px-4 py-3">
           <span className="font-semibold text-slate-900">Dante</span>
           <div className="flex items-center gap-3">
@@ -43,9 +43,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </nav>
       </header>
 
-      <main className="flex-1 px-4 py-4 pb-20 md:pb-4">{children}</main>
+      <main className="flex-1 px-4 py-4 pb-20 md:pb-4 print:p-0">{children}</main>
 
-      <nav className="fixed inset-x-0 bottom-0 flex border-t border-slate-200 bg-white md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 flex border-t border-slate-200 bg-white md:hidden print:hidden">
         {navItems.map((item) => (
           <Link
             key={item.href}
