@@ -57,7 +57,7 @@ export default async function ListadosPage({
     { label: "Traumatología", filters: { agenda: "traumatologo" } },
     { label: "Enfermería", filters: { agenda: "enfermeria" } },
     { label: "Quirófano", filters: { agenda: "quirofano" } },
-    { label: "Pendientes de confirmar", filters: { estado: "programada" } },
+    { label: "Confirmada sin avisar", filters: { estado: "confirmada_sin_avisar" } },
     { label: "Por avisar (WhatsApp)", filters: { aviso: "pendiente" } },
     { label: "Todas las próximas", filters: {} },
   ];

@@ -4,13 +4,12 @@
 export type AppRole = "admin" | "readonly";
 export type AgendaType = "traumatologo" | "enfermeria" | "quirofano";
 export type AppointmentStatus =
-  | "programada"
-  | "confirmada"
+  | "confirmada_sin_avisar"
+  | "confirmada_avisada"
   | "completada"
   | "no_presentado"
   | "cancelada"
-  | "pendiente"
-  | "avisado";
+  | "pendiente";
 export type QuirofanoCandidatoStatus = "pendiente" | "convertido" | "descartado";
 
 export interface Database {

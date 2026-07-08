@@ -56,7 +56,7 @@ Una cita solo puede crearse en un día abierto de su agenda. Un hueco ocupado de
 - Agenda (traumatólogo / enfermería / quirófano), fecha. Hora de inicio y fin exactas en traumatólogo y quirófano (se elige directamente el rango, no una duración); en enfermería no se registra hora, solo el día.
 - Paciente registrado (opcional si es particular) o etiqueta libre.
 - Compañía aseguradora.
-- Estado: programada, avisado (ya se ha llamado o escrito por WhatsApp, a la espera de que confirme), confirmada, completada, no presentado, cancelada. En quirófano además: pendiente.
+- Estado: confirmada sin avisar (reservada, pendiente del recordatorio si lo necesita), confirmada/avisada (no necesita recordatorio, o ya se le avisó), completada, no presentado, cancelada. En quirófano además: pendiente. El check "avisar antes de la cita" decide el estado inicial (marcado → confirmada sin avisar; sin marcar → confirmada/avisada); al avisar por WhatsApp, si estaba "confirmada sin avisar" pasa sola a "confirmada/avisada".
 
 ### Campos adicionales solo en quirófano
 - Patología o motivo de la operación.
@@ -66,7 +66,7 @@ Una cita solo puede crearse en un día abierto de su agenda. Un hueco ocupado de
 
 ### Seguimiento
 - Cualquier cita puede marcarse "avisar antes de la cita" (sí/no). Si está marcada, entra en el aviso de Inicio dentro de los días de antelación configurados para esa agenda (`agenda_config.notice_days_default`), hasta que se marca el aviso de WhatsApp como enviado.
-- Al abrir la app (Inicio) aparece un aviso con los pacientes a los que hay que llamar o escribir por WhatsApp: las citas marcadas para avisar que entran en su ventana de antelación, y los candidatos de quirófano cuya fecha aproximada deseada está a un mes o menos.
+- Al abrir la app (Inicio) aparece un aviso con los pacientes a los que hay que llamar o escribir por WhatsApp: las citas marcadas para avisar que entran en su ventana de antelación, y los candidatos de quirófano cuya fecha aproximada deseada está a un mes o menos. En las citas, el botón de avisar cambia de color según lo cerca que esté la cita: verde con más de 48h, amarillo entre 48h y 24h, rojo con menos de 24h y sin avisar todavía.
 - **Candidatos de quirófano sin cita cerrada**: pacientes en estudio para quirófano que todavía no tienen día ni hora reservados — no son una cita, es una lista aparte (`/agenda/quirofano/candidatos`) con como mucho un paciente (o nombre libre), una fecha aproximada deseada (opcional) y observaciones. Al concretar día y hora se crea la cita real de quirófano de la forma habitual, y el candidato se marca como convertido (o se descarta si no sigue adelante).
 
 ## Creación de citas

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { requireAdmin, requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { isAgendaType, agendaLabel } from "@/lib/domain/agendas";
+import { isAgendaType, agendaLabel, defaultStatusForReminder } from "@/lib/domain/agendas";
 import { todayYmd } from "@/lib/domain/dates";
 import { createAppointmentAction } from "@/lib/actions/appointments";
 import { minutesToTime, timeToMinutes } from "@/lib/domain/slots";
@@ -56,7 +56,7 @@ export default async function NuevaCitaPage({
           particular_label: "",
           insurance_company_id: "",
           appointment_type_id: "",
-          status: "programada",
+          status: defaultStatusForReminder(false),
           pathology: "",
           prosthesis_brand: "",
           dni: "",

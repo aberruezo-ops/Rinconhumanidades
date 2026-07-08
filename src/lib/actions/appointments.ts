@@ -10,9 +10,8 @@ import { findOverlap, timeToMinutes } from "@/lib/domain/slots";
 import type { AgendaType, AppointmentStatus } from "@/lib/supabase/database.types";
 
 const STATUSES: AppointmentStatus[] = [
-  "programada",
-  "avisado",
-  "confirmada",
+  "confirmada_sin_avisar",
+  "confirmada_avisada",
   "completada",
   "no_presentado",
   "cancelada",
@@ -288,7 +287,13 @@ export async function markWhatsappSentAction(id: string): Promise<{ error?: stri
   const user = await requireUser();
   requireAdmin(user);
   const supabase = await createClient();
-  const { error } = await supabase.from("appointments").update({ whatsapp_sent_at: new Date().toISOString() }).eq("id", id);
+
+  // Al avisar, si la cita seguía "confirmada sin avisar" pasa a "confirmada/avisada".
+  const { data: current } = await supabase.from("appointments").select("status").eq("id", id).single();
+  const update: { whatsapp_sent_at: string; status?: AppointmentStatus } = { whatsapp_sent_at: new Date().toISOString() };
+  if (current?.status === "confirmada_sin_avisar") update.status = "confirmada_avisada";
+
+  const { error } = await supabase.from("appointments").update(update).eq("id", id);
   if (error) return { error: "No se ha podido registrar el aviso." };
   revalidatePath("/listados");
   revalidatePath("/");

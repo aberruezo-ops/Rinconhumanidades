@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { interpretAppointmentTextAction, type InterpretedAppointment } from "@/lib/actions/dictation";
 import { createAppointmentAction } from "@/lib/actions/appointments";
-import { agendaLabel } from "@/lib/domain/agendas";
+import { agendaLabel, defaultStatusForReminder } from "@/lib/domain/agendas";
 import { AppointmentForm, type AppointmentFormDefaults } from "../_components/appointment-form";
 
 type Company = { id: string; name: string; duration_minutes: number | null };
@@ -99,7 +99,7 @@ export function DictadoFlow({
       particular_label: result.is_particular ? (result.patient_name ?? "") : "",
       insurance_company_id: "",
       appointment_type_id: appointmentTypes.find((t) => t.name === result.appointment_type)?.id ?? "",
-      status: "programada",
+      status: defaultStatusForReminder(false),
       pathology: "",
       prosthesis_brand: "",
       dni: "",

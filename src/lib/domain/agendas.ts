@@ -41,9 +41,8 @@ export const AGENDA_COLORS: Record<AgendaType, { badge: string; solid: string; d
 };
 
 export const APPOINTMENT_STATUSES: { value: AppointmentStatus; label: string }[] = [
-  { value: "programada", label: "Programada" },
-  { value: "avisado", label: "Avisado" },
-  { value: "confirmada", label: "Confirmada" },
+  { value: "confirmada_sin_avisar", label: "Confirmada sin avisar" },
+  { value: "confirmada_avisada", label: "Confirmada/avisada" },
   { value: "completada", label: "Completada" },
   { value: "no_presentado", label: "No presentado" },
   { value: "cancelada", label: "Cancelada" },
@@ -62,13 +61,37 @@ export function statusesForAgenda(agenda: AgendaType) {
 // Colores de estado, deliberadamente fuera de la gama morado/verde-azulado/verde militar
 // que ya identifica a cada agenda, para no confundir "de qué agenda es" con "cómo va".
 export const STATUS_STYLES: Record<AppointmentStatus, string> = {
-  programada: "bg-brand-100 text-brand-700",
-  avisado: "bg-lime-100 text-lime-800",
-  confirmada: "bg-indigo-100 text-indigo-800",
+  confirmada_sin_avisar: "bg-brand-100 text-brand-700",
+  confirmada_avisada: "bg-lime-100 text-lime-800",
   completada: "bg-slate-200 text-slate-600",
   no_presentado: "bg-amber-100 text-amber-800",
   cancelada: "bg-red-100 text-red-700 line-through",
   pendiente: "bg-accent-100 text-accent-600",
+};
+
+// El check "avisar antes de la cita" decide el estado inicial: si hay que avisar todavía,
+// queda "confirmada sin avisar"; si no hace falta avisar (o ya se avisó), "confirmada/avisada".
+export function defaultStatusForReminder(needsReminder: boolean): AppointmentStatus {
+  return needsReminder ? "confirmada_sin_avisar" : "confirmada_avisada";
+}
+
+export function isConfirmableStatus(status: AppointmentStatus): boolean {
+  return status === "confirmada_sin_avisar" || status === "confirmada_avisada";
+}
+
+// Urgencia del botón de avisar por WhatsApp según cuánto falte para la cita.
+export type ReminderUrgency = "green" | "yellow" | "red";
+
+export function reminderUrgency(hoursUntil: number): ReminderUrgency {
+  if (hoursUntil < 24) return "red";
+  if (hoursUntil <= 48) return "yellow";
+  return "green";
+}
+
+export const REMINDER_URGENCY_STYLES: Record<ReminderUrgency, string> = {
+  green: "bg-emerald-100 text-emerald-700 hover:bg-emerald-200",
+  yellow: "bg-amber-100 text-amber-800 hover:bg-amber-200",
+  red: "bg-red-100 text-red-700 hover:bg-red-200",
 };
 
 export const WEEKDAY_LABELS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];

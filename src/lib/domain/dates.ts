@@ -58,6 +58,30 @@ export function daysBetween(fromStr: string, toStr: string): number {
   return Math.round((toMs - fromMs) / 86400000);
 }
 
+// Offset horario de Europe/Madrid (en minutos) respecto a UTC para una fecha dada, calculado
+// vía Intl para que resuelva solo el cambio de hora de verano/invierno.
+function madridUtcOffsetMinutes(dateStr: string): number {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const probe = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Madrid",
+    hour: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(probe);
+  const madridHour = Number(parts.find((p) => p.type === "hour")?.value ?? 12);
+  return (madridHour - 12) * 60;
+}
+
+// Horas reales que faltan (desde ahora) para el instante de una cita, en la hora de Jaén.
+// Si la cita no tiene hora (enfermería), se toma la medianoche de ese día como referencia.
+export function hoursUntilAppointment(dateStr: string, timeStr: string | null): number {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const [hh, mm] = (timeStr ?? "00:00").slice(0, 5).split(":").map(Number);
+  const offsetMinutes = madridUtcOffsetMinutes(dateStr);
+  const targetUtcMs = Date.UTC(y, m - 1, d, hh, mm) - offsetMinutes * 60000;
+  return (targetUtcMs - Date.now()) / 3_600_000;
+}
+
 export function startOfWeek(dateStr: string): string {
   const [y, m, d] = dateStr.split("-").map(Number);
   return addDays(dateStr, -(isoWeekday(y, m, d) - 1));

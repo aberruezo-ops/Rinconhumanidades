@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { AGENDAS, AGENDA_COLORS, agendaLabel, statusLabel, STATUS_STYLES } from "@/lib/domain/agendas";
+import { AGENDAS, AGENDA_COLORS, agendaLabel, statusLabel, STATUS_STYLES, reminderUrgency } from "@/lib/domain/agendas";
 import {
   buildMonthWeeks,
   daysBetween,
   formatDateEs,
   formatTimeEs,
+  hoursUntilAppointment,
   monthLabelEs,
   shiftYearMonth,
   todayYmd,
@@ -138,6 +139,7 @@ export default async function DashboardPage({
                         onMarkSent={markWhatsappSentAction.bind(null, a.id)}
                         phone={phone}
                         sentAt={a.whatsapp_sent_at}
+                        urgency={reminderUrgency(hoursUntilAppointment(a.date, a.start_time))}
                         message={buildReminderMessage({
                           patientFirstName: a.patients?.first_name ?? name,
                           agendaLabel: agendaLabel(a.agenda),
