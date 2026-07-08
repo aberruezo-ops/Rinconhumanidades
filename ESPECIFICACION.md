@@ -13,9 +13,9 @@ No hay portal de pacientes ni reserva online en esta versión.
 
 ## Las tres agendas
 
-1. **Traumatólogo (Alex)**. Consulta. Día y horario por defecto: lunes de 16:00 a 19:30.
-2. **Enfermería**. Curas y PRP. Día por defecto: martes (jornada 16:00 a 19:30, aunque el patrón se puede dejar sin días y abrir solo un día concreto cuando se acumulan casos). Las citas de enfermería **no llevan hora exacta**: solo día, paciente y tipo (cura o PRP) — no hay solapes que comprobar, solo importa qué pacientes tocan ese día.
-3. **Quirófano**. Día y horario por defecto: miércoles de 16:00 a 19:30. Dos estados propios: **programado** y **pendiente** (pre-reserva a la espera de confirmación, requiere seguimiento).
+1. **Traumatólogo (Alex)**. Consulta. Día y horario por defecto: lunes de 16:00 a 20:30.
+2. **Enfermería**. Curas y PRP. Día por defecto: lunes, coincidiendo con el día de la consulta de traumatología (jornada 17:00 a 19:30, aunque el patrón se puede dejar sin días y abrir solo un día concreto cuando se acumulan casos). Las citas de enfermería **no llevan hora exacta**: solo día, paciente y tipo (cura o PRP) — no hay solapes que comprobar, solo importa qué pacientes tocan ese día.
+3. **Quirófano**. Día por defecto: lunes, a partir de las 12:00 (jornada configurada hasta las 21:30, aunque en la práctica no hay una hora de fin fija: se apunta a todos los pacientes que necesiten quirófano ese día). Dos estados propios: **programado** y **pendiente** (pre-reserva a la espera de confirmación, requiere seguimiento).
 
 Estos son solo los valores de partida: desde el backoffice se puede cambiar el día (cualquier día de la semana, no solo el indicado) y el horario de cada agenda en cualquier momento.
 

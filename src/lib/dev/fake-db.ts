@@ -30,9 +30,9 @@ function seed(): Store {
   ];
 
   const agendaConfig: Row[] = [
-    { agenda: "traumatologo", default_weekdays: [1], default_duration_minutes: 15, start_time: "16:00", end_time: "19:30", notice_days_default: 3, updated_at: nowIso },
-    { agenda: "enfermeria", default_weekdays: [2], default_duration_minutes: 20, start_time: "16:00", end_time: "19:30", notice_days_default: 3, updated_at: nowIso },
-    { agenda: "quirofano", default_weekdays: [3], default_duration_minutes: 60, start_time: "16:00", end_time: "19:30", notice_days_default: 3, updated_at: nowIso },
+    { agenda: "traumatologo", default_weekdays: [1], default_duration_minutes: 15, start_time: "16:00", end_time: "20:30", notice_days_default: 3, updated_at: nowIso },
+    { agenda: "enfermeria", default_weekdays: [1], default_duration_minutes: 20, start_time: "17:00", end_time: "19:30", notice_days_default: 3, updated_at: nowIso },
+    { agenda: "quirofano", default_weekdays: [1], default_duration_minutes: 60, start_time: "12:00", end_time: "21:30", notice_days_default: 3, updated_at: nowIso },
   ];
 
   const agendaDays: Row[] = [];
