@@ -41,7 +41,7 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
     return (
       <div className="space-y-2">
         {!isOpen && (
-          <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          <p className="rounded-lg bg-accent-100 px-3 py-2 text-sm text-accent-600">
             Este día está marcado como cerrado, pero tiene citas registradas.
           </p>
         )}
@@ -112,7 +112,7 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
   return (
     <div className="space-y-2">
       {!isOpen && (
-        <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
+        <p className="rounded-lg bg-accent-100 px-3 py-2 text-sm text-accent-600">
           Este día está marcado como cerrado, pero tiene citas registradas.
         </p>
       )}

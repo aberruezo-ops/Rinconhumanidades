@@ -82,17 +82,17 @@ export async function MonthView({
                     href={`/agenda/${agenda}?vista=mes&fecha=${cell.date}`}
                     className={`relative flex h-8 items-center justify-center rounded-md text-xs ${
                       hasPendiente
-                        ? "bg-amber-100 font-semibold text-amber-900 hover:bg-amber-200"
+                        ? "bg-accent-100 font-semibold text-accent-600 hover:bg-accent-100/70"
                         : count > 0
                           ? "bg-sky-100 font-semibold text-sky-900 hover:bg-sky-200"
                           : "text-slate-300 hover:bg-slate-50"
-                    } ${isSelected ? "ring-2 ring-brand-600" : isToday ? "ring-2 ring-slate-900" : ""}`}
+                    } ${isSelected ? "ring-2 ring-brand-600" : isToday ? "ring-2 ring-accent-500" : ""}`}
                   >
                     {cell.day}
                     {count > 0 && (
                       <span
                         className={`absolute -right-0.5 -top-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-0.5 text-[9px] font-medium text-white ${
-                          hasPendiente ? "bg-amber-600" : "bg-sky-600"
+                          hasPendiente ? "bg-accent-600" : "bg-sky-600"
                         }`}
                       >
                         {count}

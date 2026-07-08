@@ -122,7 +122,7 @@ export default async function BackofficeAgendaDaysPage({
                     type="submit"
                     className={`h-9 w-full rounded-md text-xs font-medium ${
                       isOpen ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200" : "bg-slate-100 text-slate-400 hover:bg-slate-200"
-                    } ${isToday ? "ring-2 ring-offset-1 ring-slate-900" : ""}`}
+                    } ${isToday ? "ring-2 ring-offset-1 ring-accent-500" : ""}`}
                   >
                     {cell.day}
                   </button>
@@ -182,7 +182,7 @@ export default async function BackofficeAgendaDaysPage({
                   })}
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="space-y-1">
                     <label className="text-xs font-medium text-slate-500">Hora inicio</label>
                     <input

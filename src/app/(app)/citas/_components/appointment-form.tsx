@@ -113,7 +113,7 @@ export function AppointmentForm({
       </div>
 
       {!isEnfermeria && (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-1">
             <label className="text-sm font-medium text-slate-700" htmlFor="start_time">
               Hora inicio
@@ -146,7 +146,7 @@ export function AppointmentForm({
       )}
 
       {overlapWarning && (
-        <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">⚠ {overlapWarning}</p>
+        <p className="rounded-lg bg-accent-100 px-3 py-2 text-sm text-accent-600">⚠ {overlapWarning}</p>
       )}
 
       {isEnfermeria && (

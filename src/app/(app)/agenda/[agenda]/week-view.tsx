@@ -45,7 +45,7 @@ export async function WeekView({ agenda, date }: { agenda: AgendaType; date: str
                 {count > 0 && (
                   <span
                     className={`rounded-full px-2 py-0.5 ${
-                      hasPendiente ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"
+                      hasPendiente ? "bg-accent-100 text-accent-600" : "bg-slate-100 text-slate-600"
                     }`}
                   >
                     {count}

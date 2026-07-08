@@ -95,7 +95,7 @@ export default async function DashboardPage({
                     key={cellIndex}
                     href={`/?fecha=${cell.date}`}
                     className={`relative flex h-10 flex-col items-center justify-center gap-0.5 rounded-md text-xs hover:bg-slate-50 ${
-                      isSelected ? "ring-2 ring-brand-600" : isToday ? "ring-2 ring-slate-900" : ""
+                      isSelected ? "ring-2 ring-brand-600" : isToday ? "ring-2 ring-accent-500" : ""
                     } ${dayAgendas ? "font-semibold text-slate-900" : "text-slate-300"}`}
                   >
                     {cell.day}
