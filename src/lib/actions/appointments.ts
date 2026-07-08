@@ -11,6 +11,7 @@ import type { AgendaType, AppointmentStatus } from "@/lib/supabase/database.type
 
 const STATUSES: AppointmentStatus[] = [
   "programada",
+  "avisado",
   "confirmada",
   "completada",
   "no_presentado",
@@ -36,7 +37,7 @@ const formSchema = z.object({
   prosthesis_brand: z.string().optional(),
   dni: z.string().optional(),
   observations: z.string().optional(),
-  follow_up_date: z.string().optional(),
+  needs_reminder: z.string().optional(),
 });
 
 export type AppointmentFormState = { error?: string } | undefined;
@@ -198,7 +199,7 @@ export async function createAppointmentAction(
     prosthesis_brand: isQuirofano ? data.prosthesis_brand?.trim() || null : null,
     dni: isQuirofano ? data.dni?.trim() || null : null,
     observations: data.observations?.trim() || null,
-    follow_up_date: data.follow_up_date || null,
+    needs_reminder: data.needs_reminder === "on",
   });
 
   if (error) {
@@ -259,7 +260,7 @@ export async function updateAppointmentAction(
       prosthesis_brand: isQuirofano ? data.prosthesis_brand?.trim() || null : null,
       dni: isQuirofano ? data.dni?.trim() || null : null,
       observations: data.observations?.trim() || null,
-      follow_up_date: data.follow_up_date || null,
+      needs_reminder: data.needs_reminder === "on",
     })
     .eq("id", id);
 
@@ -290,5 +291,6 @@ export async function markWhatsappSentAction(id: string): Promise<{ error?: stri
   const { error } = await supabase.from("appointments").update({ whatsapp_sent_at: new Date().toISOString() }).eq("id", id);
   if (error) return { error: "No se ha podido registrar el aviso." };
   revalidatePath("/listados");
+  revalidatePath("/");
   return {};
 }

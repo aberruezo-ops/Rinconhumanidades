@@ -104,7 +104,7 @@ export function DictadoFlow({
       prosthesis_brand: "",
       dni: "",
       observations: result.observations ?? "",
-      follow_up_date: "",
+      needs_reminder: false,
     };
 
     return (

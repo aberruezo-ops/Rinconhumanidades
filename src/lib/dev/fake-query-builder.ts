@@ -12,6 +12,7 @@ function randomId(): string {
 
 function defaultsFor(table: string): Row {
   if (table === "insurance_companies" || table === "appointment_types") return { active: true };
+  if (table === "quirofano_candidatos") return { status: "pendiente" };
   return {};
 }
 

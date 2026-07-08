@@ -42,6 +42,7 @@ export const AGENDA_COLORS: Record<AgendaType, { badge: string; solid: string; d
 
 export const APPOINTMENT_STATUSES: { value: AppointmentStatus; label: string }[] = [
   { value: "programada", label: "Programada" },
+  { value: "avisado", label: "Avisado" },
   { value: "confirmada", label: "Confirmada" },
   { value: "completada", label: "Completada" },
   { value: "no_presentado", label: "No presentado" },
@@ -62,6 +63,7 @@ export function statusesForAgenda(agenda: AgendaType) {
 // que ya identifica a cada agenda, para no confundir "de qué agenda es" con "cómo va".
 export const STATUS_STYLES: Record<AppointmentStatus, string> = {
   programada: "bg-brand-100 text-brand-700",
+  avisado: "bg-lime-100 text-lime-800",
   confirmada: "bg-indigo-100 text-indigo-800",
   completada: "bg-slate-200 text-slate-600",
   no_presentado: "bg-amber-100 text-amber-800",

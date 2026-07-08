@@ -61,7 +61,7 @@ export default async function NuevaCitaPage({
           prosthesis_brand: "",
           dni: "",
           observations: "",
-          follow_up_date: "",
+          needs_reminder: false,
         }}
       />
     </div>

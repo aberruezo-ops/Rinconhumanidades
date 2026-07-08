@@ -49,6 +49,15 @@ export function addDays(dateStr: string, delta: number): string {
   return ymd(dt.getUTCFullYear(), dt.getUTCMonth() + 1, dt.getUTCDate());
 }
 
+// Días entre dos fechas de calendario (toStr - fromStr); positivo si toStr es posterior.
+export function daysBetween(fromStr: string, toStr: string): number {
+  const [fy, fm, fd] = fromStr.split("-").map(Number);
+  const [ty, tm, td] = toStr.split("-").map(Number);
+  const fromMs = Date.UTC(fy, fm - 1, fd);
+  const toMs = Date.UTC(ty, tm - 1, td);
+  return Math.round((toMs - fromMs) / 86400000);
+}
+
 export function startOfWeek(dateStr: string): string {
   const [y, m, d] = dateStr.split("-").map(Number);
   return addDays(dateStr, -(isoWeekday(y, m, d) - 1));

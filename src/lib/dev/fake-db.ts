@@ -1,4 +1,4 @@
-import { isoWeekday, ymd, daysInMonth } from "@/lib/domain/dates";
+import { isoWeekday, ymd, daysInMonth, addDays, todayYmd } from "@/lib/domain/dates";
 import { FAKE_USER } from "@/lib/dev/fake-mode";
 
 export type Row = Record<string, unknown>;
@@ -73,7 +73,7 @@ function seed(): Store {
       prosthesis_brand: null,
       dni: null,
       observations: null,
-      follow_up_date: null,
+      needs_reminder: false,
       whatsapp_sent_at: null,
       created_by: FAKE_USER.id,
       created_at: nowIso,
@@ -94,7 +94,7 @@ function seed(): Store {
       prosthesis_brand: null,
       dni: null,
       observations: null,
-      follow_up_date: null,
+      needs_reminder: false,
       whatsapp_sent_at: null,
       created_by: FAKE_USER.id,
       created_at: nowIso,
@@ -115,7 +115,7 @@ function seed(): Store {
       prosthesis_brand: null,
       dni: "87654321B",
       observations: "A la espera de confirmar quirófano",
-      follow_up_date: ymd(year, month, Math.min(28, daysInMonth(year, month))),
+      needs_reminder: false,
       whatsapp_sent_at: null,
       created_by: FAKE_USER.id,
       created_at: nowIso,
@@ -136,8 +136,44 @@ function seed(): Store {
       prosthesis_brand: null,
       dni: null,
       observations: null,
-      follow_up_date: null,
+      needs_reminder: false,
       whatsapp_sent_at: null,
+      created_by: FAKE_USER.id,
+      created_at: nowIso,
+      updated_at: nowIso,
+    },
+    {
+      id: randomId(),
+      agenda: "traumatologo",
+      date: addDays(todayYmd(), 2),
+      start_time: "16:30:00",
+      duration_minutes: 15,
+      patient_id: patients[0].id,
+      particular_label: null,
+      insurance_company_id: adeslas.id,
+      appointment_type_id: null,
+      status: "programada",
+      pathology: null,
+      prosthesis_brand: null,
+      dni: null,
+      observations: null,
+      needs_reminder: true,
+      whatsapp_sent_at: null,
+      created_by: FAKE_USER.id,
+      created_at: nowIso,
+      updated_at: nowIso,
+    },
+  ];
+
+  const quirofanoCandidatos: Row[] = [
+    {
+      id: randomId(),
+      patient_id: patients[2].id,
+      particular_label: null,
+      desired_date: addDays(todayYmd(), 20),
+      observations: "Quiere operarse de rodilla; a la espera de decidir fecha aproximada.",
+      whatsapp_sent_at: null,
+      status: "pendiente",
       created_by: FAKE_USER.id,
       created_at: nowIso,
       updated_at: nowIso,
@@ -152,6 +188,7 @@ function seed(): Store {
     agenda_days: agendaDays,
     patients,
     appointments,
+    quirofano_candidatos: quirofanoCandidatos,
   };
 }
 

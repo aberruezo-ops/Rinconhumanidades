@@ -80,7 +80,7 @@ export default async function EditarCitaPage({ params }: { params: Promise<{ id:
           prosthesis_brand: appointment.prosthesis_brand ?? "",
           dni: appointment.dni ?? "",
           observations: appointment.observations ?? "",
-          follow_up_date: appointment.follow_up_date ?? "",
+          needs_reminder: appointment.needs_reminder,
         }}
       />
     </div>

@@ -52,7 +52,15 @@ export default async function AgendaPage({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-lg font-semibold text-slate-900">{agendaLabel(agenda)}</h1>
         {user.role === "admin" && (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            {agenda === "quirofano" && (
+              <Link
+                href="/agenda/quirofano/candidatos"
+                className="whitespace-nowrap rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700"
+              >
+                Candidatos
+              </Link>
+            )}
             <Link
               href={`/citas/dictado?agenda=${agenda}&fecha=${date}`}
               className="whitespace-nowrap rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700"

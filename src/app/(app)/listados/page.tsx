@@ -4,7 +4,8 @@ import { AGENDAS, agendaLabel, APPOINTMENT_STATUSES, isAgendaType, statusLabel, 
 import { formatDateEs, formatTimeEs, todayYmd } from "@/lib/domain/dates";
 import { buildReminderMessage } from "@/lib/domain/whatsapp";
 import { PrintButton } from "./print-button";
-import { WhatsappButton } from "./whatsapp-button";
+import { WhatsappButton } from "../_components/whatsapp-button";
+import { markWhatsappSentAction } from "@/lib/actions/appointments";
 
 type Filters = { fecha?: string; agenda?: string; estado?: string; aviso?: string };
 
@@ -198,7 +199,7 @@ export default async function ListadosPage({
                     <td className="px-3 py-2 text-right print:hidden">
                       {canNotify && a.patients?.phone ? (
                         <WhatsappButton
-                          appointmentId={a.id}
+                          onMarkSent={markWhatsappSentAction.bind(null, a.id)}
                           phone={a.patients.phone}
                           sentAt={a.whatsapp_sent_at}
                           message={buildReminderMessage({

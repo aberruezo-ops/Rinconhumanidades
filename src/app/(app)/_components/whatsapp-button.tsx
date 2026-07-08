@@ -2,20 +2,19 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { markWhatsappSentAction } from "@/lib/actions/appointments";
 import { buildWhatsappLink } from "@/lib/domain/whatsapp";
 import { formatDateEs } from "@/lib/domain/dates";
 
 export function WhatsappButton({
-  appointmentId,
   phone,
   message,
   sentAt,
+  onMarkSent,
 }: {
-  appointmentId: string;
   phone: string;
   message: string;
   sentAt: string | null;
+  onMarkSent: () => Promise<unknown>;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -28,7 +27,7 @@ export function WhatsappButton({
         onClick={() => {
           window.open(buildWhatsappLink(phone, message), "_blank", "noopener,noreferrer");
           startTransition(async () => {
-            await markWhatsappSentAction(appointmentId);
+            await onMarkSent();
             router.refresh();
           });
         }}

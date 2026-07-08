@@ -9,7 +9,9 @@ export type AppointmentStatus =
   | "completada"
   | "no_presentado"
   | "cancelada"
-  | "pendiente";
+  | "pendiente"
+  | "avisado";
+export type QuirofanoCandidatoStatus = "pendiente" | "convertido" | "descartado";
 
 export interface Database {
   public: {
@@ -186,7 +188,7 @@ export interface Database {
           prosthesis_brand: string | null;
           dni: string | null;
           observations: string | null;
-          follow_up_date: string | null;
+          needs_reminder: boolean;
           whatsapp_sent_at: string | null;
           created_by: string | null;
           created_at: string;
@@ -207,7 +209,7 @@ export interface Database {
           prosthesis_brand?: string | null;
           dni?: string | null;
           observations?: string | null;
-          follow_up_date?: string | null;
+          needs_reminder?: boolean;
           whatsapp_sent_at?: string | null;
           created_by?: string | null;
         };
@@ -225,7 +227,7 @@ export interface Database {
           prosthesis_brand?: string | null;
           dni?: string | null;
           observations?: string | null;
-          follow_up_date?: string | null;
+          needs_reminder?: boolean;
           whatsapp_sent_at?: string | null;
         };
         Relationships: [
@@ -248,6 +250,47 @@ export interface Database {
             columns: ["appointment_type_id"];
             isOneToOne: false;
             referencedRelation: "appointment_types";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      quirofano_candidatos: {
+        Row: {
+          id: string;
+          patient_id: string | null;
+          particular_label: string | null;
+          desired_date: string | null;
+          observations: string | null;
+          whatsapp_sent_at: string | null;
+          status: QuirofanoCandidatoStatus;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          patient_id?: string | null;
+          particular_label?: string | null;
+          desired_date?: string | null;
+          observations?: string | null;
+          whatsapp_sent_at?: string | null;
+          status?: QuirofanoCandidatoStatus;
+          created_by?: string | null;
+        };
+        Update: {
+          patient_id?: string | null;
+          particular_label?: string | null;
+          desired_date?: string | null;
+          observations?: string | null;
+          whatsapp_sent_at?: string | null;
+          status?: QuirofanoCandidatoStatus;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "quirofano_candidatos_patient_id_fkey";
+            columns: ["patient_id"];
+            isOneToOne: false;
+            referencedRelation: "patients";
             referencedColumns: ["id"];
           },
         ];
