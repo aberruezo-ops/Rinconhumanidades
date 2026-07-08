@@ -24,10 +24,11 @@ Todo el texto visible de la interfaz, mensajes, commits y nombres de página van
 - Solapes: hay comprobación en la app (para avisar antes de guardar) *y* un `EXCLUDE` constraint en Postgres como red de seguridad — no quitar ninguna de las dos.
 - Enfermería no tiene hora: `appointments.start_time`/`duration_minutes` son `null` siempre que `agenda = 'enfermeria'` (y obligatorios en el resto), y esas citas quedan fuera del `EXCLUDE` de solapes a propósito. El formulario pide "Hora inicio"/"Hora fin" (no duración) para traumatólogo/quirófano; en enfermería no se muestra ningún campo de hora.
 - Roles: `admin` (Olga, único activo) y `readonly` (futuro traumatólogo). Las políticas RLS ya contemplan ambos aunque hoy solo exista `admin`.
+- Alta de cita por dictado/texto libre (`/citas/dictado`, usa `ANTHROPIC_API_KEY`): la IA solo rellena el formulario normal, nunca guarda directamente — la confirmación visual antes de guardar es obligatoria.
 
 ## Fases
 
-Solo se construye la Fase 1 (MVP) salvo que se indique lo contrario. Fase 2 (avisos de seguimiento, botón WhatsApp, voz) y Fase 3 (SMS, exportación) quedan fuera hasta que se pida explícitamente.
+Solo se construye la Fase 1 (MVP) salvo que se indique lo contrario. La entrada por voz/texto libre se adelantó a la Fase 1. Fase 2 (avisos de seguimiento, botón WhatsApp) y Fase 3 (SMS, exportación) quedan fuera hasta que se pida explícitamente.
 
 ## Verificación
 

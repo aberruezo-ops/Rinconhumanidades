@@ -71,7 +71,7 @@ Una cita solo puede crearse en un día abierto de su agenda. Un hueco ocupado de
 ## Creación de citas
 
 - Formulario mínimo, optimizado para móvil: pocos campos, autocompletado de paciente por nombre o teléfono para evitar duplicados.
-- **Entrada por voz**: botón de dictado que usa el reconocimiento nativo del dispositivo (Web Speech API). El texto dictado se interpreta (nombre, fecha, hora, agenda, motivo) y se muestra la cita propuesta para confirmar con un toque antes de guardar. Nunca se guarda sin confirmación visual.
+- **Entrada por voz o texto libre** (`/citas/dictado`, adelantada desde la Fase 2 original): botón de dictado que usa el reconocimiento nativo del dispositivo (Web Speech API), o pegar el texto directamente. El texto se interpreta con IA (fecha, hora, agenda, paciente, tipo, motivo) y se muestra la cita propuesta ya rellena en el formulario normal para confirmar y ajustar antes de guardar. Nunca se guarda sin confirmación visual. Requiere `ANTHROPIC_API_KEY`.
 - Detección de solapes: si la nueva cita choca con otra existente, avisar antes de guardar.
 - Reagendar en dos toques: mover una cita a otro día/hora abiertos.
 
@@ -104,6 +104,6 @@ Una cita solo puede crearse en un día abierto de su agenda. Un hueco ocupado de
 
 **Fase 1 (MVP):** autenticación con roles preparados (solo Olga activa), backoffice de configuración (días por defecto, duraciones, jornada, compañías, tipos de cita), tres agendas con vista día/semana/mes, gestión de apertura/cierre de días, alta/edición/cancelación de citas con autocompletado y detección de solapes, campos de quirófano, estados, listados imprimibles.
 
-**Fase 2:** avisos de seguimiento ("llamar antes de"), botón WhatsApp con mensaje pretexto, compartir listados, entrada por voz con confirmación.
+**Fase 2:** avisos de seguimiento ("llamar antes de"), botón WhatsApp con mensaje pretexto, compartir listados. (La entrada por voz/texto libre se adelantó y ya está en la Fase 1.)
 
 **Fase 3:** SMS automáticos, exportación de datos, mejoras que pida la usuaria tras uso real.

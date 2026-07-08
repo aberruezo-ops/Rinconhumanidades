@@ -42,6 +42,10 @@ NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=xxxxx
 ```
 
+Opcional — solo para "Nueva cita por dictado" (interpretar texto o voz con IA): crea una clave en
+[console.anthropic.com](https://console.anthropic.com) (API Keys) y añade `ANTHROPIC_API_KEY=sk-ant-...`.
+Sin ella, el resto de la app funciona igual; solo esa pantalla da un aviso.
+
 ### 3. Desarrollo local
 
 ```bash
