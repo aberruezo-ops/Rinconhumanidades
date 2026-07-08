@@ -65,12 +65,18 @@ export default async function DashboardPage({
       </div>
 
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Link href={`/?fecha=${ymd(prevMonth.year, prevMonth.month, 1)}`} className="text-sm text-slate-500 hover:text-slate-900">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+          <Link
+            href={`/?fecha=${ymd(prevMonth.year, prevMonth.month, 1)}`}
+            className="whitespace-nowrap text-sm text-slate-500 hover:text-slate-900"
+          >
             ← Anterior
           </Link>
-          <p className="text-sm font-medium capitalize text-slate-900">{monthLabelEs(year, month)}</p>
-          <Link href={`/?fecha=${ymd(nextMonth.year, nextMonth.month, 1)}`} className="text-sm text-slate-500 hover:text-slate-900">
+          <p className="text-center text-sm font-medium capitalize text-slate-900">{monthLabelEs(year, month)}</p>
+          <Link
+            href={`/?fecha=${ymd(nextMonth.year, nextMonth.month, 1)}`}
+            className="whitespace-nowrap text-sm text-slate-500 hover:text-slate-900"
+          >
             Siguiente →
           </Link>
         </div>

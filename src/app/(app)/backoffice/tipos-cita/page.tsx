@@ -18,7 +18,7 @@ export default async function BackofficeAppointmentTypesPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-lg font-semibold text-slate-900">Tipos de cita de enfermería</h1>
-        <p className="text-sm text-slate-500">Cura, infiltración de células madre, PRP…</p>
+        <p className="text-sm text-slate-500">Cura, PRP…</p>
       </div>
 
       <AppointmentTypeForm />

@@ -5,11 +5,11 @@ import { signOutAction } from "@/lib/actions/auth";
 import { AGENDAS } from "@/lib/domain/agendas";
 import { NavLinks, type NavItem } from "./nav-links";
 
-const BASE_NAV: NavItem[] = [{ href: "/", label: "Inicio" }];
+const BASE_NAV: NavItem[] = [{ href: "/", label: "Inicio", icon: "🏠" }];
 const AGENDA_NAV: NavItem[] = AGENDAS.map((a) => ({ href: `/agenda/${a.value}`, label: a.label, agenda: a.value }));
 const ADMIN_ONLY_NAV: NavItem[] = [
   { href: "/listados", label: "Listados" },
-  { href: "/backoffice", label: "Backoffice" },
+  { href: "/backoffice", label: "Backoffice", accent: { dot: "bg-purple-900", text: "text-purple-900" } },
 ];
 const READONLY_NAV: NavItem[] = [{ href: "/listados", label: "Listados" }];
 
@@ -35,16 +35,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             </form>
           </div>
         </div>
-        <nav className="hidden gap-1 border-t border-slate-100 px-4 md:flex">
-          <NavLinks items={navItems} variant="top" />
+        <nav className="flex gap-1 overflow-x-auto border-t border-slate-100 px-2">
+          <NavLinks items={navItems} />
         </nav>
       </header>
 
-      <main className="flex-1 px-4 py-4 pb-20 md:pb-4 print:p-0">{children}</main>
-
-      <nav className="fixed inset-x-0 bottom-0 flex border-t border-slate-200 bg-white md:hidden print:hidden">
-        <NavLinks items={navItems} variant="bottom" />
-      </nav>
+      <main className="flex-1 px-4 py-4 print:p-0">{children}</main>
     </div>
   );
 }

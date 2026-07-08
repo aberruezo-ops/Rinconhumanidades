@@ -49,19 +49,19 @@ export default async function AgendaPage({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-lg font-semibold text-slate-900">{agendaLabel(agenda)}</h1>
         {user.role === "admin" && (
           <div className="flex gap-2">
             <Link
               href={`/citas/dictado?agenda=${agenda}&fecha=${date}`}
-              className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700"
+              className="whitespace-nowrap rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700"
             >
               🎤 Dictar
             </Link>
             <Link
               href={`/citas/nueva?agenda=${agenda}&fecha=${date}`}
-              className="rounded-lg bg-brand-600 hover:bg-brand-700 px-3 py-1.5 text-sm font-medium text-white"
+              className="whitespace-nowrap rounded-lg bg-brand-600 hover:bg-brand-700 px-3 py-1.5 text-sm font-medium text-white"
             >
               + Nueva cita
             </Link>
@@ -84,16 +84,22 @@ export default async function AgendaPage({
       </div>
 
       {vista !== "mes" && (
-        <div className="flex items-center justify-between">
-          <Link href={`/agenda/${agenda}?vista=${vista}&fecha=${prevDate}`} className="text-sm text-slate-500 hover:text-slate-900">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+          <Link
+            href={`/agenda/${agenda}?vista=${vista}&fecha=${prevDate}`}
+            className="whitespace-nowrap text-sm text-slate-500 hover:text-slate-900"
+          >
             ← Anterior
           </Link>
-          <span className="text-sm font-medium capitalize text-slate-700">
+          <span className="text-center text-sm font-medium capitalize text-slate-700">
             {vista === "dia"
               ? formatDateEs(date, { weekday: "long", day: "numeric", month: "long" })
               : `Semana del ${formatDateEs(date, { day: "numeric", month: "long" })}`}
           </span>
-          <Link href={`/agenda/${agenda}?vista=${vista}&fecha=${nextDate}`} className="text-sm text-slate-500 hover:text-slate-900">
+          <Link
+            href={`/agenda/${agenda}?vista=${vista}&fecha=${nextDate}`}
+            className="whitespace-nowrap text-sm text-slate-500 hover:text-slate-900"
+          >
             Siguiente →
           </Link>
         </div>

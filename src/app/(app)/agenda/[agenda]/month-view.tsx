@@ -42,17 +42,17 @@ export async function MonthView({
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
           <Link
             href={`/agenda/${agenda}?vista=mes&fecha=${ymd(prevMonth.year, prevMonth.month, 1)}`}
-            className="text-sm text-slate-500 hover:text-slate-900"
+            className="whitespace-nowrap text-sm text-slate-500 hover:text-slate-900"
           >
             ← Anterior
           </Link>
-          <p className="text-sm font-medium capitalize text-slate-900">{monthLabelEs(year, month)}</p>
+          <p className="text-center text-sm font-medium capitalize text-slate-900">{monthLabelEs(year, month)}</p>
           <Link
             href={`/agenda/${agenda}?vista=mes&fecha=${ymd(nextMonth.year, nextMonth.month, 1)}`}
-            className="text-sm text-slate-500 hover:text-slate-900"
+            className="whitespace-nowrap text-sm text-slate-500 hover:text-slate-900"
           >
             Siguiente →
           </Link>
