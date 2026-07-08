@@ -18,7 +18,10 @@ export async function signInAction(_prevState: SignInState, formData: FormData):
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    return { error: "Correo o contraseña incorrectos." };
+    if (error.code === "email_not_confirmed") {
+      return { error: "Ese correo aún no está confirmado. Confírmalo desde Supabase (Authentication → Users) o desactiva la confirmación de email en Authentication → Providers → Email." };
+    }
+    return { error: `Correo o contraseña incorrectos (${error.code ?? error.message}).` };
   }
 
   redirect(redirectTo.startsWith("/") ? redirectTo : "/");
