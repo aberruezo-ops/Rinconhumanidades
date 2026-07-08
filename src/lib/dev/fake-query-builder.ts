@@ -1,7 +1,7 @@
 import { intervalsOverlap, timeToMinutes } from "@/lib/domain/slots";
 import type { Row, Store } from "@/lib/dev/fake-db";
 
-type Filter = { col: string; op: "eq" | "neq" | "gte" | "lte" | "in"; val: unknown };
+type Filter = { col: string; op: "eq" | "neq" | "gte" | "lte" | "in" | "is" | "isnot"; val: unknown };
 type Mode = "many" | "single" | "maybeSingle";
 type Op = { type: "insert" | "update" | "upsert"; payload: Row | Row[]; opts?: { onConflict?: string } };
 type Result = { data: unknown; error: { code?: string; message: string } | null };
@@ -44,8 +44,7 @@ function hasOverlap(rows: Row[], candidate: Row, excludeId: string | null): bool
 export class FakeQueryBuilder implements PromiseLike<Result> {
   private filters: Filter[] = [];
   private orFilter: { col: string; pattern: string }[] | null = null;
-  private orderCol: string | null = null;
-  private orderAsc = true;
+  private orders: { col: string; asc: boolean }[] = [];
   private limitN: number | null = null;
   private mode: Mode = "many";
   private embeds = new Set<string>();
@@ -86,6 +85,14 @@ export class FakeQueryBuilder implements PromiseLike<Result> {
     this.filters.push({ col, op: "in", val: vals });
     return this;
   }
+  is(col: string, val: null | boolean) {
+    this.filters.push({ col, op: "is", val });
+    return this;
+  }
+  not(col: string, _op: string, val: unknown) {
+    this.filters.push({ col, op: "isnot", val });
+    return this;
+  }
   or(expr: string) {
     this.orFilter = expr.split(",").map((part) => {
       const [col, , pattern] = part.split(".");
@@ -94,8 +101,7 @@ export class FakeQueryBuilder implements PromiseLike<Result> {
     return this;
   }
   order(col: string, opts?: { ascending?: boolean }) {
-    this.orderCol = col;
-    this.orderAsc = opts?.ascending ?? true;
+    this.orders.push({ col, asc: opts?.ascending ?? true });
     return this;
   }
   limit(n: number) {
@@ -138,6 +144,8 @@ export class FakeQueryBuilder implements PromiseLike<Result> {
       if (f.op === "gte" && !(val != null && String(val) >= String(f.val))) return false;
       if (f.op === "lte" && !(val != null && String(val) <= String(f.val))) return false;
       if (f.op === "in" && !(f.val as unknown[]).includes(val)) return false;
+      if (f.op === "is" && val !== f.val) return false;
+      if (f.op === "isnot" && val === f.val) return false;
     }
     if (this.orFilter) {
       const any = this.orFilter.some(({ col, pattern }) => String(row[col] ?? "").toLowerCase().includes(pattern.toLowerCase()));
@@ -179,13 +187,18 @@ export class FakeQueryBuilder implements PromiseLike<Result> {
     if (this.op) return this.executeOp();
 
     let rows = this.rows(this.table).filter((r) => this.matches(r));
-    if (this.orderCol) {
-      const col = this.orderCol;
+    if (this.orders.length > 0) {
       rows = [...rows].sort((a, b) => {
-        const av = a[col] as string | number;
-        const bv = b[col] as string | number;
-        const cmp = av < bv ? -1 : av > bv ? 1 : 0;
-        return this.orderAsc ? cmp : -cmp;
+        for (const { col, asc } of this.orders) {
+          const av = a[col] as string | number | null;
+          const bv = b[col] as string | number | null;
+          if (av == null && bv == null) continue;
+          if (av == null) return asc ? -1 : 1;
+          if (bv == null) return asc ? 1 : -1;
+          if (av < bv) return asc ? -1 : 1;
+          if (av > bv) return asc ? 1 : -1;
+        }
+        return 0;
       });
     }
     if (this.limitN != null) rows = rows.slice(0, this.limitN);

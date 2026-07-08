@@ -282,3 +282,13 @@ export async function cancelAppointmentAction(id: string, agenda: AgendaType, da
   revalidatePath(`/agenda/${agenda}`);
   redirect(`/agenda/${agenda}?fecha=${date}`);
 }
+
+export async function markWhatsappSentAction(id: string): Promise<{ error?: string }> {
+  const user = await requireUser();
+  requireAdmin(user);
+  const supabase = await createClient();
+  const { error } = await supabase.from("appointments").update({ whatsapp_sent_at: new Date().toISOString() }).eq("id", id);
+  if (error) return { error: "No se ha podido registrar el aviso." };
+  revalidatePath("/listados");
+  return {};
+}

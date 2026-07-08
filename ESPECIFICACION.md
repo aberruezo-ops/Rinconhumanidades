@@ -77,12 +77,13 @@ Una cita solo puede crearse en un día abierto de su agenda. Un hueco ocupado de
 
 ## Comunicación con pacientes
 
-- Fase inicial: botón "avisar por WhatsApp" en cada cita que abre wa.me con un mensaje pretexto (fecha, hora, consulta). Sin coste, envío manual con un toque. La cita registra si el aviso se envió y cuándo.
+- Implementado (adelantado desde la Fase 2 original): botón "avisar por WhatsApp" en cada cita de Listados que abre wa.me con un mensaje pretexto (fecha, hora, consulta). Sin coste, envío manual con un toque. La cita registra si el aviso se envió y cuándo (`whatsapp_sent_at`); solo aparece si hay paciente registrado con teléfono (no en particulares) y la cita no está cancelada/completada.
 - Fase posterior: SMS automático de confirmación unos días antes (configurable), solo a pacientes registrados. Requiere proveedor de SMS con coste por mensaje; queda fuera del MVP.
 
 ## Listados
 
-- Listado por día y por agenda, filtrable.
+- Filtros combinables: fecha (opcional; vacío = próximas citas desde hoy), agenda, estado, aviso de WhatsApp (pendiente/enviado).
+- Chips de filtro rápido: Hoy, cada agenda, "Pendientes de confirmar" (estado programada), "Por avisar (WhatsApp)" (sin aviso enviado), "Todas las próximas".
 - Vista imprimible limpia (CSS de impresión).
 - Compartir por WhatsApp o correo (Web Share API o enlaces mailto / wa.me con el texto del listado).
 
@@ -104,6 +105,6 @@ Una cita solo puede crearse en un día abierto de su agenda. Un hueco ocupado de
 
 **Fase 1 (MVP):** autenticación con roles preparados (solo Olga activa), backoffice de configuración (días por defecto, duraciones, jornada, compañías, tipos de cita), tres agendas con vista día/semana/mes, gestión de apertura/cierre de días, alta/edición/cancelación de citas con autocompletado y detección de solapes, campos de quirófano, estados, listados imprimibles.
 
-**Fase 2:** avisos de seguimiento ("llamar antes de"), botón WhatsApp con mensaje pretexto, compartir listados. (La entrada por voz/texto libre se adelantó y ya está en la Fase 1.)
+**Fase 2:** avisos de seguimiento ("llamar antes de"), compartir listados. (La entrada por voz/texto libre y el botón WhatsApp con mensaje pretexto se adelantaron y ya están en la Fase 1.)
 
 **Fase 3:** SMS automáticos, exportación de datos, mejoras que pida la usuaria tras uso real.
