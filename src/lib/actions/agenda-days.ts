@@ -23,6 +23,55 @@ export async function toggleAgendaDayAction(agenda: AgendaType, date: string, is
   revalidatePath(`/agenda/${agenda}`);
 }
 
+// Horario especial de un día concreto: por defecto se usa la jornada de agenda_config,
+// pero una semana puntual puede necesitar otra hora (o, cerrando el día habitual y
+// abriendo otra fecha, otro día de la semana) sin tocar el patrón general.
+export async function setAgendaDayScheduleAction(formData: FormData) {
+  const user = await requireUser();
+  requireAdmin(user);
+
+  const agenda = String(formData.get("agenda") ?? "") as AgendaType;
+  const date = String(formData.get("date") ?? "");
+  const startTime = String(formData.get("start_time") ?? "");
+  const endTime = String(formData.get("end_time") ?? "");
+
+  if (!date || !startTime || !endTime || startTime >= endTime) {
+    throw new Error("Revisa la fecha y que la hora de inicio sea anterior a la de fin.");
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("agenda_days").upsert(
+    { agenda, date, is_open: true, start_time_override: startTime, end_time_override: endTime },
+    { onConflict: "agenda,date" },
+  );
+
+  if (error) {
+    throw new Error("No se ha podido guardar el horario especial.");
+  }
+
+  revalidatePath(`/backoffice/dias/${agenda}`);
+  revalidatePath(`/agenda/${agenda}`);
+}
+
+export async function clearAgendaDayScheduleAction(agenda: AgendaType, date: string) {
+  const user = await requireUser();
+  requireAdmin(user);
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("agenda_days")
+    .update({ start_time_override: null, end_time_override: null })
+    .eq("agenda", agenda)
+    .eq("date", date);
+
+  if (error) {
+    throw new Error("No se ha podido quitar el horario especial.");
+  }
+
+  revalidatePath(`/backoffice/dias/${agenda}`);
+  revalidatePath(`/agenda/${agenda}`);
+}
+
 // Abre todas las fechas del mes que caen en el patrón semanal por defecto de la agenda.
 // No toca los días que ya tengan una decisión explícita en sentido contrario si el usuario
 // los cerró después de programar el mes: se hace un upsert, así que reprogramar el mes

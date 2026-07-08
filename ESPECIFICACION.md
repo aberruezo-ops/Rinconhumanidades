@@ -37,6 +37,7 @@ La administrativa debe poder, por agenda:
 - Programar el mes completo según el día por defecto (ej. todos los lunes de agosto para traumatología).
 - Abrir o cerrar cualquier día suelto, ignorando el patrón por defecto (ej. cerrar un lunes concreto, abrir un miércoles excepcional).
 - Ver de un vistazo qué días están abiertos y cerrados.
+- Poner un **horario especial a un día concreto** (otra hora de inicio/fin distinta del horario de jornada de esa agenda), sin tocar el patrón general. Para cambiar de día de la semana en una semana puntual: cerrar el día habitual de esa semana y abrir la fecha alternativa con su horario.
 
 Una cita solo puede crearse en un día abierto de su agenda. Un hueco ocupado deja de estar disponible inmediatamente.
 

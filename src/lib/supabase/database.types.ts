@@ -107,6 +107,8 @@ export interface Database {
           agenda: AgendaType;
           date: string;
           is_open: boolean;
+          start_time_override: string | null;
+          end_time_override: string | null;
           created_at: string;
         };
         Insert: {
@@ -114,9 +116,13 @@ export interface Database {
           agenda: AgendaType;
           date: string;
           is_open: boolean;
+          start_time_override?: string | null;
+          end_time_override?: string | null;
         };
         Update: {
           is_open?: boolean;
+          start_time_override?: string | null;
+          end_time_override?: string | null;
         };
         Relationships: [];
       };

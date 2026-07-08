@@ -9,7 +9,12 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
   const supabase = await createClient();
 
   const [{ data: dayRow }, { data: config }, { data: appointments }] = await Promise.all([
-    supabase.from("agenda_days").select("is_open").eq("agenda", agenda).eq("date", date).maybeSingle(),
+    supabase
+      .from("agenda_days")
+      .select("is_open, start_time_override, end_time_override")
+      .eq("agenda", agenda)
+      .eq("date", date)
+      .maybeSingle(),
     supabase.from("agenda_config").select("start_time, end_time, default_duration_minutes").eq("agenda", agenda).single(),
     supabase
       .from("appointments")
@@ -37,10 +42,13 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
       end: timeToMinutes(a.start_time.slice(0, 5)) + a.duration_minutes,
     }));
 
+  const jornadaStart = (dayRow?.start_time_override ?? config?.start_time)?.slice(0, 5);
+  const jornadaEnd = (dayRow?.end_time_override ?? config?.end_time)?.slice(0, 5);
+
   const freeSlots =
-    isOpen && config
-      ? generateSlotStarts(config.start_time.slice(0, 5), config.end_time.slice(0, 5), config.default_duration_minutes).filter(
-          (slot) => isSlotFree(slot, config.default_duration_minutes, occupied),
+    isOpen && config && jornadaStart && jornadaEnd
+      ? generateSlotStarts(jornadaStart, jornadaEnd, config.default_duration_minutes).filter((slot) =>
+          isSlotFree(slot, config.default_duration_minutes, occupied),
         )
       : [];
 
