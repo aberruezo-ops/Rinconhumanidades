@@ -32,12 +32,16 @@ Zona de administración separada de la agenda diaria donde Olga define el funcio
 
 ### Gestión de días (dentro del backoffice)
 
-La administrativa debe poder, por agenda:
+Interfaz semana a semana (no un calendario de casillas sueltas): para cada semana del mes se
+elige qué día o días de esa semana hay consulta (checkboxes L-D) y la hora de inicio/fin de
+esa semana, con un botón para guardar la semana. Una semana sin ningún día marcado queda
+cerrada. Esto permite:
 
-- Programar el mes completo según el día por defecto (ej. todos los lunes de agosto para traumatología).
-- Abrir o cerrar cualquier día suelto, ignorando el patrón por defecto (ej. cerrar un lunes concreto, abrir un miércoles excepcional).
-- Ver de un vistazo qué días están abiertos y cerrados.
-- Poner un **horario especial a un día concreto** (otra hora de inicio/fin distinta del horario de jornada de esa agenda), sin tocar el patrón general. Para cambiar de día de la semana en una semana puntual: cerrar el día habitual de esa semana y abrir la fecha alternativa con su horario.
+- Rellenar el mes completo de un click según el día por defecto ("Rellenar según patrón"), y
+  luego ajustar semana a semana lo que se salga del patrón.
+- Cambiar el día de la semana en una semana puntual (desmarcar el día habitual, marcar otro) y/o
+  darle un horario distinto al de la jornada general, sin tocar el patrón por defecto.
+- Avanzar al mes siguiente para seguir programando.
 
 Una cita solo puede crearse en un día abierto de su agenda. Un hueco ocupado deja de estar disponible inmediatamente.
 

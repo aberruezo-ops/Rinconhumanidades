@@ -5,10 +5,7 @@ import { AGENDAS } from "@/lib/domain/agendas";
 
 const BASE_NAV = [{ href: "/", label: "Inicio" }];
 const AGENDA_NAV = AGENDAS.map((a) => ({ href: `/agenda/${a.value}`, label: a.label }));
-const ADMIN_ONLY_NAV = [
-  { href: "/listados", label: "Listados" },
-  { href: "/backoffice", label: "Backoffice" },
-];
+const ADMIN_ONLY_NAV = [{ href: "/listados", label: "Listados" }];
 const READONLY_NAV = [{ href: "/listados", label: "Listados" }];
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {

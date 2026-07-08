@@ -19,8 +19,10 @@ export async function WeekView({ agenda, date }: { agenda: AgendaType; date: str
 
   const openByDate = new Map((days ?? []).map((d) => [d.date, d.is_open]));
   const countByDate = new Map<string, number>();
+  const pendienteDates = new Set<string>();
   for (const a of appointments ?? []) {
     countByDate.set(a.date, (countByDate.get(a.date) ?? 0) + 1);
+    if (a.status === "pendiente") pendienteDates.add(a.date);
   }
 
   return (
@@ -28,6 +30,7 @@ export async function WeekView({ agenda, date }: { agenda: AgendaType; date: str
       {dates.map((d) => {
         const isOpen = openByDate.get(d) ?? false;
         const count = countByDate.get(d) ?? 0;
+        const hasPendiente = pendienteDates.has(d);
         return (
           <li key={d}>
             <Link
@@ -39,7 +42,16 @@ export async function WeekView({ agenda, date }: { agenda: AgendaType; date: str
               </span>
               <span className="flex items-center gap-2 text-sm">
                 <span className={isOpen ? "text-emerald-700" : "text-slate-400"}>{isOpen ? "Abierto" : "Cerrado"}</span>
-                {count > 0 && <span className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600">{count}</span>}
+                {count > 0 && (
+                  <span
+                    className={`rounded-full px-2 py-0.5 ${
+                      hasPendiente ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"
+                    }`}
+                  >
+                    {count}
+                    {hasPendiente ? " pend." : ""}
+                  </span>
+                )}
               </span>
             </Link>
           </li>

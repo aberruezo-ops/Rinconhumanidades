@@ -1,7 +1,14 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { AGENDAS } from "@/lib/domain/agendas";
+import { requireUser } from "@/lib/auth";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const user = await requireUser();
+  if (user.role === "admin") {
+    redirect("/backoffice");
+  }
+
   const today = new Date().toLocaleDateString("es-ES", {
     weekday: "long",
     day: "numeric",

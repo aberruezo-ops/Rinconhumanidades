@@ -88,6 +88,23 @@ export function formatTimeEs(timeStr: string): string {
   return timeStr.slice(0, 5);
 }
 
+// Semanas de lunes a domingo que tocan el mes dado (7 fechas reales cada una, aunque
+// la primera o la última semana se salgan un poco al mes anterior/siguiente).
+export function weeksOverlappingMonth(year: number, month: number): string[][] {
+  const firstDay = ymd(year, month, 1);
+  const lastDay = ymd(year, month, daysInMonth(year, month));
+  const firstWeekStart = startOfWeek(firstDay);
+  const lastWeekStart = startOfWeek(lastDay);
+
+  const weeks: string[][] = [];
+  let cursor = firstWeekStart;
+  while (cursor <= lastWeekStart) {
+    weeks.push(weekDates(cursor));
+    cursor = addDays(cursor, 7);
+  }
+  return weeks;
+}
+
 export type MonthCell = { day: number; date: string } | null;
 
 // Semanas de lunes a domingo, con huecos (null) para completar la primera y la última semana.

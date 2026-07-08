@@ -6,66 +6,34 @@ import { requireAdmin, requireUser } from "@/lib/auth";
 import type { AgendaType } from "@/lib/supabase/database.types";
 import { daysInMonth, isoWeekday, ymd } from "@/lib/domain/dates";
 
-export async function toggleAgendaDayAction(agenda: AgendaType, date: string, isOpen: boolean) {
-  const user = await requireUser();
-  requireAdmin(user);
-
-  const supabase = await createClient();
-  const { error } = await supabase
-    .from("agenda_days")
-    .upsert({ agenda, date, is_open: isOpen }, { onConflict: "agenda,date" });
-
-  if (error) {
-    throw new Error("No se ha podido actualizar el día.");
-  }
-
-  revalidatePath(`/backoffice/dias/${agenda}`);
-  revalidatePath(`/agenda/${agenda}`);
-}
-
-// Horario especial de un día concreto: por defecto se usa la jornada de agenda_config,
-// pero una semana puntual puede necesitar otra hora (o, cerrando el día habitual y
-// abriendo otra fecha, otro día de la semana) sin tocar el patrón general.
-export async function setAgendaDayScheduleAction(formData: FormData) {
+// Guarda el horario de una semana completa de una tacada: los días marcados quedan
+// abiertos con la hora indicada; el resto de días de esa semana quedan cerrados (sin
+// horario especial). Así se configura "qué día(s) y a qué hora" semana a semana en vez
+// de ir fecha a fecha.
+export async function saveWeekAction(formData: FormData) {
   const user = await requireUser();
   requireAdmin(user);
 
   const agenda = String(formData.get("agenda") ?? "") as AgendaType;
-  const date = String(formData.get("date") ?? "");
+  const weekDates = JSON.parse(String(formData.get("week_dates") ?? "[]")) as string[];
+  const selectedDates = new Set(formData.getAll("selected_dates").map(String));
   const startTime = String(formData.get("start_time") ?? "");
   const endTime = String(formData.get("end_time") ?? "");
 
-  if (!date || !startTime || !endTime || startTime >= endTime) {
-    throw new Error("Revisa la fecha y que la hora de inicio sea anterior a la de fin.");
+  if (selectedDates.size > 0 && (!startTime || !endTime || startTime >= endTime)) {
+    throw new Error("Revisa que la hora de inicio sea anterior a la de fin.");
   }
 
-  const supabase = await createClient();
-  const { error } = await supabase.from("agenda_days").upsert(
-    { agenda, date, is_open: true, start_time_override: startTime, end_time_override: endTime },
-    { onConflict: "agenda,date" },
+  const rows = weekDates.map((date) =>
+    selectedDates.has(date)
+      ? { agenda, date, is_open: true, start_time_override: startTime, end_time_override: endTime }
+      : { agenda, date, is_open: false, start_time_override: null, end_time_override: null },
   );
 
-  if (error) {
-    throw new Error("No se ha podido guardar el horario especial.");
-  }
-
-  revalidatePath(`/backoffice/dias/${agenda}`);
-  revalidatePath(`/agenda/${agenda}`);
-}
-
-export async function clearAgendaDayScheduleAction(agenda: AgendaType, date: string) {
-  const user = await requireUser();
-  requireAdmin(user);
-
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("agenda_days")
-    .update({ start_time_override: null, end_time_override: null })
-    .eq("agenda", agenda)
-    .eq("date", date);
-
+  const { error } = await supabase.from("agenda_days").upsert(rows, { onConflict: "agenda,date" });
   if (error) {
-    throw new Error("No se ha podido quitar el horario especial.");
+    throw new Error("No se ha podido guardar la semana.");
   }
 
   revalidatePath(`/backoffice/dias/${agenda}`);

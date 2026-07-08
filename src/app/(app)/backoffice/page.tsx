@@ -16,7 +16,7 @@ const SECTIONS = [
   {
     href: "/backoffice/tipos-cita",
     title: "Tipos de cita de enfermería",
-    description: "Cura, infiltración de células madre, PRP…",
+    description: "Cura, PRP…",
   },
 ];
 
