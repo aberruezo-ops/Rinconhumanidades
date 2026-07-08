@@ -4,14 +4,16 @@ import { requireAdmin, requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { agendaLabel, isAgendaType, weekdayLabel } from "@/lib/domain/agendas";
 import {
+  buildMonthWeeks,
   formatDateEs,
   formatYearMonthParam,
   monthLabelEs,
   parseYearMonth,
   shiftYearMonth,
+  todayYmd,
   weeksOverlappingMonth,
 } from "@/lib/domain/dates";
-import { saveWeekAction, scheduleMonthAction } from "@/lib/actions/agenda-days";
+import { saveWeekAction, scheduleMonthAction, toggleAgendaDayAction } from "@/lib/actions/agenda-days";
 import type { AgendaType } from "@/lib/supabase/database.types";
 
 const WEEKDAY_SHORT = ["L", "M", "X", "J", "V", "S", "D"];
@@ -59,6 +61,7 @@ export default async function BackofficeAgendaDaysPage({
     .join(", ");
   const defaultStart = config?.start_time?.slice(0, 5) ?? "16:00";
   const defaultEnd = config?.end_time?.slice(0, 5) ?? "19:30";
+  const today = todayYmd();
 
   return (
     <div className="space-y-6">
@@ -98,6 +101,49 @@ export default async function BackofficeAgendaDaysPage({
           </button>
         </form>
       </div>
+
+      <div className="rounded-xl border border-slate-200 bg-white p-1.5 sm:p-2">
+        <div className="grid grid-cols-7 text-center">
+          {WEEKDAY_SHORT.map((d) => (
+            <span key={d} className="text-[11px] font-medium text-slate-400">
+              {d}
+            </span>
+          ))}
+        </div>
+        {buildMonthWeeks(year, month).map((week, weekIndex) => (
+          <div key={weekIndex} className="grid grid-cols-7 gap-0.5 py-0.5">
+            {week.map((cell, cellIndex) => {
+              if (!cell) return <div key={cellIndex} />;
+              const isOpen = dayByDate.get(cell.date)?.is_open ?? false;
+              const isToday = cell.date === today;
+              return (
+                <form key={cellIndex} action={toggleAgendaDayAction.bind(null, agenda, cell.date, !isOpen)}>
+                  <button
+                    type="submit"
+                    className={`h-9 w-full rounded-md text-xs font-medium ${
+                      isOpen ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200" : "bg-slate-100 text-slate-400 hover:bg-slate-200"
+                    } ${isToday ? "ring-2 ring-offset-1 ring-slate-900" : ""}`}
+                  >
+                    {cell.day}
+                  </button>
+                </form>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-4 text-sm text-slate-500">
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-3 w-3 rounded bg-emerald-100" /> Abierto
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-3 w-3 rounded bg-slate-100" /> Cerrado
+        </span>
+      </div>
+      <p className="text-sm text-slate-500">
+        Toca un día para abrirlo o cerrarlo al momento (con el horario por defecto). Para poner un horario distinto,
+        usa la lista de abajo.
+      </p>
 
       <div className="space-y-3">
         {weeks.map((week, weekIndex) => {

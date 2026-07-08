@@ -6,6 +6,25 @@ import { requireAdmin, requireUser } from "@/lib/auth";
 import type { AgendaType } from "@/lib/supabase/database.types";
 import { daysInMonth, isoWeekday, ymd } from "@/lib/domain/dates";
 
+// Abre/cierra un día suelto con un toque, usando el horario por defecto de la agenda
+// (para el horario fino de varios días de una semana, ver saveWeekAction).
+export async function toggleAgendaDayAction(agenda: AgendaType, date: string, isOpen: boolean) {
+  const user = await requireUser();
+  requireAdmin(user);
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("agenda_days")
+    .upsert({ agenda, date, is_open: isOpen }, { onConflict: "agenda,date" });
+
+  if (error) {
+    throw new Error("No se ha podido actualizar el día.");
+  }
+
+  revalidatePath(`/backoffice/dias/${agenda}`);
+  revalidatePath(`/agenda/${agenda}`);
+}
+
 // Guarda el horario de una semana completa de una tacada: los días marcados quedan
 // abiertos con la hora indicada; el resto de días de esa semana quedan cerrados (sin
 // horario especial). Así se configura "qué día(s) y a qué hora" semana a semana en vez
