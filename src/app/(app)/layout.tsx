@@ -9,7 +9,7 @@ const BASE_NAV: NavItem[] = [{ href: "/", label: "Inicio", icon: "🏠" }];
 const AGENDA_NAV: NavItem[] = AGENDAS.map((a) => ({ href: `/agenda/${a.value}`, label: a.label, agenda: a.value }));
 const ADMIN_ONLY_NAV: NavItem[] = [
   { href: "/listados", label: "Listados" },
-  { href: "/backoffice", label: "Backoffice", accent: { dot: "bg-purple-900", text: "text-purple-900" } },
+  { href: "/backoffice", label: "Backoffice", accent: { dot: "bg-cyan-600", text: "text-cyan-700" } },
 ];
 const READONLY_NAV: NavItem[] = [{ href: "/listados", label: "Listados" }];
 
