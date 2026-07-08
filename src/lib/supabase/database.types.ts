@@ -37,16 +37,19 @@ export interface Database {
           id: string;
           name: string;
           active: boolean;
+          duration_minutes: number | null;
           created_at: string;
         };
         Insert: {
           id?: string;
           name: string;
           active?: boolean;
+          duration_minutes?: number | null;
         };
         Update: {
           name?: string;
           active?: boolean;
+          duration_minutes?: number | null;
         };
         Relationships: [];
       };

@@ -6,7 +6,7 @@ import { createAppointmentAction } from "@/lib/actions/appointments";
 import { agendaLabel } from "@/lib/domain/agendas";
 import { AppointmentForm, type AppointmentFormDefaults } from "../_components/appointment-form";
 
-type Company = { id: string; name: string };
+type Company = { id: string; name: string; duration_minutes: number | null };
 type ApptType = { id: string; name: string; default_duration_minutes: number };
 
 interface SpeechRecognitionEventLike {
@@ -33,11 +33,13 @@ declare global {
 export function DictadoFlow({
   insuranceCompanies,
   appointmentTypes,
+  agendaDurations,
   hintAgenda,
   hintDate,
 }: {
   insuranceCompanies: Company[];
   appointmentTypes: ApptType[];
+  agendaDurations: Record<string, number>;
   hintAgenda?: string;
   hintDate?: string;
 }) {
@@ -119,6 +121,7 @@ export function DictadoFlow({
           action={createAppointmentAction}
           insuranceCompanies={insuranceCompanies}
           appointmentTypes={appointmentTypes}
+          agendaDefaultDurationMinutes={agendaDurations[result.agenda] ?? 15}
           defaults={defaults}
         />
       </div>

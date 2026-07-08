@@ -26,7 +26,7 @@ Zona de administración separada de la agenda diaria donde Olga define el funcio
 - **Días por defecto de cada agenda**: qué días de la semana pasa consulta el traumatólogo (hoy lunes), enfermería (hoy martes) y quirófano (hoy miércoles). Cambiable en cualquier momento a cualquier día.
 - **Duración por defecto de las citas**, configurable por agenda o por tipo de cita (consulta, cura, infiltración, quirófano). Los huecos de la agenda se generan a partir de esta duración y del horario de jornada.
 - **Horario de jornada**: hora de inicio y fin por agenda.
-- **Catálogo de compañías aseguradoras**: alta, edición y baja. En los formularios de cita la compañía se elige de este catálogo (más "Particular"), no se escribe a mano, para evitar variantes tipo "Adeslas" / "adeslas" / "ADESLAS".
+- **Catálogo de compañías aseguradoras**: alta, edición y baja. En los formularios de cita la compañía se elige de este catálogo (más "Particular"), no se escribe a mano, para evitar variantes tipo "Adeslas" / "adeslas" / "ADESLAS". Cada compañía puede usar la duración por defecto de la agenda o una duración personalizada propia (en minutos); al elegir esa compañía en una cita, la hora de fin se recalcula sola. "Particular" siempre usa la duración por defecto (su hora de fin se ajusta a mano, como siempre).
 - **Tipos de cita de enfermería** (cura, PRP), editables.
 - Días de antelación del aviso al paciente (para cuando lleguen los SMS de la fase 3).
 

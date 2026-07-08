@@ -19,7 +19,7 @@ export default async function EditarCitaPage({ params }: { params: Promise<{ id:
       .select("*, patients(id, first_name, last_name)")
       .eq("id", id)
       .single(),
-    supabase.from("insurance_companies").select("id, name").eq("active", true).order("name"),
+    supabase.from("insurance_companies").select("id, name, duration_minutes").eq("active", true).order("name"),
     supabase
       .from("appointment_types")
       .select("id, name, default_duration_minutes")
@@ -29,6 +29,12 @@ export default async function EditarCitaPage({ params }: { params: Promise<{ id:
   ]);
 
   if (!appointment) notFound();
+
+  const { data: agendaConfig } = await supabase
+    .from("agenda_config")
+    .select("default_duration_minutes")
+    .eq("agenda", appointment.agenda)
+    .single();
 
   const boundUpdate = updateAppointmentAction.bind(null, appointment.id);
   const boundCancel = cancelAppointmentAction.bind(null, appointment.id, appointment.agenda, appointment.date);
@@ -58,6 +64,7 @@ export default async function EditarCitaPage({ params }: { params: Promise<{ id:
         action={boundUpdate}
         insuranceCompanies={companies ?? []}
         appointmentTypes={types ?? []}
+        agendaDefaultDurationMinutes={agendaConfig?.default_duration_minutes ?? 15}
         defaults={{
           date: appointment.date,
           start_time: startTime,

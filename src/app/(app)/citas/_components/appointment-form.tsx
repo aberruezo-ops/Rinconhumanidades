@@ -4,11 +4,11 @@ import { useActionState, useEffect, useState } from "react";
 import { PatientPicker } from "./patient-picker";
 import { checkOverlapAction, type AppointmentFormState } from "@/lib/actions/appointments";
 import { statusesForAgenda } from "@/lib/domain/agendas";
-import { timeToMinutes } from "@/lib/domain/slots";
+import { timeToMinutes, minutesToTime } from "@/lib/domain/slots";
 import type { AgendaType, AppointmentStatus } from "@/lib/supabase/database.types";
 import type { PatientSearchResult } from "@/lib/actions/patients";
 
-type Company = { id: string; name: string };
+type Company = { id: string; name: string; duration_minutes: number | null };
 type ApptType = { id: string; name: string; default_duration_minutes: number };
 
 export type AppointmentFormDefaults = {
@@ -33,6 +33,7 @@ export function AppointmentForm({
   action,
   insuranceCompanies,
   appointmentTypes,
+  agendaDefaultDurationMinutes,
   defaults,
 }: {
   agenda: AgendaType;
@@ -40,6 +41,7 @@ export function AppointmentForm({
   action: (state: AppointmentFormState, formData: FormData) => Promise<AppointmentFormState>;
   insuranceCompanies: Company[];
   appointmentTypes: ApptType[];
+  agendaDefaultDurationMinutes: number;
   defaults: AppointmentFormDefaults;
 }) {
   const [state, formAction, pending] = useActionState<AppointmentFormState, FormData>(action, undefined);
@@ -69,9 +71,23 @@ export function AppointmentForm({
     return () => clearTimeout(timeout);
   }, [agenda, date, startTime, endTime, appointmentId, isEnfermeria]);
 
+  // La duración por defecto es la de la agenda, salvo que la compañía tenga una propia configurada
+  // en el backoffice (los particulares no son una compañía, así que siempre usan la de la agenda).
+  function durationForCompany(companyId: string): number {
+    const company = insuranceCompanies.find((c) => c.id === companyId);
+    return company?.duration_minutes ?? agendaDefaultDurationMinutes;
+  }
+
+  function applyCompany(companyId: string) {
+    setInsuranceCompanyId(companyId);
+    if (!isEnfermeria && startTime) {
+      setEndTime(minutesToTime(timeToMinutes(startTime) + durationForCompany(companyId)));
+    }
+  }
+
   function handlePatientSelected(patient: PatientSearchResult | null) {
     if (patient?.insurance_company_id) {
-      setInsuranceCompanyId(patient.insurance_company_id);
+      applyCompany(patient.insurance_company_id);
     }
   }
 
@@ -199,7 +215,7 @@ export function AppointmentForm({
           id="insurance_company_id"
           name="insurance_company_id"
           value={insuranceCompanyId}
-          onChange={(e) => setInsuranceCompanyId(e.target.value)}
+          onChange={(e) => applyCompany(e.target.value)}
           className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
         >
           <option value="">Particular</option>

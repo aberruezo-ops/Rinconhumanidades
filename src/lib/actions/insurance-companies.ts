@@ -41,3 +41,36 @@ export async function toggleInsuranceCompanyAction(id: string, active: boolean) 
 
   revalidatePath("/backoffice/aseguradoras");
 }
+
+export type DurationFormState = { error?: string } | undefined;
+
+const durationSchema = z.object({
+  duration_mode: z.enum(["default", "custom"]),
+  duration_minutes: z.coerce.number().int().min(5).max(240).optional(),
+});
+
+export async function updateInsuranceCompanyDurationAction(
+  id: string,
+  _prevState: DurationFormState,
+  formData: FormData,
+): Promise<DurationFormState> {
+  const user = await requireUser();
+  requireAdmin(user);
+
+  const parsed = durationSchema.safeParse(Object.fromEntries(formData.entries()));
+  if (!parsed.success) {
+    return { error: "Indica una duración entre 5 y 240 minutos." };
+  }
+
+  const durationMinutes = parsed.data.duration_mode === "custom" ? (parsed.data.duration_minutes ?? null) : null;
+  if (parsed.data.duration_mode === "custom" && durationMinutes === null) {
+    return { error: "Indica cuántos minutos." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("insurance_companies").update({ duration_minutes: durationMinutes }).eq("id", id);
+  if (error) return { error: "No se ha podido guardar." };
+
+  revalidatePath("/backoffice/aseguradoras");
+  return undefined;
+}

@@ -18,6 +18,7 @@ function seed(): Store {
     id: randomId(),
     name,
     active: true,
+    duration_minutes: null,
     created_at: nowIso,
   }));
   const adeslas = insuranceCompanies[0];

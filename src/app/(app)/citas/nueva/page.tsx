@@ -22,7 +22,7 @@ export default async function NuevaCitaPage({
 
   const supabase = await createClient();
   const [{ data: companies }, { data: types }, { data: config }] = await Promise.all([
-    supabase.from("insurance_companies").select("id, name").eq("active", true).order("name"),
+    supabase.from("insurance_companies").select("id, name, duration_minutes").eq("active", true).order("name"),
     supabase
       .from("appointment_types")
       .select("id, name, default_duration_minutes")
@@ -47,6 +47,7 @@ export default async function NuevaCitaPage({
         action={createAppointmentAction}
         insuranceCompanies={companies ?? []}
         appointmentTypes={types ?? []}
+        agendaDefaultDurationMinutes={config?.default_duration_minutes ?? 15}
         defaults={{
           date: fecha ?? todayYmd(),
           start_time: startTime,
