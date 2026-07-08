@@ -95,7 +95,7 @@ export default async function BackofficeAgendaDaysPage({
           <button
             type="submit"
             disabled={!config?.default_weekdays?.length}
-            className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40"
+            className="rounded-lg bg-brand-600 hover:bg-brand-700 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40"
           >
             Rellenar según patrón
           </button>
@@ -170,7 +170,7 @@ export default async function BackofficeAgendaDaysPage({
                     return (
                       <label
                         key={date}
-                        className={`flex flex-col items-center gap-0.5 rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs has-[:checked]:border-slate-900 has-[:checked]:bg-slate-900 has-[:checked]:text-white ${
+                        className={`flex flex-col items-center gap-0.5 rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs has-[:checked]:border-brand-600 has-[:checked]:bg-brand-600 has-[:checked]:text-white ${
                           inMonth ? "" : "opacity-50"
                         }`}
                       >
@@ -203,7 +203,7 @@ export default async function BackofficeAgendaDaysPage({
                   </div>
                 </div>
 
-                <button type="submit" className="w-full rounded-lg bg-slate-900 py-2 text-sm font-medium text-white">
+                <button type="submit" className="w-full rounded-lg bg-brand-600 hover:bg-brand-700 py-2 text-sm font-medium text-white">
                   Guardar semana
                 </button>
               </form>

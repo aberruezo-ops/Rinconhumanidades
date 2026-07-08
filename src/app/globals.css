@@ -12,6 +12,32 @@
   --font-mono: var(--font-geist-mono);
 }
 
+@theme {
+  /* Marca: azul ultramar (acciones/enlaces) + naranja flúor (acento/aviso). */
+  --color-brand-50: #eef0fd;
+  --color-brand-100: #dbe0fb;
+  --color-brand-500: #4a5aea;
+  --color-brand-600: #2d3fe0;
+  --color-brand-700: #232fb3;
+  --color-accent-100: #ffe3cc;
+  --color-accent-500: #ff8a2b;
+  --color-accent-600: #ff6a00;
+
+  /* Un color por agenda, para identificarlas de un vistazo en toda la app. */
+  --color-trauma-50: #f3ecfd;
+  --color-trauma-100: #e6d9fb;
+  --color-trauma-600: #7c3aed;
+  --color-trauma-700: #6425c9;
+  --color-enfermeria-50: #e6f5f4;
+  --color-enfermeria-100: #cceceb;
+  --color-enfermeria-600: #0f8b8b;
+  --color-enfermeria-700: #0b6b6b;
+  --color-quirofano-50: #eef1e6;
+  --color-quirofano-100: #dde3cd;
+  --color-quirofano-600: #5b6e3a;
+  --color-quirofano-700: #47572c;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;

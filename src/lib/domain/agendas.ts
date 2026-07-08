@@ -14,6 +14,32 @@ export function isAgendaType(value: string): value is AgendaType {
   return AGENDAS.some((a) => a.value === value);
 }
 
+// Un color por agenda para identificarlas de un vistazo (traumatología = morado,
+// enfermería = verde azulado, quirófano = verde militar, como el de un uniforme de quirófano).
+export const AGENDA_COLORS: Record<AgendaType, { badge: string; solid: string; dot: string; text: string; border: string }> = {
+  traumatologo: {
+    badge: "bg-trauma-100 text-trauma-700",
+    solid: "bg-trauma-600 text-white",
+    dot: "bg-trauma-600",
+    text: "text-trauma-700",
+    border: "border-trauma-600",
+  },
+  enfermeria: {
+    badge: "bg-enfermeria-100 text-enfermeria-700",
+    solid: "bg-enfermeria-600 text-white",
+    dot: "bg-enfermeria-600",
+    text: "text-enfermeria-700",
+    border: "border-enfermeria-600",
+  },
+  quirofano: {
+    badge: "bg-quirofano-100 text-quirofano-700",
+    solid: "bg-quirofano-600 text-white",
+    dot: "bg-quirofano-600",
+    text: "text-quirofano-700",
+    border: "border-quirofano-600",
+  },
+};
+
 export const APPOINTMENT_STATUSES: { value: AppointmentStatus; label: string }[] = [
   { value: "programada", label: "Programada" },
   { value: "confirmada", label: "Confirmada" },
@@ -32,13 +58,15 @@ export function statusesForAgenda(agenda: AgendaType) {
   return agenda === "quirofano" ? APPOINTMENT_STATUSES : APPOINTMENT_STATUSES.filter((s) => s.value !== "pendiente");
 }
 
+// Colores de estado, deliberadamente fuera de la gama morado/verde-azulado/verde militar
+// que ya identifica a cada agenda, para no confundir "de qué agenda es" con "cómo va".
 export const STATUS_STYLES: Record<AppointmentStatus, string> = {
-  programada: "bg-sky-100 text-sky-800",
-  confirmada: "bg-blue-100 text-blue-800",
+  programada: "bg-brand-100 text-brand-700",
+  confirmada: "bg-indigo-100 text-indigo-800",
   completada: "bg-slate-200 text-slate-600",
   no_presentado: "bg-amber-100 text-amber-800",
   cancelada: "bg-red-100 text-red-700 line-through",
-  pendiente: "bg-purple-100 text-purple-800",
+  pendiente: "bg-accent-100 text-accent-600",
 };
 
 export const WEEKDAY_LABELS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];

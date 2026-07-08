@@ -26,7 +26,7 @@ export function AgendaConfigForm({ config, label }: { config: AgendaConfigRow; l
             return (
               <label
                 key={isoDay}
-                className="flex items-center gap-1.5 rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm has-[:checked]:border-slate-900 has-[:checked]:bg-slate-900 has-[:checked]:text-white"
+                className="flex items-center gap-1.5 rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm has-[:checked]:border-brand-600 has-[:checked]:bg-brand-600 has-[:checked]:text-white"
               >
                 <input
                   type="checkbox"
@@ -104,7 +104,7 @@ export function AgendaConfigForm({ config, label }: { config: AgendaConfigRow; l
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+        className="rounded-lg bg-brand-600 hover:bg-brand-700 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
       >
         {pending ? "Guardando…" : "Guardar"}
       </button>

@@ -48,7 +48,7 @@ export function AppointmentTypeForm() {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+        className="rounded-lg bg-brand-600 hover:bg-brand-700 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
       >
         {pending ? "Añadiendo…" : "Añadir"}
       </button>

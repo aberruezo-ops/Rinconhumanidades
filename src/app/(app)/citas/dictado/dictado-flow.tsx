@@ -151,7 +151,7 @@ export function DictadoFlow({
           type="button"
           onClick={handleInterpret}
           disabled={pending || !text.trim()}
-          className="flex-1 rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white disabled:opacity-60"
+          className="flex-1 rounded-lg bg-brand-600 hover:bg-brand-700 py-2.5 text-sm font-medium text-white disabled:opacity-60"
         >
           {pending ? "Interpretando…" : "Interpretar"}
         </button>

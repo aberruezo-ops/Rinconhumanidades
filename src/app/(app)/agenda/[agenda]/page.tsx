@@ -45,7 +45,7 @@ export default async function AgendaPage({
             </Link>
             <Link
               href={`/citas/nueva?agenda=${agenda}&fecha=${date}`}
-              className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white"
+              className="rounded-lg bg-brand-600 hover:bg-brand-700 px-3 py-1.5 text-sm font-medium text-white"
             >
               + Nueva cita
             </Link>

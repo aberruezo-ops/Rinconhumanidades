@@ -285,7 +285,7 @@ export function AppointmentForm({
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-lg bg-slate-900 py-3 font-medium text-white disabled:opacity-60"
+        className="w-full rounded-lg bg-brand-600 hover:bg-brand-700 py-3 font-medium text-white disabled:opacity-60"
       >
         {pending ? "Guardando…" : "Guardar cita"}
       </button>
