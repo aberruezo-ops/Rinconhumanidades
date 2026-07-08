@@ -170,10 +170,10 @@ export interface Database {
           id: string;
           agenda: AgendaType;
           date: string;
-          start_time: string;
-          duration_minutes: number;
-          starts_at: string;
-          ends_at: string;
+          start_time: string | null;
+          duration_minutes: number | null;
+          starts_at: string | null;
+          ends_at: string | null;
           patient_id: string | null;
           particular_label: string | null;
           insurance_company_id: string | null;
@@ -193,8 +193,8 @@ export interface Database {
           id?: string;
           agenda: AgendaType;
           date: string;
-          start_time: string;
-          duration_minutes: number;
+          start_time?: string | null;
+          duration_minutes?: number | null;
           patient_id?: string | null;
           particular_label?: string | null;
           insurance_company_id?: string | null;
@@ -211,8 +211,8 @@ export interface Database {
         Update: {
           agenda?: AgendaType;
           date?: string;
-          start_time?: string;
-          duration_minutes?: number;
+          start_time?: string | null;
+          duration_minutes?: number | null;
           patient_id?: string | null;
           particular_label?: string | null;
           insurance_company_id?: string | null;

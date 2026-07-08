@@ -110,7 +110,7 @@ export default async function ListadosPage({
             <tbody>
               {appointments?.map((a) => (
                 <tr key={a.id} className="border-b border-slate-100">
-                  <td className="px-3 py-2">{formatTimeEs(a.start_time)}</td>
+                  <td className="px-3 py-2">{a.start_time ? formatTimeEs(a.start_time) : "—"}</td>
                   <td className="px-3 py-2">{agendaLabel(a.agenda)}</td>
                   <td className="px-3 py-2">
                     {a.particular_label ?? (a.patients ? `${a.patients.first_name} ${a.patients.last_name}` : "—")}

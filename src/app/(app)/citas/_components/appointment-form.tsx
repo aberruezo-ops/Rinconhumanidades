@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { PatientPicker } from "./patient-picker";
 import { checkOverlapAction, type AppointmentFormState } from "@/lib/actions/appointments";
 import { statusesForAgenda } from "@/lib/domain/agendas";
+import { timeToMinutes } from "@/lib/domain/slots";
 import type { AgendaType, AppointmentStatus } from "@/lib/supabase/database.types";
 import type { PatientSearchResult } from "@/lib/actions/patients";
 
@@ -13,7 +14,7 @@ type ApptType = { id: string; name: string; default_duration_minutes: number };
 export type AppointmentFormDefaults = {
   date: string;
   start_time: string;
-  duration_minutes: number;
+  end_time: string;
   patient: { id: string; label: string } | null;
   particular_label: string;
   insurance_company_id: string;
@@ -48,19 +49,25 @@ export function AppointmentForm({
   );
   const [date, setDate] = useState(defaults.date);
   const [startTime, setStartTime] = useState(defaults.start_time);
-  const [duration, setDuration] = useState(defaults.duration_minutes);
+  const [endTime, setEndTime] = useState(defaults.end_time);
   const [insuranceCompanyId, setInsuranceCompanyId] = useState(defaults.insurance_company_id);
   const [status, setStatus] = useState<AppointmentStatus>(defaults.status);
   const [overlapWarning, setOverlapWarning] = useState<string | null>(null);
 
+  const isQuirofano = agenda === "quirofano";
+  const isEnfermeria = agenda === "enfermeria";
+
   useEffect(() => {
+    if (isEnfermeria) return;
     const timeout = setTimeout(async () => {
-      if (!date || !startTime || !duration) return;
+      if (!date || !startTime || !endTime) return;
+      const duration = timeToMinutes(endTime) - timeToMinutes(startTime);
+      if (duration <= 0) return;
       const warning = await checkOverlapAction(agenda, date, startTime, duration, appointmentId);
       setOverlapWarning(warning);
     }, 300);
     return () => clearTimeout(timeout);
-  }, [agenda, date, startTime, duration, appointmentId]);
+  }, [agenda, date, startTime, endTime, appointmentId, isEnfermeria]);
 
   function handlePatientSelected(patient: PatientSearchResult | null) {
     if (patient?.insurance_company_id) {
@@ -69,65 +76,62 @@ export function AppointmentForm({
   }
 
   const statusOptions = statusesForAgenda(agenda);
-  const isQuirofano = agenda === "quirofano";
-  const isEnfermeria = agenda === "enfermeria";
 
   return (
     <form action={formAction} className="space-y-5">
       <input type="hidden" name="agenda" value={agenda} />
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-slate-700" htmlFor="date">
-            Fecha
-          </label>
-          <input
-            id="date"
-            name="date"
-            type="date"
-            required
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
-          />
-        </div>
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-slate-700" htmlFor="start_time">
-            Hora
-          </label>
-          <input
-            id="start_time"
-            name="start_time"
-            type="time"
-            required
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
-          />
-        </div>
+      <div className="space-y-1">
+        <label className="text-sm font-medium text-slate-700" htmlFor="date">
+          Fecha
+        </label>
+        <input
+          id="date"
+          name="date"
+          type="date"
+          required
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
+        />
       </div>
+
+      {!isEnfermeria && (
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-slate-700" htmlFor="start_time">
+              Hora inicio
+            </label>
+            <input
+              id="start_time"
+              name="start_time"
+              type="time"
+              required
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-slate-700" htmlFor="end_time">
+              Hora fin
+            </label>
+            <input
+              id="end_time"
+              name="end_time"
+              type="time"
+              required
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
+            />
+          </div>
+        </div>
+      )}
 
       {overlapWarning && (
         <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">⚠ {overlapWarning}</p>
       )}
-
-      <div className="space-y-1">
-        <label className="text-sm font-medium text-slate-700" htmlFor="duration_minutes">
-          Duración (min)
-        </label>
-        <input
-          id="duration_minutes"
-          name="duration_minutes"
-          type="number"
-          min={5}
-          max={240}
-          step={5}
-          required
-          value={duration}
-          onChange={(e) => setDuration(Number(e.target.value))}
-          className="w-32 rounded-lg border border-slate-300 px-3 py-2.5"
-        />
-      </div>
 
       {isEnfermeria && (
         <div className="space-y-1">
@@ -138,10 +142,6 @@ export function AppointmentForm({
             id="appointment_type_id"
             name="appointment_type_id"
             defaultValue={defaults.appointment_type_id}
-            onChange={(e) => {
-              const type = appointmentTypes.find((t) => t.id === e.target.value);
-              if (type) setDuration(type.default_duration_minutes);
-            }}
             className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
           >
             <option value="">— Sin especificar —</option>
@@ -184,7 +184,7 @@ export function AppointmentForm({
         ) : (
           <input
             name="particular_label"
-            placeholder={`Particular ${startTime}`}
+            placeholder={isEnfermeria || !startTime ? "Particular" : `Particular ${startTime}`}
             defaultValue={defaults.particular_label}
             className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
           />

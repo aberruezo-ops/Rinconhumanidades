@@ -7,6 +7,7 @@ import type { AgendaType } from "@/lib/supabase/database.types";
 
 export async function DayView({ agenda, date }: { agenda: AgendaType; date: string }) {
   const supabase = await createClient();
+  const isEnfermeria = agenda === "enfermeria";
 
   const [{ data: dayRow }, { data: config }, { data: appointments }] = await Promise.all([
     supabase
@@ -21,7 +22,8 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
       .select("*, patients(first_name, last_name), insurance_companies(name), appointment_types(name)")
       .eq("agenda", agenda)
       .eq("date", date)
-      .order("start_time"),
+      .order("start_time", { nullsFirst: true })
+      .order("created_at"),
   ]);
 
   const isOpen = dayRow?.is_open ?? false;
@@ -35,11 +37,57 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
     );
   }
 
+  if (isEnfermeria) {
+    return (
+      <div className="space-y-2">
+        {!isOpen && (
+          <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            Este día está marcado como cerrado, pero tiene citas registradas.
+          </p>
+        )}
+
+        <ul className="space-y-2">
+          {(appointments ?? []).map((a) => (
+            <li key={a.id}>
+              <Link
+                href={`/citas/${a.id}`}
+                className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-slate-300"
+              >
+                <span className="flex-1">
+                  <span className="block text-slate-900">
+                    {a.particular_label ?? (a.patients ? `${a.patients.first_name} ${a.patients.last_name}` : "—")}
+                  </span>
+                  <span className="block text-sm text-slate-500">
+                    {a.insurance_companies?.name ?? "Particular"}
+                    {a.appointment_types?.name ? ` · ${a.appointment_types.name}` : ""}
+                  </span>
+                </span>
+                <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLES[a.status]}`}>
+                  {statusLabel(a.status)}
+                </span>
+              </Link>
+            </li>
+          ))}
+          {(appointments ?? []).length === 0 && <p className="text-sm text-slate-500">Sin citas este día.</p>}
+        </ul>
+
+        {isOpen && (
+          <Link
+            href={`/citas/nueva?agenda=${agenda}&fecha=${date}`}
+            className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 px-4 py-3 text-slate-500 hover:border-slate-400 hover:text-slate-700"
+          >
+            + Nueva cita
+          </Link>
+        )}
+      </div>
+    );
+  }
+
   const occupied: OccupiedInterval[] = (appointments ?? [])
-    .filter((a) => a.status !== "cancelada")
+    .filter((a) => a.status !== "cancelada" && a.start_time && a.duration_minutes)
     .map((a) => ({
-      start: timeToMinutes(a.start_time.slice(0, 5)),
-      end: timeToMinutes(a.start_time.slice(0, 5)) + a.duration_minutes,
+      start: timeToMinutes(a.start_time!.slice(0, 5)),
+      end: timeToMinutes(a.start_time!.slice(0, 5)) + a.duration_minutes!,
     }));
 
   const jornadaStart = (dayRow?.start_time_override ?? config?.start_time)?.slice(0, 5);
@@ -57,7 +105,7 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
     | { kind: "free"; time: string };
 
   const items: TimelineItem[] = [
-    ...(appointments ?? []).map((a) => ({ kind: "appointment" as const, time: a.start_time.slice(0, 5), appointment: a })),
+    ...(appointments ?? []).map((a) => ({ kind: "appointment" as const, time: (a.start_time ?? "").slice(0, 5), appointment: a })),
     ...freeSlots.map((time) => ({ kind: "free" as const, time })),
   ].sort((a, b) => a.time.localeCompare(b.time));
 
@@ -89,7 +137,9 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
                 href={`/citas/${item.appointment.id}`}
                 className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-slate-300"
               >
-                <span className="w-12 font-medium text-slate-900">{formatTimeEs(item.appointment.start_time)}</span>
+                <span className="w-12 font-medium text-slate-900">
+                  {item.appointment.start_time ? formatTimeEs(item.appointment.start_time) : "—"}
+                </span>
                 <span className="flex-1">
                   <span className="block text-slate-900">
                     {item.appointment.particular_label ??

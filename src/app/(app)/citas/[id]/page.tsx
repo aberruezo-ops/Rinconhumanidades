@@ -3,6 +3,7 @@ import { requireAdmin, requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { agendaLabel } from "@/lib/domain/agendas";
 import { updateAppointmentAction, cancelAppointmentAction } from "@/lib/actions/appointments";
+import { minutesToTime, timeToMinutes } from "@/lib/domain/slots";
 import { AppointmentForm } from "../_components/appointment-form";
 
 export default async function EditarCitaPage({ params }: { params: Promise<{ id: string }> }) {
@@ -32,6 +33,12 @@ export default async function EditarCitaPage({ params }: { params: Promise<{ id:
   const boundUpdate = updateAppointmentAction.bind(null, appointment.id);
   const boundCancel = cancelAppointmentAction.bind(null, appointment.id, appointment.agenda, appointment.date);
 
+  const startTime = appointment.start_time?.slice(0, 5) ?? "";
+  const endTime =
+    appointment.start_time && appointment.duration_minutes
+      ? minutesToTime(timeToMinutes(appointment.start_time.slice(0, 5)) + appointment.duration_minutes)
+      : "";
+
   return (
     <div className="mx-auto max-w-lg space-y-4">
       <div className="flex items-center justify-between">
@@ -53,8 +60,8 @@ export default async function EditarCitaPage({ params }: { params: Promise<{ id:
         appointmentTypes={types ?? []}
         defaults={{
           date: appointment.date,
-          start_time: appointment.start_time.slice(0, 5),
-          duration_minutes: appointment.duration_minutes,
+          start_time: startTime,
+          end_time: endTime,
           patient: appointment.patients
             ? { id: appointment.patients.id, label: `${appointment.patients.first_name} ${appointment.patients.last_name}` }
             : null,

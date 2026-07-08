@@ -25,14 +25,6 @@ function seed(): Store {
 
   const appointmentTypes: Row[] = [
     { id: randomId(), agenda: "enfermeria", name: "Cura", default_duration_minutes: 15, active: true, created_at: nowIso },
-    {
-      id: randomId(),
-      agenda: "enfermeria",
-      name: "Infiltración células madre",
-      default_duration_minutes: 30,
-      active: true,
-      created_at: nowIso,
-    },
     { id: randomId(), agenda: "enfermeria", name: "PRP", default_duration_minutes: 30, active: true, created_at: nowIso },
   ];
 
@@ -123,6 +115,27 @@ function seed(): Store {
       dni: "87654321B",
       observations: "A la espera de confirmar quirófano",
       follow_up_date: ymd(year, month, Math.min(28, daysInMonth(year, month))),
+      whatsapp_sent_at: null,
+      created_by: FAKE_USER.id,
+      created_at: nowIso,
+      updated_at: nowIso,
+    },
+    {
+      id: randomId(),
+      agenda: "enfermeria",
+      date: firstAgendaDay("enfermeria"),
+      start_time: null,
+      duration_minutes: null,
+      patient_id: patients[2].id,
+      particular_label: null,
+      insurance_company_id: null,
+      appointment_type_id: appointmentTypes[0].id,
+      status: "programada",
+      pathology: null,
+      prosthesis_brand: null,
+      dni: null,
+      observations: null,
+      follow_up_date: null,
       whatsapp_sent_at: null,
       created_by: FAKE_USER.id,
       created_at: nowIso,

@@ -14,7 +14,7 @@ No hay portal de pacientes ni reserva online en esta versión.
 ## Las tres agendas
 
 1. **Traumatólogo (Alex)**. Consulta. Día y horario por defecto: lunes de 16:00 a 19:30.
-2. **Enfermería**. Curas e infiltraciones (células madre, PRP). Día y horario por defecto: martes de 16:00 a 19:30 (aunque el patrón se puede dejar sin días y abrir solo un día concreto cuando se acumulan casos).
+2. **Enfermería**. Curas y PRP. Día por defecto: martes (jornada 16:00 a 19:30, aunque el patrón se puede dejar sin días y abrir solo un día concreto cuando se acumulan casos). Las citas de enfermería **no llevan hora exacta**: solo día, paciente y tipo (cura o PRP) — no hay solapes que comprobar, solo importa qué pacientes tocan ese día.
 3. **Quirófano**. Día y horario por defecto: miércoles de 16:00 a 19:30. Dos estados propios: **programado** y **pendiente** (pre-reserva a la espera de confirmación, requiere seguimiento).
 
 Estos son solo los valores de partida: desde el backoffice se puede cambiar el día (cualquier día de la semana, no solo el indicado) y el horario de cada agenda en cualquier momento.
@@ -27,7 +27,7 @@ Zona de administración separada de la agenda diaria donde Olga define el funcio
 - **Duración por defecto de las citas**, configurable por agenda o por tipo de cita (consulta, cura, infiltración, quirófano). Los huecos de la agenda se generan a partir de esta duración y del horario de jornada.
 - **Horario de jornada**: hora de inicio y fin por agenda.
 - **Catálogo de compañías aseguradoras**: alta, edición y baja. En los formularios de cita la compañía se elige de este catálogo (más "Particular"), no se escribe a mano, para evitar variantes tipo "Adeslas" / "adeslas" / "ADESLAS".
-- **Tipos de cita de enfermería** (cura, infiltración de células madre, PRP), editables.
+- **Tipos de cita de enfermería** (cura, PRP), editables.
 - Días de antelación del aviso al paciente (para cuando lleguen los SMS de la fase 3).
 
 ### Gestión de días (dentro del backoffice)
@@ -49,7 +49,7 @@ Una cita solo puede crearse en un día abierto de su agenda. Un hueco ocupado de
 - Los pacientes **particulares no se registran**: su cita ocupa hueco pero no guarda datos personales (opcionalmente una etiqueta libre tipo "particular 12:00"). A esos los llama ella por teléfono.
 
 ### Cita (todas las agendas)
-- Agenda (traumatólogo / enfermería / quirófano), fecha, hora exacta.
+- Agenda (traumatólogo / enfermería / quirófano), fecha. Hora de inicio y fin exactas en traumatólogo y quirófano (se elige directamente el rango, no una duración); en enfermería no se registra hora, solo el día.
 - Paciente registrado (opcional si es particular) o etiqueta libre.
 - Compañía aseguradora.
 - Estado: programada, confirmada, completada, no presentado, cancelada. En quirófano además: pendiente.

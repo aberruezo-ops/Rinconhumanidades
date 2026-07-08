@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { isAgendaType, agendaLabel } from "@/lib/domain/agendas";
 import { todayYmd } from "@/lib/domain/dates";
 import { createAppointmentAction } from "@/lib/actions/appointments";
+import { minutesToTime, timeToMinutes } from "@/lib/domain/slots";
 import { AppointmentForm } from "../_components/appointment-form";
 import type { AgendaType } from "@/lib/supabase/database.types";
 
@@ -31,6 +32,13 @@ export default async function NuevaCitaPage({
     supabase.from("agenda_config").select("default_duration_minutes, start_time").eq("agenda", agenda).single(),
   ]);
 
+  const isEnfermeria = agenda === "enfermeria";
+  const startTime = isEnfermeria ? "" : (hora ?? config?.start_time.slice(0, 5) ?? "09:00");
+  const endTime =
+    isEnfermeria || !startTime
+      ? ""
+      : minutesToTime(timeToMinutes(startTime) + (config?.default_duration_minutes ?? 15));
+
   return (
     <div className="mx-auto max-w-lg space-y-4">
       <h1 className="text-lg font-semibold text-slate-900">Nueva cita — {agendaLabel(agenda)}</h1>
@@ -41,8 +49,8 @@ export default async function NuevaCitaPage({
         appointmentTypes={types ?? []}
         defaults={{
           date: fecha ?? todayYmd(),
-          start_time: hora ?? (config?.start_time.slice(0, 5) ?? "09:00"),
-          duration_minutes: config?.default_duration_minutes ?? 15,
+          start_time: startTime,
+          end_time: endTime,
           patient: null,
           particular_label: "",
           insurance_company_id: "",

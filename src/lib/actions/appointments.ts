@@ -21,8 +21,8 @@ const STATUSES: AppointmentStatus[] = [
 const formSchema = z.object({
   agenda: z.string().refine(isAgendaType),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  start_time: z.string().regex(/^\d{2}:\d{2}$/),
-  duration_minutes: z.coerce.number().int().min(5).max(240),
+  start_time: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+  end_time: z.string().regex(/^\d{2}:\d{2}$/).optional(),
   patient_mode: z.enum(["registrado", "particular"]),
   patient_id: z.string().optional(),
   new_first_name: z.string().optional(),
@@ -54,7 +54,7 @@ async function resolvePatient(
   if (data.patient_mode === "particular") {
     return {
       patientId: null,
-      particularLabel: data.particular_label?.trim() || `Particular ${data.start_time}`,
+      particularLabel: data.particular_label?.trim() || (data.start_time ? `Particular ${data.start_time}` : "Particular"),
     };
   }
 
@@ -98,13 +98,38 @@ async function checkDayOpen(
   return data?.is_open ?? false;
 }
 
+// Enfermería no tiene hora (solo día); el resto de agendas exigen hora de inicio y fin,
+// de las que se calcula la duración.
+function resolveTimeFields(
+  agenda: AgendaType,
+  data: { start_time?: string; end_time?: string },
+): { startTime: string | null; durationMinutes: number | null; error?: string } {
+  if (agenda === "enfermeria") {
+    return { startTime: null, durationMinutes: null };
+  }
+
+  if (!data.start_time || !data.end_time) {
+    return { startTime: null, durationMinutes: null, error: "Indica la hora de inicio y de fin." };
+  }
+
+  const durationMinutes = timeToMinutes(data.end_time) - timeToMinutes(data.start_time);
+  if (durationMinutes <= 0) {
+    return { startTime: null, durationMinutes: null, error: "La hora de fin debe ser posterior a la de inicio." };
+  }
+
+  return { startTime: data.start_time, durationMinutes };
+}
+
 export async function checkOverlapAction(
   agenda: AgendaType,
   date: string,
-  startTime: string,
-  durationMinutes: number,
+  startTime: string | null,
+  durationMinutes: number | null,
   excludeId?: string,
 ): Promise<string | null> {
+  // Enfermería no tiene hora: no hay solape que comprobar.
+  if (agenda === "enfermeria" || !startTime || !durationMinutes) return null;
+
   await requireUser();
   const supabase = await createClient();
 
@@ -116,10 +141,10 @@ export async function checkOverlapAction(
     .neq("status", "cancelada");
 
   const occupied = (data ?? [])
-    .filter((a) => a.id !== excludeId)
+    .filter((a) => a.id !== excludeId && a.start_time && a.duration_minutes)
     .map((a) => ({
-      start: timeToMinutes(a.start_time.slice(0, 5)),
-      end: timeToMinutes(a.start_time.slice(0, 5)) + a.duration_minutes,
+      start: timeToMinutes(a.start_time!.slice(0, 5)),
+      end: timeToMinutes(a.start_time!.slice(0, 5)) + a.duration_minutes!,
       label: a.particular_label ?? (a.patients ? `${a.patients.first_name} ${a.patients.last_name}` : "cita"),
     }));
 
@@ -151,6 +176,9 @@ export async function createAppointmentAction(
     return { error: "Ese día está cerrado para esta agenda. Ábrelo primero desde el backoffice." };
   }
 
+  const { startTime, durationMinutes, error: timeError } = resolveTimeFields(agenda, data);
+  if (timeError) return { error: timeError };
+
   const { patientId, particularLabel, error: patientError } = await resolvePatient(supabase, data);
   if (patientError) return { error: patientError };
 
@@ -159,8 +187,8 @@ export async function createAppointmentAction(
   const { error } = await supabase.from("appointments").insert({
     agenda,
     date: data.date,
-    start_time: data.start_time,
-    duration_minutes: data.duration_minutes,
+    start_time: startTime,
+    duration_minutes: durationMinutes,
     patient_id: patientId,
     particular_label: particularLabel,
     insurance_company_id: data.insurance_company_id || null,
@@ -207,6 +235,9 @@ export async function updateAppointmentAction(
     return { error: "Ese día está cerrado para esta agenda. Ábrelo primero desde el backoffice." };
   }
 
+  const { startTime, durationMinutes, error: timeError } = resolveTimeFields(agenda, data);
+  if (timeError) return { error: timeError };
+
   const { patientId, particularLabel, error: patientError } = await resolvePatient(supabase, data);
   if (patientError) return { error: patientError };
 
@@ -217,8 +248,8 @@ export async function updateAppointmentAction(
     .update({
       agenda,
       date: data.date,
-      start_time: data.start_time,
-      duration_minutes: data.duration_minutes,
+      start_time: startTime,
+      duration_minutes: durationMinutes,
       patient_id: patientId,
       particular_label: particularLabel,
       insurance_company_id: data.insurance_company_id || null,

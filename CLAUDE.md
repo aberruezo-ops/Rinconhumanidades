@@ -22,6 +22,7 @@ Todo el texto visible de la interfaz, mensajes, commits y nombres de página van
 - El DNI solo se pide en quirófano.
 - Compañía aseguradora siempre se elige del catálogo (`insurance_companies`), nunca texto libre. "Particular" = `insurance_company_id` nulo, no es una fila de la tabla.
 - Solapes: hay comprobación en la app (para avisar antes de guardar) *y* un `EXCLUDE` constraint en Postgres como red de seguridad — no quitar ninguna de las dos.
+- Enfermería no tiene hora: `appointments.start_time`/`duration_minutes` son `null` siempre que `agenda = 'enfermeria'` (y obligatorios en el resto), y esas citas quedan fuera del `EXCLUDE` de solapes a propósito. El formulario pide "Hora inicio"/"Hora fin" (no duración) para traumatólogo/quirófano; en enfermería no se muestra ningún campo de hora.
 - Roles: `admin` (Olga, único activo) y `readonly` (futuro traumatólogo). Las políticas RLS ya contemplan ambos aunque hoy solo exista `admin`.
 
 ## Fases

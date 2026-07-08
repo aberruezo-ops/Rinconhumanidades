@@ -89,16 +89,16 @@ export default async function BackofficeAgendaDaysPage({
         </form>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-2 sm:p-3">
-        <div className="grid grid-cols-7 gap-1 pb-1 text-center">
+      <div className="rounded-xl border border-slate-200 bg-white p-1.5 sm:p-2">
+        <div className="grid grid-cols-7 text-center">
           {["L", "M", "X", "J", "V", "S", "D"].map((d) => (
-            <span key={d} className="text-xs font-medium text-slate-500">
+            <span key={d} className="text-[11px] font-medium text-slate-400">
               {d}
             </span>
           ))}
         </div>
         {weeks.map((week, weekIndex) => (
-          <div key={weekIndex} className="grid grid-cols-7 gap-1 py-0.5">
+          <div key={weekIndex} className="grid grid-cols-7 gap-0.5 py-0.5">
             {week.map((cell, cellIndex) => {
               if (!cell) return <div key={cellIndex} />;
               const isOpen = dayState.get(cell.date) ?? false;
@@ -108,14 +108,14 @@ export default async function BackofficeAgendaDaysPage({
                 <form key={cellIndex} action={toggleAgendaDayAction.bind(null, agenda, cell.date, !isOpen)} className="relative">
                   <button
                     type="submit"
-                    className={`aspect-square w-full rounded-lg text-sm font-medium ${
+                    className={`h-9 w-full rounded-md text-xs font-medium ${
                       isOpen ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200" : "bg-slate-100 text-slate-400 hover:bg-slate-200"
                     } ${isToday ? "ring-2 ring-offset-1 ring-slate-900" : ""}`}
                   >
                     {cell.day}
                   </button>
                   {hasOverride && (
-                    <span className="pointer-events-none absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-amber-500" />
+                    <span className="pointer-events-none absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-amber-500" />
                   )}
                 </form>
               );
