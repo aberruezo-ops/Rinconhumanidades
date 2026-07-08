@@ -167,8 +167,8 @@ export default async function ListadosPage({
           {agenda ? ` — ${agendaLabel(agenda)}` : ""}
         </h2>
 
-        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white print:rounded-none print:border-0">
-          <table className="w-full min-w-[720px] border-collapse text-left text-sm">
+        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white print:overflow-visible print:rounded-none print:border-0">
+          <table className="w-full min-w-[720px] border-collapse text-left text-sm print:w-full print:min-w-0">
             <thead>
               <tr className="border-b border-slate-200 text-slate-500">
                 {!date && <th className="px-3 py-2 font-medium">Fecha</th>}
