@@ -15,6 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Dante — Agenda de traumatología",
   description: "Gestión de citas de la consulta de traumatología",
+  appleWebApp: {
+    capable: true,
+    title: "Dante",
+    statusBarStyle: "default",
+  },
 };
 
 export const viewport: Viewport = {
