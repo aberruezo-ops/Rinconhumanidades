@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 import { agendaLabel, isAgendaType } from "@/lib/domain/agendas";
 import { addDays, formatDateEs, todayYmd } from "@/lib/domain/dates";
 import { DayView } from "./day-view";
@@ -9,6 +10,20 @@ import { MonthView } from "./month-view";
 import type { AgendaType } from "@/lib/supabase/database.types";
 
 type Vista = "dia" | "semana" | "mes";
+
+async function resolveDefaultDate(agenda: AgendaType): Promise<string> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("agenda_days")
+    .select("date")
+    .eq("agenda", agenda)
+    .eq("is_open", true)
+    .gte("date", todayYmd())
+    .order("date")
+    .limit(1)
+    .maybeSingle();
+  return data?.date ?? todayYmd();
+}
 
 export default async function AgendaPage({
   params,
@@ -24,8 +39,9 @@ export default async function AgendaPage({
   const agenda: AgendaType = agendaParam;
 
   const { vista: vistaParam, fecha } = await searchParams;
-  const vista: Vista = vistaParam === "semana" || vistaParam === "mes" ? vistaParam : "dia";
-  const date = fecha && /^\d{4}-\d{2}-\d{2}$/.test(fecha) ? fecha : todayYmd();
+  const vista: Vista = vistaParam === "dia" || vistaParam === "semana" ? vistaParam : "mes";
+  const explicitDate = fecha && /^\d{4}-\d{2}-\d{2}$/.test(fecha) ? fecha : null;
+  const date = explicitDate ?? (await resolveDefaultDate(agenda));
   const [year, month] = date.split("-").map(Number);
 
   const prevDate = vista === "semana" ? addDays(date, -7) : addDays(date, -1);
@@ -85,7 +101,7 @@ export default async function AgendaPage({
 
       {vista === "dia" && <DayView agenda={agenda} date={date} />}
       {vista === "semana" && <WeekView agenda={agenda} date={date} />}
-      {vista === "mes" && <MonthView agenda={agenda} year={year} month={month} />}
+      {vista === "mes" && <MonthView agenda={agenda} year={year} month={month} selectedDate={date} />}
     </div>
   );
 }
