@@ -56,10 +56,10 @@ async function loadPacientesPorAvisar(supabase: Awaited<ReturnType<typeof create
 
 async function resolveDefaultDate(supabase: Awaited<ReturnType<typeof createClient>>): Promise<string> {
   const { data } = await supabase
-    .from("appointments")
+    .from("agenda_days")
     .select("date")
+    .eq("is_open", true)
     .gte("date", todayYmd())
-    .neq("status", "cancelada")
     .order("date")
     .limit(1)
     .maybeSingle();
@@ -85,8 +85,8 @@ export default async function DashboardPage({
   const from = `${year}-${String(month).padStart(2, "0")}-01`;
   const to = `${year}-${String(month).padStart(2, "0")}-31`;
 
-  const [{ data: monthAppointments }, { data: dayAppointments }] = await Promise.all([
-    supabase.from("appointments").select("date, agenda").gte("date", from).lte("date", to).neq("status", "cancelada"),
+  const [{ data: monthAgendaDays }, { data: dayAppointments }] = await Promise.all([
+    supabase.from("agenda_days").select("date, agenda").eq("is_open", true).gte("date", from).lte("date", to),
     supabase
       .from("appointments")
       .select("*, patients(first_name, last_name), insurance_companies(name)")
@@ -95,9 +95,9 @@ export default async function DashboardPage({
   ]);
 
   const agendasByDate = new Map<string, Set<AgendaType>>();
-  for (const a of monthAppointments ?? []) {
-    if (!agendasByDate.has(a.date)) agendasByDate.set(a.date, new Set());
-    agendasByDate.get(a.date)!.add(a.agenda);
+  for (const d of monthAgendaDays ?? []) {
+    if (!agendasByDate.has(d.date)) agendasByDate.set(d.date, new Set());
+    agendasByDate.get(d.date)!.add(d.agenda);
   }
 
   const byAgenda = (agenda: AgendaType) => (dayAppointments ?? []).filter((a) => a.agenda === agenda);
@@ -192,7 +192,7 @@ export default async function DashboardPage({
             Siguiente →
           </Link>
         </div>
-        <p className="text-center text-xs text-slate-400">Los puntos de color indican qué agendas tienen citas ese día.</p>
+        <p className="text-center text-xs text-slate-400">Los puntos de color indican qué agendas tienen consulta (día abierto) ese día.</p>
         <div className="rounded-xl border border-slate-200 bg-white p-1.5">
           <div className="grid grid-cols-7 text-center">
             {["L", "M", "X", "J", "V", "S", "D"].map((d) => (
