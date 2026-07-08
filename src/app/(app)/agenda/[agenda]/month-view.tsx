@@ -19,13 +19,16 @@ export async function MonthView({
   const from = `${year}-${String(month).padStart(2, "0")}-01`;
   const to = `${year}-${String(month).padStart(2, "0")}-31`;
 
-  const { data: appointments } = await supabase
-    .from("appointments")
-    .select("date, status")
-    .eq("agenda", agenda)
-    .gte("date", from)
-    .lte("date", to)
-    .neq("status", "cancelada");
+  const [{ data: appointments }, { data: agendaDays }] = await Promise.all([
+    supabase
+      .from("appointments")
+      .select("date, status")
+      .eq("agenda", agenda)
+      .gte("date", from)
+      .lte("date", to)
+      .neq("status", "cancelada"),
+    supabase.from("agenda_days").select("date, is_open").eq("agenda", agenda).gte("date", from).lte("date", to),
+  ]);
 
   const countByDate = new Map<string, number>();
   const pendienteDates = new Set<string>();
@@ -33,6 +36,7 @@ export async function MonthView({
     countByDate.set(a.date, (countByDate.get(a.date) ?? 0) + 1);
     if (a.status === "pendiente") pendienteDates.add(a.date);
   }
+  const openDates = new Set((agendaDays ?? []).filter((d) => d.is_open).map((d) => d.date));
 
   const weeks = buildMonthWeeks(year, month);
   const today = todayYmd();
@@ -58,7 +62,7 @@ export async function MonthView({
           </Link>
         </div>
         <p className="text-center text-xs text-slate-400">
-          Solo se destacan los días con citas{agenda === "quirofano" ? " (en ámbar, los que tienen alguna pendiente)" : ""}.
+          En verde, los días abiertos para esta agenda{agenda === "quirofano" ? " (en ámbar, los que tienen alguna pendiente)" : ""}.
         </p>
         <div className="rounded-xl border border-slate-200 bg-white p-1.5">
           <div className="grid grid-cols-7 text-center">
@@ -74,6 +78,7 @@ export async function MonthView({
                 if (!cell) return <div key={cellIndex} />;
                 const count = countByDate.get(cell.date) ?? 0;
                 const hasPendiente = pendienteDates.has(cell.date);
+                const isOpen = openDates.has(cell.date);
                 const isToday = cell.date === today;
                 const isSelected = cell.date === selectedDate;
                 return (
@@ -83,8 +88,8 @@ export async function MonthView({
                     className={`relative flex h-8 items-center justify-center rounded-md text-xs ${
                       hasPendiente
                         ? "bg-accent-100 font-semibold text-accent-600 hover:bg-accent-100/70"
-                        : count > 0
-                          ? "bg-sky-100 font-semibold text-sky-900 hover:bg-sky-200"
+                        : isOpen
+                          ? "bg-emerald-100 font-semibold text-emerald-900 hover:bg-emerald-200"
                           : "text-slate-300 hover:bg-slate-50"
                     } ${isSelected ? "ring-2 ring-brand-600" : isToday ? "ring-2 ring-accent-500" : ""}`}
                   >
@@ -92,7 +97,7 @@ export async function MonthView({
                     {count > 0 && (
                       <span
                         className={`absolute -right-0.5 -top-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-0.5 text-[9px] font-medium text-white ${
-                          hasPendiente ? "bg-accent-600" : "bg-sky-600"
+                          hasPendiente ? "bg-accent-600" : "bg-emerald-600"
                         }`}
                       >
                         {count}
