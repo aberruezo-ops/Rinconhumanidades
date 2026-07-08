@@ -13,15 +13,17 @@ No hay portal de pacientes ni reserva online en esta versión.
 
 ## Las tres agendas
 
-1. **Traumatólogo (Alex)**. Consulta. Día por defecto: martes.
-2. **Enfermería**. Curas e infiltraciones (células madre, PRP). Sin día fijo: se abre un día concreto cuando se acumulan casos.
-3. **Quirófano**. Día por defecto: lunes. Dos estados propios: **programado** y **pendiente** (pre-reserva a la espera de confirmación, requiere seguimiento).
+1. **Traumatólogo (Alex)**. Consulta. Día y horario por defecto: lunes de 16:00 a 19:30.
+2. **Enfermería**. Curas e infiltraciones (células madre, PRP). Día y horario por defecto: martes de 16:00 a 19:30 (aunque el patrón se puede dejar sin días y abrir solo un día concreto cuando se acumulan casos).
+3. **Quirófano**. Día y horario por defecto: miércoles de 16:00 a 19:30. Dos estados propios: **programado** y **pendiente** (pre-reserva a la espera de confirmación, requiere seguimiento).
+
+Estos son solo los valores de partida: desde el backoffice se puede cambiar el día (cualquier día de la semana, no solo el indicado) y el horario de cada agenda en cualquier momento.
 
 ## Backoffice de configuración (requisito crítico)
 
 Zona de administración separada de la agenda diaria donde Olga define el funcionamiento de la consulta sin tocar código:
 
-- **Días por defecto de cada agenda**: qué días de la semana pasa consulta el traumatólogo (hoy martes), qué día es quirófano (hoy lunes). Cambiable en cualquier momento.
+- **Días por defecto de cada agenda**: qué días de la semana pasa consulta el traumatólogo (hoy lunes), enfermería (hoy martes) y quirófano (hoy miércoles). Cambiable en cualquier momento a cualquier día.
 - **Duración por defecto de las citas**, configurable por agenda o por tipo de cita (consulta, cura, infiltración, quirófano). Los huecos de la agenda se generan a partir de esta duración y del horario de jornada.
 - **Horario de jornada**: hora de inicio y fin por agenda.
 - **Catálogo de compañías aseguradoras**: alta, edición y baja. En los formularios de cita la compañía se elige de este catálogo (más "Particular"), no se escribe a mano, para evitar variantes tipo "Adeslas" / "adeslas" / "ADESLAS".
@@ -32,8 +34,8 @@ Zona de administración separada de la agenda diaria donde Olga define el funcio
 
 La administrativa debe poder, por agenda:
 
-- Programar el mes completo según el día por defecto (ej. todos los martes de agosto para traumatología).
-- Abrir o cerrar cualquier día suelto, ignorando el patrón por defecto (ej. cerrar un martes concreto, abrir un miércoles excepcional).
+- Programar el mes completo según el día por defecto (ej. todos los lunes de agosto para traumatología).
+- Abrir o cerrar cualquier día suelto, ignorando el patrón por defecto (ej. cerrar un lunes concreto, abrir un miércoles excepcional).
 - Ver de un vistazo qué días están abiertos y cerrados.
 
 Una cita solo puede crearse en un día abierto de su agenda. Un hueco ocupado deja de estar disponible inmediatamente.

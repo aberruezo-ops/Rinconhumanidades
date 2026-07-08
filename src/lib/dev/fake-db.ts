@@ -37,9 +37,9 @@ function seed(): Store {
   ];
 
   const agendaConfig: Row[] = [
-    { agenda: "traumatologo", default_weekdays: [2], default_duration_minutes: 15, start_time: "09:00", end_time: "14:00", notice_days_default: 3, updated_at: nowIso },
-    { agenda: "enfermeria", default_weekdays: [], default_duration_minutes: 20, start_time: "09:00", end_time: "14:00", notice_days_default: 3, updated_at: nowIso },
-    { agenda: "quirofano", default_weekdays: [1], default_duration_minutes: 60, start_time: "08:00", end_time: "15:00", notice_days_default: 3, updated_at: nowIso },
+    { agenda: "traumatologo", default_weekdays: [1], default_duration_minutes: 15, start_time: "16:00", end_time: "19:30", notice_days_default: 3, updated_at: nowIso },
+    { agenda: "enfermeria", default_weekdays: [2], default_duration_minutes: 20, start_time: "16:00", end_time: "19:30", notice_days_default: 3, updated_at: nowIso },
+    { agenda: "quirofano", default_weekdays: [3], default_duration_minutes: 60, start_time: "16:00", end_time: "19:30", notice_days_default: 3, updated_at: nowIso },
   ];
 
   const agendaDays: Row[] = [];
@@ -69,7 +69,7 @@ function seed(): Store {
       id: randomId(),
       agenda: "traumatologo",
       date: firstAgendaDay("traumatologo"),
-      start_time: "09:00:00",
+      start_time: "16:00:00",
       duration_minutes: 15,
       patient_id: patients[0].id,
       particular_label: null,
@@ -90,10 +90,10 @@ function seed(): Store {
       id: randomId(),
       agenda: "traumatologo",
       date: firstAgendaDay("traumatologo"),
-      start_time: "09:15:00",
+      start_time: "16:15:00",
       duration_minutes: 15,
       patient_id: null,
-      particular_label: "Particular 09:15",
+      particular_label: "Particular 16:15",
       insurance_company_id: null,
       appointment_type_id: null,
       status: "confirmada",
@@ -111,7 +111,7 @@ function seed(): Store {
       id: randomId(),
       agenda: "quirofano",
       date: firstAgendaDay("quirofano"),
-      start_time: "08:00:00",
+      start_time: "16:00:00",
       duration_minutes: 60,
       patient_id: patients[1].id,
       particular_label: null,

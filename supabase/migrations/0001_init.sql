@@ -160,9 +160,9 @@ create trigger agenda_config_set_updated_at before update on agenda_config for e
 -- ═══════════════════════════ datos semilla ═══════════════════════════
 
 insert into agenda_config (agenda, default_weekdays, default_duration_minutes, start_time, end_time, notice_days_default) values
-  ('traumatologo', '{2}', 15, '09:00', '14:00', 3),
-  ('enfermeria', '{}', 20, '09:00', '14:00', 3),
-  ('quirofano', '{1}', 60, '08:00', '15:00', 3);
+  ('traumatologo', '{1}', 15, '16:00', '19:30', 3),
+  ('enfermeria', '{2}', 20, '16:00', '19:30', 3),
+  ('quirofano', '{3}', 60, '16:00', '19:30', 3);
 
 insert into appointment_types (agenda, name, default_duration_minutes) values
   ('enfermeria', 'Cura', 15),
