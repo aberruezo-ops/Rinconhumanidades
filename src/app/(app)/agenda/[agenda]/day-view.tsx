@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateEs, formatTimeEs, hoursUntilAppointment } from "@/lib/domain/dates";
 import { generateSlotStarts, isSlotFree, timeToMinutes, type OccupiedInterval } from "@/lib/domain/slots";
-import { agendaLabel, reminderUrgency, statusLabel, STATUS_STYLES } from "@/lib/domain/agendas";
+import { agendaLabel, reminderUrgency, statusLabel, statusStyle } from "@/lib/domain/agendas";
 import { buildReminderMessage } from "@/lib/domain/whatsapp";
 import { markWhatsappSentAction } from "@/lib/actions/appointments";
 import { WhatsappButton } from "@/app/(app)/_components/whatsapp-button";
@@ -91,7 +91,7 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
                     {a.patients?.phone ? ` · ${a.patients.phone}` : ""}
                   </span>
                 </span>
-                <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLES[a.status]}`}>
+                <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusStyle(a.status)}`}>
                   {statusLabel(a.status)}
                 </span>
               </Link>
@@ -183,7 +183,7 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
                     {item.appointment.patients?.phone ? ` · ${item.appointment.patients.phone}` : ""}
                   </span>
                 </span>
-                <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLES[item.appointment.status]}`}>
+                <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusStyle(item.appointment.status)}`}>
                   {statusLabel(item.appointment.status)}
                 </span>
               </Link>

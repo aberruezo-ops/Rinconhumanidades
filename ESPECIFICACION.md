@@ -85,7 +85,7 @@ Una cita solo puede crearse en un día abierto de su agenda. Un hueco ocupado de
 ## Listados
 
 - Filtros combinables: fecha (opcional; vacío = próximas citas desde hoy), agenda, estado, aviso de WhatsApp (pendiente/enviado).
-- Chips de filtro rápido: Hoy, cada agenda, "Pendientes de confirmar" (estado programada), "Por avisar (WhatsApp)" (sin aviso enviado), "Todas las próximas".
+- Chips de filtro rápido: Hoy, cada agenda, "Confirmada sin avisar", "Por avisar (WhatsApp)" (sin aviso enviado), "Todas las próximas".
 - Vista imprimible limpia (CSS de impresión).
 - Compartir por WhatsApp o correo (Web Share API o enlaces mailto / wa.me con el texto del listado).
 

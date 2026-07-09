@@ -1,6 +1,6 @@
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { AGENDAS, agendaLabel, APPOINTMENT_STATUSES, isAgendaType, statusLabel, STATUS_STYLES, reminderUrgency } from "@/lib/domain/agendas";
+import { AGENDAS, agendaLabel, APPOINTMENT_STATUSES, isAgendaType, statusLabel, statusStyle, reminderUrgency } from "@/lib/domain/agendas";
 import { formatDateEs, formatTimeEs, hoursUntilAppointment, todayYmd } from "@/lib/domain/dates";
 import { buildReminderMessage } from "@/lib/domain/whatsapp";
 import { PrintButton } from "./print-button";
@@ -194,7 +194,7 @@ export default async function ListadosPage({
                     <td className="px-3 py-2">{a.patients?.phone ?? "—"}</td>
                     <td className="px-3 py-2">{a.insurance_companies?.name ?? "Particular"}</td>
                     <td className="px-3 py-2">
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[a.status]}`}>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyle(a.status)}`}>
                         {statusLabel(a.status)}
                       </span>
                     </td>

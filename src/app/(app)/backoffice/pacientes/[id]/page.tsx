@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin, requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { agendaLabel, statusLabel, STATUS_STYLES } from "@/lib/domain/agendas";
+import { agendaLabel, statusLabel, statusStyle } from "@/lib/domain/agendas";
 import { formatDateEs, formatTimeEs, todayYmd } from "@/lib/domain/dates";
 import type { AgendaType, AppointmentStatus } from "@/lib/supabase/database.types";
 
@@ -35,7 +35,7 @@ function CitasList({ citas }: { citas: Cita[] }) {
                 {a.observations ? ` · ${a.observations}` : ""}
               </span>
             </span>
-            <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[a.status]}`}>
+            <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyle(a.status)}`}>
               {statusLabel(a.status)}
             </span>
           </Link>

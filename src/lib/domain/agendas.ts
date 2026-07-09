@@ -49,8 +49,26 @@ export const APPOINTMENT_STATUSES: { value: AppointmentStatus; label: string }[]
   { value: "pendiente", label: "Pendiente" },
 ];
 
+// Estados antiguos que ya no existen en la app (aunque el tipo de Postgres los conserve por no
+// poder eliminar valores de un enum): una fila que quedara sin migrar no debe mostrar nunca el
+// texto crudo "programada" ni las demás etiquetas antiguas en ningún sitio de la interfaz.
+const LEGACY_STATUS_MAP: Record<string, AppointmentStatus> = {
+  programada: "confirmada_sin_avisar",
+  avisado: "confirmada_avisada",
+  confirmada: "confirmada_avisada",
+};
+
+export function normalizeStatus(status: string): AppointmentStatus {
+  return (LEGACY_STATUS_MAP[status] ?? status) as AppointmentStatus;
+}
+
 export function statusLabel(status: AppointmentStatus): string {
-  return APPOINTMENT_STATUSES.find((s) => s.value === status)?.label ?? status;
+  const normalized = normalizeStatus(status);
+  return APPOINTMENT_STATUSES.find((s) => s.value === normalized)?.label ?? normalized;
+}
+
+export function statusStyle(status: AppointmentStatus): string {
+  return STATUS_STYLES[normalizeStatus(status)];
 }
 
 // "pendiente" (pre-reserva a la espera de confirmación) solo existe en quirófano

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { requireAdmin, requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { agendaLabel } from "@/lib/domain/agendas";
+import { agendaLabel, normalizeStatus } from "@/lib/domain/agendas";
 import { updateAppointmentAction, cancelAppointmentAction } from "@/lib/actions/appointments";
 import { minutesToTime, timeToMinutes } from "@/lib/domain/slots";
 import { AppointmentForm } from "../_components/appointment-form";
@@ -79,7 +79,7 @@ export default async function EditarCitaPage({ params }: { params: Promise<{ id:
           particular_label: appointment.particular_label ?? "",
           insurance_company_id: appointment.insurance_company_id ?? "",
           appointment_type_id: appointment.appointment_type_id ?? "",
-          status: appointment.status,
+          status: normalizeStatus(appointment.status),
           pathology: appointment.pathology ?? "",
           prosthesis_brand: appointment.prosthesis_brand ?? "",
           dni: appointment.dni ?? "",

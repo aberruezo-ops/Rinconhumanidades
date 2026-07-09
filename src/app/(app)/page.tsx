@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { AGENDAS, AGENDA_COLORS, agendaLabel, statusLabel, STATUS_STYLES, reminderUrgency } from "@/lib/domain/agendas";
+import { AGENDAS, AGENDA_COLORS, agendaLabel, statusLabel, statusStyle, reminderUrgency } from "@/lib/domain/agendas";
 import {
   buildMonthWeeks,
   daysBetween,
@@ -292,7 +292,7 @@ export default async function DashboardPage({
                           {a.patients?.phone ? ` · ${a.patients.phone}` : ""}
                         </span>
                       </span>
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[a.status]}`}>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyle(a.status)}`}>
                         {statusLabel(a.status)}
                       </span>
                     </Link>

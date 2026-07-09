@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin, requireUser } from "@/lib/auth";
-import { isAgendaType } from "@/lib/domain/agendas";
+import { isAgendaType, normalizeStatus } from "@/lib/domain/agendas";
 import { findOverlap, timeToMinutes } from "@/lib/domain/slots";
 import type { AgendaType, AppointmentStatus } from "@/lib/supabase/database.types";
 
@@ -285,10 +285,13 @@ export async function markWhatsappSentAction(id: string): Promise<{ error?: stri
   requireAdmin(user);
   const supabase = await createClient();
 
-  // Al avisar, si la cita seguía "confirmada sin avisar" pasa a "confirmada/avisada".
+  // Al avisar, la cita pasa a "confirmada/avisada" (también si la fila seguía con un estado
+  // antiguo sin migrar como "programada" o "avisado": se normaliza en el mismo gesto).
   const { data: current } = await supabase.from("appointments").select("status").eq("id", id).single();
   const update: { whatsapp_sent_at: string; status?: AppointmentStatus } = { whatsapp_sent_at: new Date().toISOString() };
-  if (current?.status === "confirmada_sin_avisar") update.status = "confirmada_avisada";
+  if (current && ["confirmada_sin_avisar", "confirmada_avisada"].includes(normalizeStatus(current.status))) {
+    update.status = "confirmada_avisada";
+  }
 
   const { error } = await supabase.from("appointments").update(update).eq("id", id);
   if (error) return { error: "No se ha podido registrar el aviso." };
