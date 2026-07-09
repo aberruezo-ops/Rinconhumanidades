@@ -187,7 +187,6 @@ export interface Database {
           prosthesis_brand: string | null;
           dni: string | null;
           observations: string | null;
-          needs_reminder: boolean;
           whatsapp_sent_at: string | null;
           created_by: string | null;
           created_at: string;
@@ -208,7 +207,6 @@ export interface Database {
           prosthesis_brand?: string | null;
           dni?: string | null;
           observations?: string | null;
-          needs_reminder?: boolean;
           whatsapp_sent_at?: string | null;
           created_by?: string | null;
         };
@@ -226,7 +224,6 @@ export interface Database {
           prosthesis_brand?: string | null;
           dni?: string | null;
           observations?: string | null;
-          needs_reminder?: boolean;
           whatsapp_sent_at?: string | null;
         };
         Relationships: [

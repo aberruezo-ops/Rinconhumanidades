@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useState } from "react";
 import { PatientPicker } from "./patient-picker";
 import { checkOverlapAction, type AppointmentFormState } from "@/lib/actions/appointments";
-import { statusesForAgenda, defaultStatusForReminder, isConfirmableStatus } from "@/lib/domain/agendas";
+import { statusesForAgenda } from "@/lib/domain/agendas";
 import { timeToMinutes, minutesToTime } from "@/lib/domain/slots";
 import type { AgendaType, AppointmentStatus } from "@/lib/supabase/database.types";
 import type { PatientSearchResult } from "@/lib/actions/patients";
@@ -24,7 +24,6 @@ export type AppointmentFormDefaults = {
   prosthesis_brand: string;
   dni: string;
   observations: string;
-  needs_reminder: boolean;
 };
 
 export function AppointmentForm({
@@ -54,16 +53,7 @@ export function AppointmentForm({
   const [endTime, setEndTime] = useState(defaults.end_time);
   const [insuranceCompanyId, setInsuranceCompanyId] = useState(defaults.insurance_company_id);
   const [status, setStatus] = useState<AppointmentStatus>(defaults.status);
-  const [needsReminder, setNeedsReminder] = useState(defaults.needs_reminder);
   const [overlapWarning, setOverlapWarning] = useState<string | null>(null);
-
-  // El check "avisar antes de la cita" decide entre los dos estados de "confirmada": si el
-  // estado actual ya es uno de los dos, lo actualiza; si está en completada/no presentado/
-  // cancelada/pendiente, no lo toca (eso se cambia a mano desde el desplegable de estado).
-  function handleReminderToggle(checked: boolean) {
-    setNeedsReminder(checked);
-    setStatus((prev) => (isConfirmableStatus(prev) ? defaultStatusForReminder(checked) : prev));
-  }
 
   const isQuirofano = agenda === "quirofano";
   const isEnfermeria = agenda === "enfermeria";
@@ -291,17 +281,6 @@ export function AppointmentForm({
           className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
         />
       </div>
-
-      <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
-        <input
-          type="checkbox"
-          name="needs_reminder"
-          checked={needsReminder}
-          onChange={(e) => handleReminderToggle(e.target.checked)}
-          className="h-4 w-4"
-        />
-        Avisar antes de la cita
-      </label>
 
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
 

@@ -1,7 +1,7 @@
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { AGENDAS, agendaLabel, APPOINTMENT_STATUSES, isAgendaType, statusLabel, STATUS_STYLES } from "@/lib/domain/agendas";
-import { formatDateEs, formatTimeEs, todayYmd } from "@/lib/domain/dates";
+import { AGENDAS, agendaLabel, APPOINTMENT_STATUSES, isAgendaType, statusLabel, STATUS_STYLES, reminderUrgency } from "@/lib/domain/agendas";
+import { formatDateEs, formatTimeEs, hoursUntilAppointment, todayYmd } from "@/lib/domain/dates";
 import { buildReminderMessage } from "@/lib/domain/whatsapp";
 import { PrintButton } from "./print-button";
 import { WhatsappButton } from "../_components/whatsapp-button";
@@ -202,6 +202,7 @@ export default async function ListadosPage({
                           onMarkSent={markWhatsappSentAction.bind(null, a.id)}
                           phone={a.patients.phone}
                           sentAt={a.whatsapp_sent_at}
+                          urgency={reminderUrgency(hoursUntilAppointment(a.date, a.start_time))}
                           message={buildReminderMessage({
                             patientFirstName: a.patients.first_name,
                             agendaLabel: agendaLabel(a.agenda),

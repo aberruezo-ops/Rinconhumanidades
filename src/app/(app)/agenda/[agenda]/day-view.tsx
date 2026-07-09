@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { formatTimeEs } from "@/lib/domain/dates";
+import { formatDateEs, formatTimeEs, hoursUntilAppointment } from "@/lib/domain/dates";
 import { generateSlotStarts, isSlotFree, timeToMinutes, type OccupiedInterval } from "@/lib/domain/slots";
-import { statusLabel, STATUS_STYLES } from "@/lib/domain/agendas";
+import { agendaLabel, reminderUrgency, statusLabel, STATUS_STYLES } from "@/lib/domain/agendas";
+import { buildReminderMessage } from "@/lib/domain/whatsapp";
+import { markWhatsappSentAction } from "@/lib/actions/appointments";
+import { WhatsappButton } from "@/app/(app)/_components/whatsapp-button";
 import type { AgendaType } from "@/lib/supabase/database.types";
 
 export async function DayView({ agenda, date }: { agenda: AgendaType; date: string }) {
@@ -19,7 +22,7 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
     supabase.from("agenda_config").select("start_time, end_time, default_duration_minutes").eq("agenda", agenda).single(),
     supabase
       .from("appointments")
-      .select("*, patients(first_name, last_name), insurance_companies(name), appointment_types(name)")
+      .select("*, patients(first_name, last_name, phone), insurance_companies(name), appointment_types(name)")
       .eq("agenda", agenda)
       .eq("date", date)
       .order("start_time", { nullsFirst: true })
@@ -37,6 +40,31 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
     );
   }
 
+  type Appointment = NonNullable<typeof appointments>[number];
+
+  // Botón de avisar/recordar por WhatsApp: aparece en cualquier cita con teléfono que no esté
+  // cancelada ni completada, coloreado según lo cerca que esté (rojo <48h, amarillo 48h-4 días,
+  // verde +4 días). Al pulsarlo, si la cita estaba "confirmada sin avisar" pasa sola a "confirmada/avisada".
+  function whatsappButtonFor(a: Appointment) {
+    const phone = a.patients?.phone;
+    const canNotify = !!phone && a.status !== "cancelada" && a.status !== "completada";
+    if (!canNotify || !phone) return null;
+    return (
+      <WhatsappButton
+        onMarkSent={markWhatsappSentAction.bind(null, a.id)}
+        phone={phone}
+        sentAt={a.whatsapp_sent_at}
+        urgency={reminderUrgency(hoursUntilAppointment(a.date, a.start_time))}
+        message={buildReminderMessage({
+          patientFirstName: a.patients?.first_name ?? a.particular_label ?? "paciente",
+          agendaLabel: agendaLabel(agenda),
+          dateLabel: formatDateEs(a.date, { weekday: "long", day: "numeric", month: "long" }),
+          timeLabel: a.start_time ? formatTimeEs(a.start_time) : null,
+        })}
+      />
+    );
+  }
+
   if (isEnfermeria) {
     return (
       <div className="space-y-2">
@@ -48,11 +76,11 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
 
         <ul className="space-y-2">
           {(appointments ?? []).map((a) => (
-            <li key={a.id}>
-              <Link
-                href={`/citas/${a.id}`}
-                className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-slate-300"
-              >
+            <li
+              key={a.id}
+              className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-slate-300"
+            >
+              <Link href={`/citas/${a.id}`} className="flex flex-1 items-center gap-3">
                 <span className="flex-1">
                   <span className="block text-slate-900">
                     {a.particular_label ?? (a.patients ? `${a.patients.first_name} ${a.patients.last_name}` : "—")}
@@ -66,6 +94,7 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
                   {statusLabel(a.status)}
                 </span>
               </Link>
+              {whatsappButtonFor(a)}
             </li>
           ))}
           {(appointments ?? []).length === 0 && <p className="text-sm text-slate-500">Sin citas este día.</p>}
@@ -101,7 +130,7 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
       : [];
 
   type TimelineItem =
-    | { kind: "appointment"; time: string; appointment: NonNullable<typeof appointments>[number] }
+    | { kind: "appointment"; time: string; appointment: Appointment }
     | { kind: "free"; time: string };
 
   const items: TimelineItem[] = [
@@ -132,11 +161,11 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
               </Link>
             </li>
           ) : (
-            <li key={item.appointment.id}>
-              <Link
-                href={`/citas/${item.appointment.id}`}
-                className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-slate-300"
-              >
+            <li
+              key={item.appointment.id}
+              className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-slate-300"
+            >
+              <Link href={`/citas/${item.appointment.id}`} className="flex flex-1 items-center gap-3">
                 <span className="w-12 font-medium text-slate-900">
                   {item.appointment.start_time ? formatTimeEs(item.appointment.start_time) : "—"}
                 </span>
@@ -156,6 +185,7 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
                   {statusLabel(item.appointment.status)}
                 </span>
               </Link>
+              {whatsappButtonFor(item.appointment)}
             </li>
           ),
         )}

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { requireAdmin, requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { isAgendaType, agendaLabel, defaultStatusForReminder } from "@/lib/domain/agendas";
+import { isAgendaType, agendaLabel, DEFAULT_NEW_APPOINTMENT_STATUS } from "@/lib/domain/agendas";
 import { todayYmd } from "@/lib/domain/dates";
 import { createAppointmentAction } from "@/lib/actions/appointments";
 import { minutesToTime, timeToMinutes } from "@/lib/domain/slots";
@@ -56,12 +56,11 @@ export default async function NuevaCitaPage({
           particular_label: "",
           insurance_company_id: "",
           appointment_type_id: "",
-          status: defaultStatusForReminder(false),
+          status: DEFAULT_NEW_APPOINTMENT_STATUS,
           pathology: "",
           prosthesis_brand: "",
           dni: "",
           observations: "",
-          needs_reminder: false,
         }}
       />
     </div>

@@ -26,7 +26,6 @@ async function loadPacientesPorAvisar(supabase: Awaited<ReturnType<typeof create
     supabase
       .from("appointments")
       .select("*, patients(first_name, last_name, phone), insurance_companies(name)")
-      .eq("needs_reminder", true)
       .is("whatsapp_sent_at", null)
       .gte("date", today)
       .neq("status", "cancelada")

@@ -69,22 +69,16 @@ export const STATUS_STYLES: Record<AppointmentStatus, string> = {
   pendiente: "bg-accent-100 text-accent-600",
 };
 
-// El check "avisar antes de la cita" decide el estado inicial: si hay que avisar todavía,
-// queda "confirmada sin avisar"; si no hace falta avisar (o ya se avisó), "confirmada/avisada".
-export function defaultStatusForReminder(needsReminder: boolean): AppointmentStatus {
-  return needsReminder ? "confirmada_sin_avisar" : "confirmada_avisada";
-}
-
-export function isConfirmableStatus(status: AppointmentStatus): boolean {
-  return status === "confirmada_sin_avisar" || status === "confirmada_avisada";
-}
+// Toda cita nueva empieza así: se avisará por WhatsApp a todo el mundo, y al avisar
+// (botón de WhatsApp) pasa sola a "confirmada/avisada".
+export const DEFAULT_NEW_APPOINTMENT_STATUS: AppointmentStatus = "confirmada_sin_avisar";
 
 // Urgencia del botón de avisar por WhatsApp según cuánto falte para la cita.
 export type ReminderUrgency = "green" | "yellow" | "red";
 
 export function reminderUrgency(hoursUntil: number): ReminderUrgency {
-  if (hoursUntil < 24) return "red";
-  if (hoursUntil <= 48) return "yellow";
+  if (hoursUntil < 48) return "red";
+  if (hoursUntil <= 96) return "yellow"; // 96h = 4 días
   return "green";
 }
 

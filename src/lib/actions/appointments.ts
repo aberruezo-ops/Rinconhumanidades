@@ -36,7 +36,6 @@ const formSchema = z.object({
   prosthesis_brand: z.string().optional(),
   dni: z.string().optional(),
   observations: z.string().optional(),
-  needs_reminder: z.string().optional(),
 });
 
 export type AppointmentFormState = { error?: string } | undefined;
@@ -198,7 +197,6 @@ export async function createAppointmentAction(
     prosthesis_brand: isQuirofano ? data.prosthesis_brand?.trim() || null : null,
     dni: isQuirofano ? data.dni?.trim() || null : null,
     observations: data.observations?.trim() || null,
-    needs_reminder: data.needs_reminder === "on",
   });
 
   if (error) {
@@ -259,7 +257,6 @@ export async function updateAppointmentAction(
       prosthesis_brand: isQuirofano ? data.prosthesis_brand?.trim() || null : null,
       dni: isQuirofano ? data.dni?.trim() || null : null,
       observations: data.observations?.trim() || null,
-      needs_reminder: data.needs_reminder === "on",
     })
     .eq("id", id);
 
