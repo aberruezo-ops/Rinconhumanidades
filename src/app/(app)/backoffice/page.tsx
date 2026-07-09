@@ -4,6 +4,11 @@ import { AGENDAS } from "@/lib/domain/agendas";
 
 const SECTIONS = [
   {
+    href: "/backoffice/pacientes",
+    title: "Pacientes",
+    description: "Base de datos de pacientes registrados: sus datos y su historial de citas.",
+  },
+  {
     href: "/backoffice/agendas",
     title: "Agendas",
     description: "Días por defecto, duración de citas y horario de jornada de cada agenda.",

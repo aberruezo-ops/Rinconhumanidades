@@ -15,7 +15,7 @@ export type AppointmentFormDefaults = {
   date: string;
   start_time: string;
   end_time: string;
-  patient: { id: string; label: string } | null;
+  patient: { id: string; label: string; phone?: string } | null;
   particular_label: string;
   insurance_company_id: string;
   appointment_type_id: string;

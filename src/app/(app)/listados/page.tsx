@@ -175,6 +175,7 @@ export default async function ListadosPage({
                 <th className="px-3 py-2 font-medium">Hora</th>
                 <th className="px-3 py-2 font-medium">Agenda</th>
                 <th className="px-3 py-2 font-medium">Paciente</th>
+                <th className="px-3 py-2 font-medium">Teléfono</th>
                 <th className="px-3 py-2 font-medium">Compañía</th>
                 <th className="px-3 py-2 font-medium">Estado</th>
                 <th className="px-3 py-2 font-medium print:hidden">Aviso</th>
@@ -190,6 +191,7 @@ export default async function ListadosPage({
                     <td className="px-3 py-2">{a.start_time ? formatTimeEs(a.start_time) : "—"}</td>
                     <td className="px-3 py-2">{agendaLabel(a.agenda)}</td>
                     <td className="px-3 py-2">{patientName}</td>
+                    <td className="px-3 py-2">{a.patients?.phone ?? "—"}</td>
                     <td className="px-3 py-2">{a.insurance_companies?.name ?? "Particular"}</td>
                     <td className="px-3 py-2">
                       <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[a.status]}`}>
@@ -219,7 +221,7 @@ export default async function ListadosPage({
               })}
               {appointments?.length === 0 && (
                 <tr>
-                  <td colSpan={date ? 6 : 7} className="px-3 py-6 text-center text-slate-500">
+                  <td colSpan={date ? 7 : 8} className="px-3 py-6 text-center text-slate-500">
                     Sin citas para estos filtros.
                   </td>
                 </tr>

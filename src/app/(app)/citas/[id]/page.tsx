@@ -16,7 +16,7 @@ export default async function EditarCitaPage({ params }: { params: Promise<{ id:
   const [{ data: appointment }, { data: companies }, { data: types }] = await Promise.all([
     supabase
       .from("appointments")
-      .select("*, patients(id, first_name, last_name)")
+      .select("*, patients(id, first_name, last_name, phone)")
       .eq("id", id)
       .single(),
     supabase.from("insurance_companies").select("id, name, duration_minutes").eq("active", true).order("name"),
@@ -70,7 +70,11 @@ export default async function EditarCitaPage({ params }: { params: Promise<{ id:
           start_time: startTime,
           end_time: endTime,
           patient: appointment.patients
-            ? { id: appointment.patients.id, label: `${appointment.patients.first_name} ${appointment.patients.last_name}` }
+            ? {
+                id: appointment.patients.id,
+                label: `${appointment.patients.first_name} ${appointment.patients.last_name}`,
+                phone: appointment.patients.phone,
+              }
             : null,
           particular_label: appointment.particular_label ?? "",
           insurance_company_id: appointment.insurance_company_id ?? "",

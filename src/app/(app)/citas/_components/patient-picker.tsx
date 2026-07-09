@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { searchPatientsAction, type PatientSearchResult } from "@/lib/actions/patients";
 
+type SelectedPatient = { id: string; label: string; phone?: string };
+
 type Props = {
-  initialPatient?: { id: string; label: string } | null;
+  initialPatient?: SelectedPatient | null;
   onPatientSelected: (patient: PatientSearchResult | null) => void;
 };
 
@@ -30,7 +32,7 @@ export function PatientPicker({ initialPatient, onPatientSelected }: Props) {
   const visibleResults = selected || query.trim().length < 2 ? [] : results;
 
   function selectPatient(patient: PatientSearchResult) {
-    setSelected({ id: patient.id, label: `${patient.first_name} ${patient.last_name}` });
+    setSelected({ id: patient.id, label: `${patient.first_name} ${patient.last_name}`, phone: patient.phone });
     setQuery(`${patient.first_name} ${patient.last_name}`);
     setResults([]);
     onPatientSelected(patient);
@@ -48,7 +50,10 @@ export function PatientPicker({ initialPatient, onPatientSelected }: Props) {
 
       {selected ? (
         <div className="flex items-center justify-between rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5">
-          <span className="text-slate-900">{selected.label}</span>
+          <span className="text-slate-900">
+            {selected.label}
+            {selected.phone && <span className="text-slate-500"> — {selected.phone}</span>}
+          </span>
           <button type="button" onClick={clearSelection} className="text-sm text-slate-500 hover:text-slate-900">
             Cambiar
           </button>

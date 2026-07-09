@@ -88,6 +88,7 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
                   <span className="block text-sm text-slate-500">
                     {a.insurance_companies?.name ?? "Particular"}
                     {a.appointment_types?.name ? ` · ${a.appointment_types.name}` : ""}
+                    {a.patients?.phone ? ` · ${a.patients.phone}` : ""}
                   </span>
                 </span>
                 <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLES[a.status]}`}>
@@ -179,6 +180,7 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
                   <span className="block text-sm text-slate-500">
                     {item.appointment.insurance_companies?.name ?? "Particular"}
                     {item.appointment.appointment_types?.name ? ` · ${item.appointment.appointment_types.name}` : ""}
+                    {item.appointment.patients?.phone ? ` · ${item.appointment.patients.phone}` : ""}
                   </span>
                 </span>
                 <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLES[item.appointment.status]}`}>

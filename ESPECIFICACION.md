@@ -29,6 +29,7 @@ Zona de administración separada de la agenda diaria donde Olga define el funcio
 - **Catálogo de compañías aseguradoras**: alta, edición y baja. En los formularios de cita la compañía se elige de este catálogo (más "Particular"), no se escribe a mano, para evitar variantes tipo "Adeslas" / "adeslas" / "ADESLAS". Cada compañía puede usar la duración por defecto de la agenda o una duración personalizada propia (en minutos); al elegir esa compañía en una cita, la hora de fin se recalcula sola. "Particular" siempre usa la duración por defecto (su hora de fin se ajusta a mano, como siempre).
 - **Tipos de cita de enfermería** (cura, PRP), editables.
 - Días de antelación del aviso al paciente (para cuando lleguen los SMS de la fase 3).
+- **Base de datos de pacientes** (`/backoffice/pacientes`): listado buscable por nombre o teléfono de todos los pacientes registrados (los particulares no aparecen, no se registran). Cada paciente tiene su ficha con teléfono, compañía, DNI/notas si los tiene, y su historial completo de citas (próximas y pasadas) en las tres agendas.
 
 ### Gestión de días (dentro del backoffice)
 

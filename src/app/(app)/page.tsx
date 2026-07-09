@@ -89,7 +89,7 @@ export default async function DashboardPage({
     supabase.from("agenda_days").select("date, agenda").eq("is_open", true).gte("date", from).lte("date", to),
     supabase
       .from("appointments")
-      .select("*, patients(first_name, last_name), insurance_companies(name)")
+      .select("*, patients(first_name, last_name, phone), insurance_companies(name)")
       .eq("date", date)
       .order("start_time", { nullsFirst: true }),
   ]);
@@ -131,6 +131,7 @@ export default async function DashboardPage({
                       <span className="block text-xs text-slate-500">
                         {agendaLabel(a.agenda)} · {formatDateEs(a.date, { day: "numeric", month: "short" })}
                         {a.start_time ? ` · ${formatTimeEs(a.start_time)}` : ""}
+                        {phone ? ` · ${phone}` : ""}
                       </span>
                     </Link>
                     {phone && (
@@ -160,6 +161,7 @@ export default async function DashboardPage({
                     <span className="block text-sm text-slate-900">{name}</span>
                     <span className="block text-xs text-slate-500">
                       Candidato quirófano · fecha deseada {formatDateEs(c.desired_date!, { day: "numeric", month: "short" })}
+                      {phone ? ` · ${phone}` : ""}
                     </span>
                   </Link>
                   {phone && (
@@ -285,7 +287,10 @@ export default async function DashboardPage({
                         <span className="block text-slate-900">
                           {a.particular_label ?? (a.patients ? `${a.patients.first_name} ${a.patients.last_name}` : "—")}
                         </span>
-                        <span className="block text-xs text-slate-500">{a.insurance_companies?.name ?? "Particular"}</span>
+                        <span className="block text-xs text-slate-500">
+                          {a.insurance_companies?.name ?? "Particular"}
+                          {a.patients?.phone ? ` · ${a.patients.phone}` : ""}
+                        </span>
                       </span>
                       <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[a.status]}`}>
                         {statusLabel(a.status)}

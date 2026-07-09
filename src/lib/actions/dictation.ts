@@ -16,7 +16,7 @@ export type InterpretedAppointment = {
   is_particular: boolean;
   appointment_type: string | null;
   observations: string | null;
-  matched_patient: { id: string; label: string } | null;
+  matched_patient: { id: string; label: string; phone: string } | null;
 };
 
 export type InterpretResult = { data?: InterpretedAppointment; error?: string };
@@ -140,16 +140,16 @@ export async function interpretAppointmentTextAction(
   const patientName = typeof raw.patient_name === "string" ? raw.patient_name.trim() : null;
   const isParticular = Boolean(raw.is_particular) || !patientName;
 
-  let matchedPatient: { id: string; label: string } | null = null;
+  let matchedPatient: { id: string; label: string; phone: string } | null = null;
   if (!isParticular && patientName) {
     const escaped = escapeLike(patientName);
     const { data: matches } = await supabase
       .from("patients")
-      .select("id, first_name, last_name")
+      .select("id, first_name, last_name, phone")
       .or(`first_name.ilike.%${escaped}%,last_name.ilike.%${escaped}%`)
       .limit(1);
     if (matches && matches[0]) {
-      matchedPatient = { id: matches[0].id, label: `${matches[0].first_name} ${matches[0].last_name}` };
+      matchedPatient = { id: matches[0].id, label: `${matches[0].first_name} ${matches[0].last_name}`, phone: matches[0].phone };
     }
   }
 
