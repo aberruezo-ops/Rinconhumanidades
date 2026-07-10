@@ -5,9 +5,11 @@ import { AGENDAS, AGENDA_COLORS, agendaLabel, statusLabel, statusStyle, reminder
 import {
   addDays,
   buildMonthWeeks,
+  daysInMonth,
   daysBetween,
   formatDateEs,
   formatTimeEs,
+  formatYearMonthParam,
   hoursUntilAppointment,
   monthLabelEs,
   shiftYearMonth,
@@ -82,6 +84,29 @@ async function resolveDefaultDate(supabase: Awaited<ReturnType<typeof createClie
   return data?.date ?? todayYmd();
 }
 
+// Al navegar a "mes siguiente/anterior" no tiene sentido aterrizar siempre en el día 1: si ese
+// día está cerrado (como pasa siempre que el 1 cae en fin de semana) parece que no hay nada
+// programado. Se busca el primer día abierto de cualquier agenda dentro de ese mes; si el mes
+// entero no tiene ningún día abierto todavía (p. ej. no se ha programado aún), se cae al día 1.
+async function resolveDefaultDateInMonth(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  year: number,
+  month: number,
+): Promise<string> {
+  const from = ymd(year, month, 1);
+  const to = ymd(year, month, daysInMonth(year, month));
+  const { data } = await supabase
+    .from("agenda_days")
+    .select("date")
+    .eq("is_open", true)
+    .gte("date", from)
+    .lte("date", to)
+    .order("date")
+    .limit(1)
+    .maybeSingle();
+  return data?.date ?? from;
+}
+
 // Huecos libres del día para una agenda con hora (traumatólogo / quirófano). Enfermería no
 // tiene slots (no lleva hora), así que no pasa por aquí.
 function freeSlotsFor(
@@ -111,20 +136,26 @@ function freeSlotsFor(
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ fecha?: string }>;
+  searchParams: Promise<{ fecha?: string; mes?: string }>;
 }) {
   await requireUser();
 
   const supabase = await createClient();
   const today = todayYmd();
   const tomorrow = addDays(today, 1);
-  const { fecha } = await searchParams;
+  const { fecha, mes } = await searchParams;
   const explicitDate = fecha && /^\d{4}-\d{2}-\d{2}$/.test(fecha) ? fecha : null;
+  const explicitMonthMatch = !explicitDate ? mes?.match(/^(\d{4})-(\d{2})$/) : null;
+  const explicitMonth = explicitMonthMatch ? { year: Number(explicitMonthMatch[1]), month: Number(explicitMonthMatch[2]) } : null;
 
   // Ninguna de las tres depende de las otras (todas cuelgan de today/tomorrow, no del `date`
   // ya resuelto), así que se lanzan juntas en vez de esperar una detrás de otra.
   const [resolvedDate, pacientesPorAvisar, recordatoriosManana] = await Promise.all([
-    explicitDate ? Promise.resolve(explicitDate) : resolveDefaultDate(supabase),
+    explicitDate
+      ? Promise.resolve(explicitDate)
+      : explicitMonth
+        ? resolveDefaultDateInMonth(supabase, explicitMonth.year, explicitMonth.month)
+        : resolveDefaultDate(supabase),
     loadPacientesPorAvisar(supabase, today),
     loadRecordatoriosManana(supabase, tomorrow),
   ]);
@@ -331,14 +362,14 @@ export default async function DashboardPage({
       <div className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
           <Link
-            href={`/?fecha=${ymd(prevMonth.year, prevMonth.month, 1)}`}
+            href={`/?mes=${formatYearMonthParam(prevMonth.year, prevMonth.month)}`}
             className="whitespace-nowrap text-sm text-slate-500 hover:text-slate-900"
           >
             ← Anterior
           </Link>
           <p className="text-center text-sm font-medium capitalize text-slate-900">{monthLabelEs(year, month)}</p>
           <Link
-            href={`/?fecha=${ymd(nextMonth.year, nextMonth.month, 1)}`}
+            href={`/?mes=${formatYearMonthParam(nextMonth.year, nextMonth.month)}`}
             className="whitespace-nowrap text-sm text-slate-500 hover:text-slate-900"
           >
             Siguiente →
