@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { AGENDAS, AGENDA_COLORS, agendaLabel, statusLabel, statusStyle, reminderUrgency } from "@/lib/domain/agendas";
+import { AGENDAS, AGENDA_COLORS, agendaLabel, statusLabel, statusStyle, reminderUrgency, normalizeStatus } from "@/lib/domain/agendas";
 import {
+  addDays,
   buildMonthWeeks,
   daysBetween,
   formatDateEs,
@@ -13,6 +14,7 @@ import {
   todayYmd,
   ymd,
 } from "@/lib/domain/dates";
+import { generateSlotStarts, isSlotFree, timeToMinutes, type OccupiedInterval } from "@/lib/domain/slots";
 import { buildReminderMessage } from "@/lib/domain/whatsapp";
 import { markWhatsappSentAction } from "@/lib/actions/appointments";
 import { markCandidatoWhatsappSentAction } from "@/lib/actions/quirofano-candidatos";
@@ -54,6 +56,20 @@ async function loadPacientesPorAvisar(supabase: Awaited<ReturnType<typeof create
   return [...appointmentReminders, ...candidatoReminders].sort((a, b) => a.sortDate.localeCompare(b.sortDate));
 }
 
+async function loadRecordatoriosManana(supabase: Awaited<ReturnType<typeof createClient>>, tomorrow: string) {
+  const { data } = await supabase
+    .from("appointments")
+    .select("*, patients(first_name, last_name, phone), insurance_companies(name)")
+    .eq("date", tomorrow)
+    .neq("status", "cancelada")
+    .order("agenda")
+    .order("start_time", { nullsFirst: true });
+
+  const all = data ?? [];
+  const pendientes = all.filter((a) => !!a.patients?.phone && a.whatsapp_sent_at == null);
+  return { total: all.length, pendientes };
+}
+
 async function resolveDefaultDate(supabase: Awaited<ReturnType<typeof createClient>>): Promise<string> {
   const { data } = await supabase
     .from("agenda_days")
@@ -66,6 +82,32 @@ async function resolveDefaultDate(supabase: Awaited<ReturnType<typeof createClie
   return data?.date ?? todayYmd();
 }
 
+// Huecos libres del día para una agenda con hora (traumatólogo / quirófano). Enfermería no
+// tiene slots (no lleva hora), así que no pasa por aquí.
+function freeSlotsFor(
+  agenda: AgendaType,
+  dayRow: { agenda: AgendaType; is_open: boolean; start_time_override: string | null; end_time_override: string | null } | undefined,
+  config: { agenda: AgendaType; start_time: string; end_time: string; default_duration_minutes: number } | undefined,
+  dayAppointments: { agenda: AgendaType; status: string; start_time: string | null; duration_minutes: number | null }[],
+): { isOpen: boolean; slots: string[] } {
+  const isOpen = dayRow?.is_open ?? false;
+  if (!isOpen || !config) return { isOpen, slots: [] };
+
+  const occupied: OccupiedInterval[] = dayAppointments
+    .filter((a) => a.agenda === agenda && normalizeStatus(a.status) !== "cancelada" && a.start_time && a.duration_minutes)
+    .map((a) => ({
+      start: timeToMinutes(a.start_time!.slice(0, 5)),
+      end: timeToMinutes(a.start_time!.slice(0, 5)) + a.duration_minutes!,
+    }));
+
+  const jornadaStart = (dayRow?.start_time_override ?? config.start_time).slice(0, 5);
+  const jornadaEnd = (dayRow?.end_time_override ?? config.end_time).slice(0, 5);
+  const slots = generateSlotStarts(jornadaStart, jornadaEnd, config.default_duration_minutes).filter((slot) =>
+    isSlotFree(slot, config.default_duration_minutes, occupied),
+  );
+  return { isOpen, slots };
+}
+
 export default async function DashboardPage({
   searchParams,
 }: {
@@ -75,23 +117,29 @@ export default async function DashboardPage({
 
   const supabase = await createClient();
   const today = todayYmd();
+  const tomorrow = addDays(today, 1);
   const { fecha } = await searchParams;
   const explicitDate = fecha && /^\d{4}-\d{2}-\d{2}$/.test(fecha) ? fecha : null;
   const date = explicitDate ?? (await resolveDefaultDate(supabase));
   const [year, month] = date.split("-").map(Number);
 
-  const pacientesPorAvisar = await loadPacientesPorAvisar(supabase, today);
+  const [pacientesPorAvisar, recordatoriosManana] = await Promise.all([
+    loadPacientesPorAvisar(supabase, today),
+    loadRecordatoriosManana(supabase, tomorrow),
+  ]);
 
   const from = `${year}-${String(month).padStart(2, "0")}-01`;
   const to = `${year}-${String(month).padStart(2, "0")}-31`;
 
-  const [{ data: monthAgendaDays }, { data: dayAppointments }] = await Promise.all([
+  const [{ data: monthAgendaDays }, { data: dayAppointments }, { data: dayRows }, { data: configs }] = await Promise.all([
     supabase.from("agenda_days").select("date, agenda").eq("is_open", true).gte("date", from).lte("date", to),
     supabase
       .from("appointments")
       .select("*, patients(first_name, last_name, phone), insurance_companies(name)")
       .eq("date", date)
       .order("start_time", { nullsFirst: true }),
+    supabase.from("agenda_days").select("agenda, is_open, start_time_override, end_time_override").eq("date", date),
+    supabase.from("agenda_config").select("agenda, start_time, end_time, default_duration_minutes"),
   ]);
 
   const agendasByDate = new Map<string, Set<AgendaType>>();
@@ -105,6 +153,8 @@ export default async function DashboardPage({
   const weeks = buildMonthWeeks(year, month);
   const prevMonth = shiftYearMonth(year, month, -1);
   const nextMonth = shiftYearMonth(year, month, 1);
+
+  const enfermeriaOpen = dayRows?.find((d) => d.agenda === "enfermeria")?.is_open ?? false;
 
   return (
     <div className="space-y-5">
@@ -178,6 +228,102 @@ export default async function DashboardPage({
           </ul>
         </div>
       )}
+
+      {recordatoriosManana.pendientes.length > 0 && (
+        <div className="space-y-2 rounded-xl border border-brand-100 bg-brand-50 p-3">
+          <h2 className="text-sm font-medium text-brand-700">
+            Recordatorios de mañana ({recordatoriosManana.pendientes.length} de {recordatoriosManana.total} por avisar)
+          </h2>
+          <ul className="space-y-2">
+            {recordatoriosManana.pendientes.map((a) => {
+              const name = a.particular_label ?? (a.patients ? `${a.patients.first_name} ${a.patients.last_name}` : "—");
+              const phone = a.patients!.phone;
+              return (
+                <li key={a.id} className="flex items-center justify-between gap-3 rounded-lg bg-white px-3 py-2 shadow-sm">
+                  <Link href={`/citas/${a.id}`} className="flex-1">
+                    <span className="block text-sm text-slate-900">{name}</span>
+                    <span className="block text-xs text-slate-500">
+                      {agendaLabel(a.agenda)}
+                      {a.start_time ? ` · ${formatTimeEs(a.start_time)}` : ""} · {phone}
+                    </span>
+                  </Link>
+                  <WhatsappButton
+                    onMarkSent={markWhatsappSentAction.bind(null, a.id)}
+                    phone={phone}
+                    sentAt={a.whatsapp_sent_at}
+                    urgency={reminderUrgency(hoursUntilAppointment(a.date, a.start_time))}
+                    message={buildReminderMessage({
+                      patientFirstName: a.patients?.first_name ?? name,
+                      agendaLabel: agendaLabel(a.agenda),
+                      dateLabel: formatDateEs(a.date, { weekday: "long", day: "numeric", month: "long" }),
+                      timeLabel: a.start_time ? formatTimeEs(a.start_time) : null,
+                    })}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+
+      <div className="space-y-2">
+        <h2 className="text-sm font-medium text-slate-700">Huecos libres — {formatDateEs(date, { day: "numeric", month: "long" })}</h2>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {AGENDAS.map((agenda) => {
+            const colors = AGENDA_COLORS[agenda.value];
+            const isEnfermeria = agenda.value === "enfermeria";
+            const dayRow = dayRows?.find((d) => d.agenda === agenda.value);
+            const config = configs?.find((c) => c.agenda === agenda.value);
+            const { isOpen, slots } = isEnfermeria
+              ? { isOpen: enfermeriaOpen, slots: [] }
+              : freeSlotsFor(agenda.value, dayRow, config, dayAppointments ?? []);
+
+            return (
+              <div key={agenda.value} className="rounded-xl border border-slate-200 bg-white p-3">
+                <div className="mb-2 flex items-center gap-2">
+                  <span className={`h-2 w-2 rounded-full ${colors.dot}`} />
+                  <span className="text-sm font-medium text-slate-900">{agenda.label}</span>
+                </div>
+                {!isOpen ? (
+                  <p className="text-xs text-slate-400">Día cerrado</p>
+                ) : isEnfermeria ? (
+                  <Link
+                    href={`/citas/nueva?agenda=enfermeria&fecha=${date}`}
+                    className={`inline-block rounded-full px-2.5 py-1 text-xs font-medium ${colors.badge}`}
+                  >
+                    + Nueva cita
+                  </Link>
+                ) : slots.length === 0 ? (
+                  <p className="text-xs text-slate-400">Sin huecos libres</p>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5">
+                    {slots.map((slot) => (
+                      <Link
+                        key={slot}
+                        href={`/citas/nueva?agenda=${agenda.value}&fecha=${date}&hora=${slot}`}
+                        className={`rounded-full px-2.5 py-1 text-xs font-medium hover:opacity-80 ${colors.badge}`}
+                      >
+                        {slot}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <Link
+        href="/estadisticas"
+        className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:border-slate-300"
+      >
+        <span>
+          <span className="block font-medium text-slate-900">Cuadro de mandos</span>
+          <span className="block text-sm text-slate-500">Ocupación, ratios por compañía, enfermería y quirófano.</span>
+        </span>
+        <span className="text-slate-400">→</span>
+      </Link>
 
       <div className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">

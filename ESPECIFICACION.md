@@ -89,6 +89,24 @@ Una cita solo puede crearse en un día abierto de su agenda. Un hueco ocupado de
 - Vista imprimible limpia (CSS de impresión).
 - Compartir por WhatsApp o correo (Web Share API o enlaces mailto / wa.me con el texto del listado).
 
+## Inicio (funcional, no solo un resumen)
+
+- **Pacientes por avisar**: citas dentro de su ventana de antelación sin avisar todavía, y candidatos de quirófano cerca de su fecha deseada.
+- **Recordatorios de mañana**: citas del día siguiente (cualquier agenda) con paciente registrado y sin avisar, con botón de WhatsApp directo — pensado para despachar de un tirón los avisos del día antes de cerrar la consulta.
+- **Huecos libres del día**: por agenda, los huecos que quedan libres (traumatólogo y quirófano, con hora) o un acceso directo a "+ Nueva cita" (enfermería, sin hora). Cada hueco libre es un enlace que abre el formulario de nueva cita con agenda, fecha y hora ya rellenos.
+- Acceso directo al cuadro de mandos.
+- Calendario del mes (días abiertos por agenda) y citas del día por agenda, como hasta ahora.
+
+## Cuadro de mandos (`/estadisticas`)
+
+Solo admin. Navegación mes a mes (como el backoffice de días):
+
+- Citas del mes (no canceladas), % de cancelaciones, % de no presentados.
+- Ocupación: huecos ocupados / huecos generados en los días abiertos del mes, para traumatólogo y quirófano (enfermería no tiene huecos con hora, así que muestra total de citas y promedio por día en su lugar).
+- Ratio por compañía aseguradora (incluye "Particular").
+- Ratio en enfermería por tipo de cita (cura, PRP, …).
+- Ratio de quirófano por estado (pendiente vs. resto).
+
 ## Seguridad y RGPD
 
 - Datos de salud y DNI: categoría especial RGPD. Cifrado en tránsito (HTTPS) y en reposo (el proveedor de base de datos debe cifrarlo, ej. Supabase/Postgres).
@@ -101,7 +119,7 @@ Una cita solo puede crearse en un día abierto de su agenda. Un hueco ocupado de
 - Reserva online por parte del paciente.
 - Integración o sincronización con Doctoralia.
 - Gestión documental de informes (llegan por correo aparte).
-- Multiusuario, estadísticas, facturación.
+- Multiusuario, facturación.
 
 ## Fases propuestas
 
