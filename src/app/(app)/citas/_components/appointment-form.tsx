@@ -53,6 +53,7 @@ export function AppointmentForm({
   const [endTime, setEndTime] = useState(defaults.end_time);
   const [insuranceCompanyId, setInsuranceCompanyId] = useState(defaults.insurance_company_id);
   const [status, setStatus] = useState<AppointmentStatus>(defaults.status);
+  const [observations, setObservations] = useState(defaults.observations);
   const [overlapWarning, setOverlapWarning] = useState<string | null>(null);
 
   const isQuirofano = agenda === "quirofano";
@@ -84,9 +85,15 @@ export function AppointmentForm({
     }
   }
 
+  // Al elegir un paciente registrado, se trasladan a esta cita su compañía (incluso si no
+  // tiene, para no dejar puesta la de una selección anterior) y sus notas guardadas, si esta
+  // cita en concreto todavía no tiene observaciones propias escritas.
   function handlePatientSelected(patient: PatientSearchResult | null) {
-    if (patient?.insurance_company_id) {
-      applyCompany(patient.insurance_company_id);
+    if (patient) {
+      applyCompany(patient.insurance_company_id ?? "");
+      if (patient.notes && !observations.trim()) {
+        setObservations(patient.notes);
+      }
     }
   }
 
@@ -279,9 +286,13 @@ export function AppointmentForm({
           id="observations"
           name="observations"
           rows={2}
-          defaultValue={defaults.observations}
+          value={observations}
+          onChange={(e) => setObservations(e.target.value)}
           className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
         />
+        <p className="text-xs text-slate-400">
+          Al elegir un paciente registrado que tenga notas guardadas, se rellenan aquí solas (puedes editarlas).
+        </p>
       </div>
 
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}

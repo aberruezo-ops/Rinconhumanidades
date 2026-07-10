@@ -9,6 +9,7 @@ export type PatientSearchResult = {
   last_name: string;
   phone: string;
   insurance_company_id: string | null;
+  notes: string | null;
 };
 
 export async function searchPatientsAction(query: string): Promise<PatientSearchResult[]> {
@@ -21,7 +22,7 @@ export async function searchPatientsAction(query: string): Promise<PatientSearch
   const escaped = trimmed.replace(/[%_]/g, (m) => `\\${m}`);
   const { data } = await supabase
     .from("patients")
-    .select("id, first_name, last_name, phone, insurance_company_id")
+    .select("id, first_name, last_name, phone, insurance_company_id, notes")
     .or(`first_name.ilike.%${escaped}%,last_name.ilike.%${escaped}%,phone.ilike.%${escaped}%`)
     .order("last_name")
     .limit(8);

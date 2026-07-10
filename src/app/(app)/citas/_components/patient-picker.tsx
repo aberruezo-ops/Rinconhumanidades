@@ -49,14 +49,16 @@ export function PatientPicker({ initialPatient, onPatientSelected }: Props) {
       <input type="hidden" name="patient_id" value={selected?.id ?? ""} />
 
       {selected ? (
-        <div className="flex items-center justify-between rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5">
-          <span className="text-slate-900">
-            {selected.label}
-            {selected.phone && <span className="text-slate-500"> — {selected.phone}</span>}
-          </span>
-          <button type="button" onClick={clearSelection} className="text-sm text-slate-500 hover:text-slate-900">
-            Cambiar
-          </button>
+        <div className="space-y-1 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5">
+          <div className="flex items-center justify-between">
+            <span className="font-medium text-slate-900">{selected.label}</span>
+            <button type="button" onClick={clearSelection} className="text-sm text-slate-500 hover:text-slate-900">
+              Cambiar
+            </button>
+          </div>
+          <p className="text-sm text-slate-700">
+            <span className="text-slate-500">Teléfono:</span> {selected.phone || "—"}
+          </p>
         </div>
       ) : (
         <div className="relative">
@@ -77,8 +79,10 @@ export function PatientPicker({ initialPatient, onPatientSelected }: Props) {
                     onClick={() => selectPatient(patient)}
                     className="block w-full px-3 py-2 text-left hover:bg-slate-50"
                   >
-                    {patient.first_name} {patient.last_name}{" "}
-                    <span className="text-sm text-slate-500">— {patient.phone}</span>
+                    <span className="block text-slate-900">
+                      {patient.first_name} {patient.last_name}
+                    </span>
+                    <span className="block text-sm text-slate-500">{patient.phone}</span>
                   </button>
                 </li>
               ))}
