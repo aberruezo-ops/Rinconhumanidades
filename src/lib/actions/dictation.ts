@@ -57,8 +57,11 @@ const EXTRACT_TOOL: Anthropic.Tool = {
   },
 };
 
-function escapeLike(value: string): string {
-  return value.replace(/[%_]/g, (m) => `\\${m}`);
+function normalize(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase();
 }
 
 export async function interpretAppointmentTextAction(
@@ -106,7 +109,22 @@ export async function interpretAppointmentTextAction(
         },
       ],
     });
-  } catch {
+  } catch (err) {
+    if (err instanceof Anthropic.AuthenticationError) {
+      return { error: "La clave ANTHROPIC_API_KEY configurada en el servidor no es válida." };
+    }
+    if (err instanceof Anthropic.RateLimitError) {
+      return { error: "Se ha superado el límite de peticiones al servicio de interpretación. Espera un momento e inténtalo de nuevo." };
+    }
+    if (err instanceof Anthropic.BadRequestError) {
+      return { error: `El servicio de interpretación rechazó la petición: ${err.message}` };
+    }
+    if (err instanceof Anthropic.APIConnectionError) {
+      return { error: "No se ha podido conectar con el servicio de interpretación. Comprueba la conexión e inténtalo de nuevo." };
+    }
+    if (err instanceof Anthropic.APIError) {
+      return { error: `Error del servicio de interpretación (${err.status ?? "desconocido"}): ${err.message}` };
+    }
     return { error: "No se ha podido contactar con el servicio de interpretación. Inténtalo de nuevo." };
   }
 
@@ -142,14 +160,14 @@ export async function interpretAppointmentTextAction(
 
   let matchedPatient: { id: string; label: string; phone: string } | null = null;
   if (!isParticular && patientName) {
-    const escaped = escapeLike(patientName);
-    const { data: matches } = await supabase
-      .from("patients")
-      .select("id, first_name, last_name, phone")
-      .or(`first_name.ilike.%${escaped}%,last_name.ilike.%${escaped}%`)
-      .limit(1);
-    if (matches && matches[0]) {
-      matchedPatient = { id: matches[0].id, label: `${matches[0].first_name} ${matches[0].last_name}`, phone: matches[0].phone };
+    const tokens = patientName.split(/\s+/).filter(Boolean).map(normalize);
+    const { data: candidates } = await supabase.from("patients").select("id, first_name, last_name, phone").limit(2000);
+    const match = candidates?.find((candidate) => {
+      const haystack = normalize(`${candidate.first_name} ${candidate.last_name}`);
+      return tokens.every((token) => haystack.includes(token));
+    });
+    if (match) {
+      matchedPatient = { id: match.id, label: `${match.first_name} ${match.last_name}`, phone: match.phone };
     }
   }
 

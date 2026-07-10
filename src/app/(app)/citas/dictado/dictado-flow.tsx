@@ -78,6 +78,13 @@ export function DictadoFlow({
     setListening(true);
   }
 
+  function clearText() {
+    recognitionRef.current?.stop();
+    setListening(false);
+    setText("");
+    setError(null);
+  }
+
   async function handleInterpret() {
     setPending(true);
     setError(null);
@@ -158,6 +165,11 @@ export function DictadoFlow({
           {pending ? "Interpretando…" : "Interpretar"}
         </button>
       </div>
+      {text.trim() && (
+        <button type="button" onClick={clearText} className="text-sm text-slate-500 underline hover:text-slate-900">
+          Borrar texto
+        </button>
+      )}
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );

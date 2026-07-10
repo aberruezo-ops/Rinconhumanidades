@@ -103,26 +103,44 @@ export function PatientPicker({ initialPatient, onPatientSelected }: Props) {
 
       {!selected && showNewPatientFields && (
         <div className="grid grid-cols-2 gap-2 rounded-lg border border-dashed border-slate-300 p-3">
-          <input
-            name="new_first_name"
-            placeholder="Nombre"
-            autoComplete="given-name"
-            className="col-span-1 rounded-lg border border-slate-300 px-3 py-2"
-          />
-          <input
-            name="new_last_name"
-            placeholder="Apellidos"
-            autoComplete="family-name"
-            className="col-span-1 rounded-lg border border-slate-300 px-3 py-2"
-          />
-          <input
-            name="new_phone"
-            type="tel"
-            inputMode="tel"
-            placeholder="Teléfono"
-            autoComplete="tel"
-            className="col-span-2 rounded-lg border border-slate-300 px-3 py-2"
-          />
+          <div className="col-span-1 space-y-1">
+            <label className="text-xs font-medium text-slate-500" htmlFor="new_first_name">
+              Nombre
+            </label>
+            <input
+              id="new_first_name"
+              name="new_first_name"
+              placeholder="Nombre"
+              autoComplete="given-name"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2"
+            />
+          </div>
+          <div className="col-span-1 space-y-1">
+            <label className="text-xs font-medium text-slate-500" htmlFor="new_last_name">
+              Apellidos
+            </label>
+            <input
+              id="new_last_name"
+              name="new_last_name"
+              placeholder="Apellidos"
+              autoComplete="family-name"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2"
+            />
+          </div>
+          <div className="col-span-2 space-y-1">
+            <label className="text-xs font-medium text-slate-500" htmlFor="new_phone">
+              Teléfono
+            </label>
+            <input
+              id="new_phone"
+              name="new_phone"
+              type="tel"
+              inputMode="tel"
+              placeholder="Teléfono"
+              autoComplete="tel"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2"
+            />
+          </div>
         </div>
       )}
     </div>
