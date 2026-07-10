@@ -5,6 +5,7 @@ import { agendaLabel, normalizeStatus } from "@/lib/domain/agendas";
 import { updateAppointmentAction, cancelAppointmentAction } from "@/lib/actions/appointments";
 import { minutesToTime, timeToMinutes } from "@/lib/domain/slots";
 import { AppointmentForm } from "../_components/appointment-form";
+import { ConfirmSubmitButton } from "@/app/(app)/_components/confirm-submit-button";
 
 export default async function EditarCitaPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireUser();
@@ -51,9 +52,12 @@ export default async function EditarCitaPage({ params }: { params: Promise<{ id:
         <h1 className="text-lg font-semibold text-slate-900">Editar cita — {agendaLabel(appointment.agenda)}</h1>
         {appointment.status !== "cancelada" && (
           <form action={boundCancel}>
-            <button type="submit" className="text-sm text-red-600 hover:underline">
+            <ConfirmSubmitButton
+              confirmMessage="¿Cancelar esta cita? El paciente dejará de estar citado en ese hueco."
+              className="text-sm text-red-600 hover:underline"
+            >
               Cancelar cita
-            </button>
+            </ConfirmSubmitButton>
           </form>
         )}
       </div>

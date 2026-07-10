@@ -120,13 +120,16 @@ export default async function DashboardPage({
   const tomorrow = addDays(today, 1);
   const { fecha } = await searchParams;
   const explicitDate = fecha && /^\d{4}-\d{2}-\d{2}$/.test(fecha) ? fecha : null;
-  const date = explicitDate ?? (await resolveDefaultDate(supabase));
-  const [year, month] = date.split("-").map(Number);
 
-  const [pacientesPorAvisar, recordatoriosManana] = await Promise.all([
+  // Ninguna de las tres depende de las otras (todas cuelgan de today/tomorrow, no del `date`
+  // ya resuelto), así que se lanzan juntas en vez de esperar una detrás de otra.
+  const [resolvedDate, pacientesPorAvisar, recordatoriosManana] = await Promise.all([
+    explicitDate ? Promise.resolve(explicitDate) : resolveDefaultDate(supabase),
     loadPacientesPorAvisar(supabase, today),
     loadRecordatoriosManana(supabase, tomorrow),
   ]);
+  const date = resolvedDate;
+  const [year, month] = date.split("-").map(Number);
 
   const from = `${year}-${String(month).padStart(2, "0")}-01`;
   const to = `${year}-${String(month).padStart(2, "0")}-31`;

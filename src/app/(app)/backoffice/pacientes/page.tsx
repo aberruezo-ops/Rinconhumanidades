@@ -38,10 +38,12 @@ export default async function BackofficePacientesPage({
 
       <form method="get" className="flex gap-2">
         <input
-          type="text"
+          type="search"
           name="q"
           defaultValue={query}
           placeholder="Buscar por nombre o teléfono…"
+          autoFocus
+          enterKeyHint="search"
           className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
         />
         <button

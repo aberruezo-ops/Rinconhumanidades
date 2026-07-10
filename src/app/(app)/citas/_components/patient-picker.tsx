@@ -23,7 +23,7 @@ export function PatientPicker({ initialPatient, onPatientSelected }: Props) {
     debounceRef.current = setTimeout(async () => {
       const matches = await searchPatientsAction(query);
       setResults(matches);
-    }, 250);
+    }, 200);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
@@ -102,16 +102,21 @@ export function PatientPicker({ initialPatient, onPatientSelected }: Props) {
           <input
             name="new_first_name"
             placeholder="Nombre"
+            autoComplete="given-name"
             className="col-span-1 rounded-lg border border-slate-300 px-3 py-2"
           />
           <input
             name="new_last_name"
             placeholder="Apellidos"
+            autoComplete="family-name"
             className="col-span-1 rounded-lg border border-slate-300 px-3 py-2"
           />
           <input
             name="new_phone"
+            type="tel"
+            inputMode="tel"
             placeholder="Teléfono"
+            autoComplete="tel"
             className="col-span-2 rounded-lg border border-slate-300 px-3 py-2"
           />
         </div>

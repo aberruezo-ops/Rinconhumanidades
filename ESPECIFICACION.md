@@ -107,6 +107,14 @@ Solo admin. Navegación mes a mes (como el backoffice de días):
 - Ratio en enfermería por tipo de cita (cura, PRP, …).
 - Ratio de quirófano por estado (pendiente vs. resto).
 
+## Rendimiento y facilidad de uso
+
+- `requireUser()` (sesión + rol) se memoiza por petición (React `cache`): antes se repetía una vez en el layout y otra vez en cada página, duplicando el viaje a Supabase en cada navegación.
+- Índices en Postgres para las consultas más repetidas: `appointments.patient_id` (historial de un paciente), `appointments.status`, `appointments(date) where whatsapp_sent_at is null` (avisos pendientes), `agenda_days(date) where is_open` (próximo día abierto), y trigram por columna en `patients.first_name`/`last_name` (la búsqueda de pacientes consulta cada columna por separado; el índice anterior era sobre el nombre completo concatenado y no lo usaba ninguna consulta real).
+- Pantallas de carga (esqueleto) en las páginas con más consultas (Inicio, agenda, listados, cuadro de mandos, pacientes) para que la navegación nunca se quede en blanco mientras carga.
+- Teclado adecuado en móvil: teléfono (`type="tel"`) al registrar un paciente nuevo, autocompletar de nombre/apellidos, mayúsculas automáticas en el DNI.
+- Confirmación antes de cancelar una cita o descartar un candidato de quirófano (las únicas acciones de un toque que no se pueden deshacer fácilmente desde la interfaz).
+
 ## Seguridad y RGPD
 
 - Datos de salud y DNI: categoría especial RGPD. Cifrado en tránsito (HTTPS) y en reposo (el proveedor de base de datos debe cifrarlo, ej. Supabase/Postgres).

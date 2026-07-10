@@ -9,6 +9,7 @@ import {
   markCandidatoWhatsappSentAction,
 } from "@/lib/actions/quirofano-candidatos";
 import { WhatsappButton } from "@/app/(app)/_components/whatsapp-button";
+import { ConfirmSubmitButton } from "@/app/(app)/_components/confirm-submit-button";
 import { CandidatoForm } from "./candidato-form";
 
 const REMINDER_WINDOW_DAYS = 30;
@@ -84,9 +85,12 @@ export default async function CandidatosQuirofanoPage() {
                     </button>
                   </form>
                   <form action={discardCandidatoAction.bind(null, c.id)}>
-                    <button type="submit" className="text-slate-500 hover:underline">
+                    <ConfirmSubmitButton
+                      confirmMessage={`¿Descartar a ${name} como candidato de quirófano?`}
+                      className="text-slate-500 hover:underline"
+                    >
                       Descartar
-                    </button>
+                    </ConfirmSubmitButton>
                   </form>
                   {phone && !withinWindow && (
                     <a
