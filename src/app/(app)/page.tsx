@@ -238,14 +238,15 @@ export default async function DashboardPage({
 
               const c = item.candidato;
               const name = c.particular_label ?? (c.patients ? `${c.patients.first_name} ${c.patients.last_name}` : "—");
-              const phone = c.patients?.phone;
+              const phone = c.patients?.phone ?? c.particular_phone;
               return (
                 <li key={`candidato-${c.id}`} className="flex items-center justify-between gap-3 rounded-lg bg-white px-3 py-2 shadow-sm">
                   <Link href="/agenda/quirofano/candidatos" className="flex-1">
                     <span className="block text-sm text-slate-900">{name}</span>
                     <span className="block text-xs text-slate-500">
                       Candidato quirófano · fecha deseada {formatDateEs(c.desired_date!, { day: "numeric", month: "short" })}
-                      {phone ? ` · ${phone}` : ""}
+                      {" · "}
+                      {phone ?? "—"}
                     </span>
                   </Link>
                   {phone && (

@@ -258,6 +258,7 @@ export interface Database {
           id: string;
           patient_id: string | null;
           particular_label: string | null;
+          particular_phone: string | null;
           desired_date: string | null;
           observations: string | null;
           whatsapp_sent_at: string | null;
@@ -270,6 +271,7 @@ export interface Database {
           id?: string;
           patient_id?: string | null;
           particular_label?: string | null;
+          particular_phone?: string | null;
           desired_date?: string | null;
           observations?: string | null;
           whatsapp_sent_at?: string | null;
@@ -279,6 +281,7 @@ export interface Database {
         Update: {
           patient_id?: string | null;
           particular_label?: string | null;
+          particular_phone?: string | null;
           desired_date?: string | null;
           observations?: string | null;
           whatsapp_sent_at?: string | null;

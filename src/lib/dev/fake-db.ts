@@ -170,6 +170,7 @@ function seed(): Store {
       id: randomId(),
       patient_id: patients[2].id,
       particular_label: null,
+      particular_phone: null,
       desired_date: addDays(todayYmd(), 20),
       observations: "Quiere operarse de rodilla; a la espera de decidir fecha aproximada.",
       whatsapp_sent_at: null,

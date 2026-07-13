@@ -11,6 +11,7 @@ const formSchema = z.object({
   patient_mode: z.enum(["registrado", "particular"]),
   patient_id: z.string().optional(),
   particular_label: z.string().optional(),
+  particular_phone: z.string().optional(),
   desired_date: z.string().optional(),
   observations: z.string().optional(),
 });
@@ -28,14 +29,19 @@ export async function createCandidatoAction(
 
   const patientId = data.patient_mode === "registrado" ? data.patient_id || null : null;
   const particularLabel = data.patient_mode === "particular" ? data.particular_label?.trim() || null : null;
+  const particularPhone = data.patient_mode === "particular" ? data.particular_phone?.trim() || null : null;
   if (!patientId && !particularLabel) {
     return { error: "Busca un paciente registrado o indica un nombre para el candidato." };
+  }
+  if (data.patient_mode === "particular" && !particularPhone) {
+    return { error: "Indica el teléfono del candidato particular." };
   }
 
   const supabase = await createClient();
   const { error } = await supabase.from("quirofano_candidatos").insert({
     patient_id: patientId,
     particular_label: particularLabel,
+    particular_phone: particularPhone,
     desired_date: data.desired_date || null,
     observations: data.observations?.trim() || null,
   });
