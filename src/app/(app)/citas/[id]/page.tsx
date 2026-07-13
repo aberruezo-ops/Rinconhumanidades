@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { requireAdmin, requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { agendaLabel, normalizeStatus } from "@/lib/domain/agendas";
-import { updateAppointmentAction, cancelAppointmentAction } from "@/lib/actions/appointments";
+import { updateAppointmentAction, cancelAppointmentAction, deleteAppointmentAction } from "@/lib/actions/appointments";
 import { minutesToTime, normalizeTimeInput, timeToMinutes } from "@/lib/domain/slots";
 import { AppointmentForm } from "../_components/appointment-form";
 import { ConfirmSubmitButton } from "@/app/(app)/_components/confirm-submit-button";
@@ -39,6 +39,7 @@ export default async function EditarCitaPage({ params }: { params: Promise<{ id:
 
   const boundUpdate = updateAppointmentAction.bind(null, appointment.id);
   const boundCancel = cancelAppointmentAction.bind(null, appointment.id, appointment.agenda, appointment.date);
+  const boundDelete = deleteAppointmentAction.bind(null, appointment.id, appointment.agenda, appointment.date);
 
   const startTime = normalizeTimeInput(appointment.start_time);
   const endTime =
@@ -91,6 +92,22 @@ export default async function EditarCitaPage({ params }: { params: Promise<{ id:
           observations: appointment.observations ?? "",
         }}
       />
+
+      <div className="space-y-2 rounded-xl border border-red-200 bg-red-50 p-4">
+        <p className="text-sm font-medium text-red-800">Zona de peligro</p>
+        <p className="text-sm text-red-700">
+          Elimina la cita por completo, sin dejar registro. Para un paciente que no viene, mejor usa "Cancelar
+          cita" arriba: esa sí conserva el historial. Esto es para citas dadas de alta por error.
+        </p>
+        <form action={boundDelete}>
+          <ConfirmSubmitButton
+            confirmMessage="¿Eliminar esta cita definitivamente? No se puede deshacer y no queda ningún registro, a diferencia de cancelar."
+            className="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100"
+          >
+            Eliminar cita
+          </ConfirmSubmitButton>
+        </form>
+      </div>
     </div>
   );
 }

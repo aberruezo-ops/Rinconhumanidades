@@ -2,7 +2,7 @@ import type { Row, Store } from "@/lib/dev/fake-db";
 
 type Filter = { col: string; op: "eq" | "neq" | "gte" | "lte" | "in" | "is" | "isnot"; val: unknown };
 type Mode = "many" | "single" | "maybeSingle";
-type Op = { type: "insert" | "update" | "upsert"; payload: Row | Row[]; opts?: { onConflict?: string } };
+type Op = { type: "insert" | "update" | "upsert" | "delete"; payload: Row | Row[]; opts?: { onConflict?: string } };
 type Result = { data: unknown; error: { code?: string; message: string } | null };
 
 function randomId(): string {
@@ -115,6 +115,10 @@ export class FakeQueryBuilder implements PromiseLike<Result> {
     this.op = { type: "upsert", payload, opts };
     return this;
   }
+  delete() {
+    this.op = { type: "delete", payload: {} };
+    return this;
+  }
 
   then<TResult1 = Result, TResult2 = never>(
     onfulfilled?: ((value: Result) => TResult1 | PromiseLike<TResult1>) | null,
@@ -211,6 +215,12 @@ export class FakeQueryBuilder implements PromiseLike<Result> {
       const targets = table.filter((r) => this.matches(r));
       const now = new Date().toISOString();
       for (const t of targets) Object.assign(t, op.payload, { updated_at: now });
+      return this.shape(targets.map((r) => this.embed(r)));
+    }
+
+    if (op.type === "delete") {
+      const targets = table.filter((r) => this.matches(r));
+      table.splice(0, table.length, ...table.filter((r) => !this.matches(r)));
       return this.shape(targets.map((r) => this.embed(r)));
     }
 

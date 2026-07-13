@@ -300,6 +300,20 @@ export async function cancelAppointmentAction(id: string, agenda: AgendaType, da
   redirect(`/agenda/${agenda}?fecha=${date}`);
 }
 
+// A diferencia de cancelar (que solo cambia el estado y conserva la cita como registro),
+// esto borra la fila por completo: es para citas dadas de alta por error, no para pacientes
+// que no vienen. Irreversible.
+export async function deleteAppointmentAction(id: string, agenda: AgendaType, date: string) {
+  const user = await requireUser();
+  requireAdmin(user);
+  const supabase = await createClient();
+  await supabase.from("appointments").delete().eq("id", id);
+  revalidatePath(`/agenda/${agenda}`);
+  revalidatePath("/listados");
+  revalidatePath("/");
+  redirect(`/agenda/${agenda}?fecha=${date}`);
+}
+
 export async function markWhatsappSentAction(id: string): Promise<{ error?: string }> {
   const user = await requireUser();
   requireAdmin(user);
