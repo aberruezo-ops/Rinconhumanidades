@@ -13,15 +13,15 @@
 }
 
 @theme {
-  /* Marca: azul ultramar (acciones/enlaces) + naranja flúor (acento/aviso). */
+  /* Marca: azul ultramar (acciones/enlaces) + buganvilla (acento/aviso). */
   --color-brand-50: #eef0fd;
   --color-brand-100: #dbe0fb;
   --color-brand-500: #4a5aea;
   --color-brand-600: #2d3fe0;
   --color-brand-700: #232fb3;
-  --color-accent-100: #ffe3cc;
-  --color-accent-500: #ff8a2b;
-  --color-accent-600: #ff6a00;
+  --color-accent-100: #ffccee;
+  --color-accent-500: #ff2bb8;
+  --color-accent-600: #ff00aa;
 
   /* Un color por agenda, para identificarlas de un vistazo en toda la app. */
   --color-trauma-50: #f3ecfd;
