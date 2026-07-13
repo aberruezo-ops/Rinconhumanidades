@@ -68,7 +68,7 @@ async function loadRecordatoriosManana(supabase: Awaited<ReturnType<typeof creat
     .order("start_time", { nullsFirst: true });
 
   const all = data ?? [];
-  const pendientes = all.filter((a) => !!a.patients?.phone && a.whatsapp_sent_at == null);
+  const pendientes = all.filter((a) => !!(a.patients?.phone ?? a.particular_phone) && a.whatsapp_sent_at == null);
   return { total: all.length, pendientes };
 }
 
@@ -207,7 +207,7 @@ export default async function DashboardPage({
               if (item.kind === "cita") {
                 const a = item.appointment;
                 const name = a.particular_label ?? (a.patients ? `${a.patients.first_name} ${a.patients.last_name}` : "—");
-                const phone = a.patients?.phone;
+                const phone = a.patients?.phone ?? a.particular_phone;
                 return (
                   <li key={`cita-${a.id}`} className="flex items-center justify-between gap-3 rounded-lg bg-white px-3 py-2 shadow-sm">
                     <Link href={`/citas/${a.id}`} className="flex-1">
@@ -271,7 +271,7 @@ export default async function DashboardPage({
           <ul className="space-y-2">
             {recordatoriosManana.pendientes.map((a) => {
               const name = a.particular_label ?? (a.patients ? `${a.patients.first_name} ${a.patients.last_name}` : "—");
-              const phone = a.patients!.phone;
+              const phone = (a.patients?.phone ?? a.particular_phone)!;
               return (
                 <li key={a.id} className="flex items-center justify-between gap-3 rounded-lg bg-white px-3 py-2 shadow-sm">
                   <Link href={`/citas/${a.id}`} className="flex-1">
@@ -469,7 +469,8 @@ export default async function DashboardPage({
                         </span>
                         <span className="block text-xs text-slate-500">
                           {a.insurance_companies?.name ?? "Particular"}
-                          {a.patients?.phone ? ` · ${a.patients.phone}` : ""}
+                          {" · "}
+                          {a.patients?.phone ?? a.particular_phone ?? "—"}
                         </span>
                       </span>
                       <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyle(a.status)}`}>

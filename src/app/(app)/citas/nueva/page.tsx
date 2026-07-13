@@ -62,6 +62,7 @@ export default async function NuevaCitaPage({
           end_time: endTime,
           patient: null,
           particular_label: "",
+          particular_phone: "",
           insurance_company_id: "",
           appointment_type_id: "",
           status: DEFAULT_NEW_APPOINTMENT_STATUS,

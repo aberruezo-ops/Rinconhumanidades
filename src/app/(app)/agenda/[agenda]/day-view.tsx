@@ -46,7 +46,7 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
   // cancelada ni completada, coloreado según lo cerca que esté (rojo <48h, amarillo 48h-4 días,
   // verde +4 días). Al pulsarlo, si la cita estaba "confirmada sin avisar" pasa sola a "confirmada/avisada".
   function whatsappButtonFor(a: Appointment) {
-    const phone = a.patients?.phone;
+    const phone = a.patients?.phone ?? a.particular_phone;
     const canNotify = !!phone && a.status !== "cancelada" && a.status !== "completada";
     if (!canNotify || !phone) return null;
     return (
@@ -88,7 +88,8 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
                   <span className="block text-sm text-slate-500">
                     {a.insurance_companies?.name ?? "Particular"}
                     {a.appointment_types?.name ? ` · ${a.appointment_types.name}` : ""}
-                    {a.patients?.phone ? ` · ${a.patients.phone}` : ""}
+                    {" · "}
+                    {a.patients?.phone ?? a.particular_phone ?? "—"}
                   </span>
                 </span>
                 <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusStyle(a.status)}`}>
@@ -180,7 +181,8 @@ export async function DayView({ agenda, date }: { agenda: AgendaType; date: stri
                   <span className="block text-sm text-slate-500">
                     {item.appointment.insurance_companies?.name ?? "Particular"}
                     {item.appointment.appointment_types?.name ? ` · ${item.appointment.appointment_types.name}` : ""}
-                    {item.appointment.patients?.phone ? ` · ${item.appointment.patients.phone}` : ""}
+                    {" · "}
+                    {item.appointment.patients?.phone ?? item.appointment.particular_phone ?? "—"}
                   </span>
                 </span>
                 <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusStyle(item.appointment.status)}`}>

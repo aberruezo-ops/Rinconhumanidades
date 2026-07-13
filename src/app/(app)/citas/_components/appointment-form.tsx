@@ -17,6 +17,7 @@ export type AppointmentFormDefaults = {
   end_time: string;
   patient: { id: string; label: string; phone?: string } | null;
   particular_label: string;
+  particular_phone: string;
   insurance_company_id: string;
   appointment_type_id: string;
   status: AppointmentStatus;
@@ -85,6 +86,16 @@ export function AppointmentForm({
     }
   }
 
+  // Al escribir/cambiar la hora de inicio, la hora de fin se recalcula sola según la duración
+  // configurada (de la compañía si tiene una propia, si no la de la agenda) — nunca se deja en
+  // blanco a la espera de que la rellene la usuaria a mano.
+  function handleStartTimeChange(value: string) {
+    setStartTime(value);
+    if (!isEnfermeria && value) {
+      setEndTime(minutesToTime(timeToMinutes(value) + durationForCompany(insuranceCompanyId)));
+    }
+  }
+
   // Al elegir un paciente registrado, se trasladan a esta cita su compañía (incluso si no
   // tiene, para no dejar puesta la de una selección anterior) y sus notas guardadas, si esta
   // cita en concreto todavía no tiene observaciones propias escritas.
@@ -130,7 +141,7 @@ export function AppointmentForm({
               type="time"
               required
               value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
+              onChange={(e) => handleStartTimeChange(e.target.value)}
               className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
             />
           </div>
@@ -204,12 +215,35 @@ export function AppointmentForm({
         {patientMode === "registrado" ? (
           <PatientPicker initialPatient={defaults.patient} onPatientSelected={handlePatientSelected} />
         ) : (
-          <input
-            name="particular_label"
-            placeholder={isEnfermeria || !startTime ? "Particular" : `Particular ${startTime}`}
-            defaultValue={defaults.particular_label}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
-          />
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-500" htmlFor="particular_label">
+                Nombre o referencia
+              </label>
+              <input
+                id="particular_label"
+                name="particular_label"
+                placeholder={isEnfermeria || !startTime ? "Particular" : `Particular ${startTime}`}
+                defaultValue={defaults.particular_label}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-500" htmlFor="particular_phone">
+                Teléfono
+              </label>
+              <input
+                id="particular_phone"
+                name="particular_phone"
+                type="tel"
+                inputMode="tel"
+                required
+                placeholder="Teléfono"
+                defaultValue={defaults.particular_phone}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
+              />
+            </div>
+          </div>
         )}
       </div>
 

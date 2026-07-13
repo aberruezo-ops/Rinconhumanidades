@@ -104,6 +104,7 @@ export function DictadoFlow({
       end_time: result.end_time ?? "",
       patient: result.matched_patient,
       particular_label: result.is_particular ? (result.patient_name ?? "") : "",
+      particular_phone: "",
       insurance_company_id: "",
       appointment_type_id: appointmentTypes.find((t) => t.name === result.appointment_type)?.id ?? "",
       status: DEFAULT_NEW_APPOINTMENT_STATUS,

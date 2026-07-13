@@ -29,6 +29,7 @@ const formSchema = z.object({
   new_last_name: z.string().optional(),
   new_phone: z.string().optional(),
   particular_label: z.string().optional(),
+  particular_phone: z.string().optional(),
   insurance_company_id: z.string().optional(),
   appointment_type_id: z.string().optional(),
   status: z.string().refine((s): s is AppointmentStatus => STATUSES.includes(s as AppointmentStatus)),
@@ -67,16 +68,21 @@ function readForm(formData: FormData) {
 async function resolvePatient(
   supabase: Awaited<ReturnType<typeof createClient>>,
   data: NonNullable<ReturnType<typeof readForm>>,
-): Promise<{ patientId: string | null; particularLabel: string | null; error?: string }> {
+): Promise<{ patientId: string | null; particularLabel: string | null; particularPhone: string | null; error?: string }> {
   if (data.patient_mode === "particular") {
+    const particularPhone = data.particular_phone?.trim();
+    if (!particularPhone) {
+      return { patientId: null, particularLabel: null, particularPhone: null, error: "Indica el teléfono del paciente particular." };
+    }
     return {
       patientId: null,
       particularLabel: data.particular_label?.trim() || (data.start_time ? `Particular ${data.start_time}` : "Particular"),
+      particularPhone,
     };
   }
 
   if (data.patient_id) {
-    return { patientId: data.patient_id, particularLabel: null };
+    return { patientId: data.patient_id, particularLabel: null, particularPhone: null };
   }
 
   const firstName = data.new_first_name?.trim();
@@ -84,7 +90,7 @@ async function resolvePatient(
   const phone = data.new_phone?.trim();
 
   if (!firstName || !lastName || !phone) {
-    return { patientId: null, particularLabel: null, error: "Busca un paciente existente o rellena nombre, apellidos y teléfono para registrar uno nuevo." };
+    return { patientId: null, particularLabel: null, particularPhone: null, error: "Busca un paciente existente o rellena nombre, apellidos y teléfono para registrar uno nuevo." };
   }
 
   const { data: patient, error } = await supabase
@@ -100,10 +106,10 @@ async function resolvePatient(
     .single();
 
   if (error || !patient) {
-    return { patientId: null, particularLabel: null, error: "No se ha podido registrar el paciente." };
+    return { patientId: null, particularLabel: null, particularPhone: null, error: "No se ha podido registrar el paciente." };
   }
 
-  return { patientId: patient.id, particularLabel: null };
+  return { patientId: patient.id, particularLabel: null, particularPhone: null };
 }
 
 async function checkDayOpen(
@@ -196,7 +202,7 @@ export async function createAppointmentAction(
   const { startTime, durationMinutes, error: timeError } = resolveTimeFields(agenda, data);
   if (timeError) return { error: timeError };
 
-  const { patientId, particularLabel, error: patientError } = await resolvePatient(supabase, data);
+  const { patientId, particularLabel, particularPhone, error: patientError } = await resolvePatient(supabase, data);
   if (patientError) return { error: patientError };
 
   const isQuirofano = agenda === "quirofano";
@@ -208,6 +214,7 @@ export async function createAppointmentAction(
     duration_minutes: durationMinutes,
     patient_id: patientId,
     particular_label: particularLabel,
+    particular_phone: particularPhone,
     insurance_company_id: data.insurance_company_id || null,
     appointment_type_id: agenda === "enfermeria" ? data.appointment_type_id || null : null,
     status: data.status,
@@ -251,7 +258,7 @@ export async function updateAppointmentAction(
   const { startTime, durationMinutes, error: timeError } = resolveTimeFields(agenda, data);
   if (timeError) return { error: timeError };
 
-  const { patientId, particularLabel, error: patientError } = await resolvePatient(supabase, data);
+  const { patientId, particularLabel, particularPhone, error: patientError } = await resolvePatient(supabase, data);
   if (patientError) return { error: patientError };
 
   const isQuirofano = agenda === "quirofano";
@@ -265,6 +272,7 @@ export async function updateAppointmentAction(
       duration_minutes: durationMinutes,
       patient_id: patientId,
       particular_label: particularLabel,
+      particular_phone: particularPhone,
       insurance_company_id: data.insurance_company_id || null,
       appointment_type_id: agenda === "enfermeria" ? data.appointment_type_id || null : null,
       status: data.status,

@@ -180,6 +180,7 @@ export interface Database {
           ends_at: string | null;
           patient_id: string | null;
           particular_label: string | null;
+          particular_phone: string | null;
           insurance_company_id: string | null;
           appointment_type_id: string | null;
           status: AppointmentStatus;
@@ -200,6 +201,7 @@ export interface Database {
           duration_minutes?: number | null;
           patient_id?: string | null;
           particular_label?: string | null;
+          particular_phone?: string | null;
           insurance_company_id?: string | null;
           appointment_type_id?: string | null;
           status?: AppointmentStatus;
@@ -217,6 +219,7 @@ export interface Database {
           duration_minutes?: number | null;
           patient_id?: string | null;
           particular_label?: string | null;
+          particular_phone?: string | null;
           insurance_company_id?: string | null;
           appointment_type_id?: string | null;
           status?: AppointmentStatus;

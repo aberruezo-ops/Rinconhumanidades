@@ -18,11 +18,11 @@ Todo el texto visible de la interfaz, mensajes, commits y nombres de página van
 
 - Tres agendas fijas: `traumatologo`, `enfermeria`, `quirofano`. No añadir una cuarta sin que lo pida el usuario.
 - Una cita solo puede crearse en un día abierto de su agenda (`agenda_days.is_open = true`). Si no hay fila para esa fecha, el día se considera cerrado.
-- Los pacientes "particulares" no se registran como paciente: la cita puede llevar `particular_label` en vez de `patient_id`.
+- Los pacientes "particulares" no se registran como paciente: la cita puede llevar `particular_label` en vez de `patient_id`. Aun así, el teléfono es obligatorio para toda cita, registrada o particular: `appointments.particular_phone` guarda el de los particulares (paralelo a `particular_label`), exigido por la app al dar de alta o editar. El campo Teléfono debe mostrarse siempre — alta, edición, consulta y en cualquier listado — tanto si el paciente está registrado (`patients.phone`) como si es particular (`particular_phone`).
 - El DNI solo se pide en quirófano.
 - Compañía aseguradora siempre se elige del catálogo (`insurance_companies`), nunca texto libre. "Particular" = `insurance_company_id` nulo, no es una fila de la tabla.
-- Solapes: hay comprobación en la app (para avisar antes de guardar) *y* un `EXCLUDE` constraint en Postgres como red de seguridad — no quitar ninguna de las dos.
-- Enfermería no tiene hora: `appointments.start_time`/`duration_minutes` son `null` siempre que `agenda = 'enfermeria'` (y obligatorios en el resto), y esas citas quedan fuera del `EXCLUDE` de solapes a propósito. El formulario pide "Hora inicio"/"Hora fin" (no duración) para traumatólogo/quirófano; en enfermería no se muestra ningún campo de hora.
+- Solapes: la app avisa antes de guardar si hay choque de horario, pero **no bloquea**: se puede guardar más de una cita a la misma hora a propósito (sobrecarga de agenda). No hay `EXCLUDE` constraint en Postgres para esto — se quitó deliberadamente; no reintroducirlo.
+- Enfermería no tiene hora: `appointments.start_time`/`duration_minutes` son `null` siempre que `agenda = 'enfermeria'` (y obligatorios en el resto). El formulario pide "Hora inicio"/"Hora fin" (no duración) para traumatólogo/quirófano; en enfermería no se muestra ningún campo de hora. Al escribir o cambiar la hora de inicio, la hora de fin se recalcula sola según la duración configurada en el backoffice (por agenda, o por compañía si tiene una propia) — nunca se deja en blanco a la espera de que la rellene la usuaria.
 - Roles: `admin` (Olga, único activo) y `readonly` (futuro traumatólogo). Las políticas RLS ya contemplan ambos aunque hoy solo exista `admin`.
 - Alta de cita por dictado/texto libre (`/citas/dictado`, usa `ANTHROPIC_API_KEY`): la IA solo rellena el formulario normal, nunca guarda directamente — la confirmación visual antes de guardar es obligatoria.
 

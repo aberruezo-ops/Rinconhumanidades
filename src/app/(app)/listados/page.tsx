@@ -184,14 +184,15 @@ export default async function ListadosPage({
             <tbody>
               {appointments?.map((a) => {
                 const patientName = a.particular_label ?? (a.patients ? `${a.patients.first_name} ${a.patients.last_name}` : "—");
-                const canNotify = !!a.patients?.phone && a.status !== "cancelada" && a.status !== "completada";
+                const phone = a.patients?.phone ?? a.particular_phone;
+                const canNotify = !!phone && a.status !== "cancelada" && a.status !== "completada";
                 return (
                   <tr key={a.id} className="border-b border-slate-100">
                     {!date && <td className="px-3 py-2">{formatDateEs(a.date, { day: "numeric", month: "short" })}</td>}
                     <td className="px-3 py-2">{a.start_time ? formatTimeEs(a.start_time) : "—"}</td>
                     <td className="px-3 py-2">{agendaLabel(a.agenda)}</td>
                     <td className="px-3 py-2">{patientName}</td>
-                    <td className="px-3 py-2">{a.patients?.phone ?? "—"}</td>
+                    <td className="px-3 py-2">{phone ?? "—"}</td>
                     <td className="px-3 py-2">{a.insurance_companies?.name ?? "Particular"}</td>
                     <td className="px-3 py-2">
                       <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyle(a.status)}`}>
@@ -199,14 +200,14 @@ export default async function ListadosPage({
                       </span>
                     </td>
                     <td className="px-3 py-2 text-right print:hidden">
-                      {canNotify && a.patients?.phone ? (
+                      {canNotify && phone ? (
                         <WhatsappButton
                           onMarkSent={markWhatsappSentAction.bind(null, a.id)}
-                          phone={a.patients.phone}
+                          phone={phone}
                           sentAt={a.whatsapp_sent_at}
                           urgency={reminderUrgency(hoursUntilAppointment(a.date, a.start_time))}
                           message={buildReminderMessage({
-                            patientFirstName: a.patients.first_name,
+                            patientFirstName: a.patients?.first_name ?? patientName,
                             agendaLabel: agendaLabel(a.agenda),
                             dateLabel: formatDateEs(a.date, { weekday: "long", day: "numeric", month: "long" }),
                             timeLabel: a.start_time ? formatTimeEs(a.start_time) : null,

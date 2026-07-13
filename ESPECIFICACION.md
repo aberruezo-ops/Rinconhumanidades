@@ -51,7 +51,7 @@ Una cita solo puede crearse en un día abierto de su agenda. Un hueco ocupado de
 ### Paciente (registrado)
 - Nombre, apellidos, teléfono, compañía aseguradora (seleccionada del catálogo del backoffice).
 - DNI solo se solicita en quirófano.
-- Los pacientes **particulares no se registran**: su cita ocupa hueco pero no guarda datos personales (opcionalmente una etiqueta libre tipo "particular 12:00"). A esos los llama ella por teléfono.
+- Los pacientes **particulares no se registran**: su cita ocupa hueco pero no crea una ficha de paciente (opcionalmente una etiqueta libre tipo "particular 12:00"). El teléfono sí es obligatorio también para ellos — no puede haber una cita sin forma de contactar al paciente — y se guarda en la propia cita (`particular_phone`), no en una ficha de paciente.
 
 ### Cita (todas las agendas)
 - Agenda (traumatólogo / enfermería / quirófano), fecha. Hora de inicio y fin exactas en traumatólogo y quirófano (se elige directamente el rango, no una duración); en enfermería no se registra hora, solo el día.
@@ -74,12 +74,13 @@ Una cita solo puede crearse en un día abierto de su agenda. Un hueco ocupado de
 
 - Formulario mínimo, optimizado para móvil: pocos campos, autocompletado de paciente por nombre o teléfono para evitar duplicados.
 - **Entrada por voz o texto libre** (`/citas/dictado`, adelantada desde la Fase 2 original): botón de dictado que usa el reconocimiento nativo del dispositivo (Web Speech API), o pegar el texto directamente. El texto se interpreta con IA (fecha, hora, agenda, paciente, tipo, motivo) y se muestra la cita propuesta ya rellena en el formulario normal para confirmar y ajustar antes de guardar. Nunca se guarda sin confirmación visual. Requiere `ANTHROPIC_API_KEY`.
-- Detección de solapes: si la nueva cita choca con otra existente, avisar antes de guardar.
+- Detección de solapes: si la nueva cita choca con otra existente, avisar antes de guardar — pero no impedir guardarla; se permite tener varias citas a la misma hora a propósito cuando hay sobrecarga de agenda.
+- La hora de fin se calcula sola a partir de la hora de inicio y la duración configurada en el backoffice (por agenda, o por compañía si tiene una propia); nunca queda en blanco esperando que se rellene a mano.
 - Reagendar en dos toques: mover una cita a otro día/hora abiertos.
 
 ## Comunicación con pacientes
 
-- Implementado (adelantado desde la Fase 2 original): botón "avisar por WhatsApp" en cada cita de Listados que abre wa.me con un mensaje pretexto (fecha, hora, consulta). Sin coste, envío manual con un toque. La cita registra si el aviso se envió y cuándo (`whatsapp_sent_at`); solo aparece si hay paciente registrado con teléfono (no en particulares) y la cita no está cancelada/completada.
+- Implementado (adelantado desde la Fase 2 original): botón "avisar por WhatsApp" en cada cita de Listados que abre wa.me con un mensaje pretexto (fecha, hora, consulta). Sin coste, envío manual con un toque. La cita registra si el aviso se envió y cuándo (`whatsapp_sent_at`); aparece siempre que haya un teléfono (paciente registrado o particular) y la cita no esté cancelada/completada.
 - Fase posterior: SMS automático de confirmación unos días antes (configurable), solo a pacientes registrados. Requiere proveedor de SMS con coste por mensaje; queda fuera del MVP.
 
 ## Listados

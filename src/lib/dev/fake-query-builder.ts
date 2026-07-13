@@ -1,4 +1,3 @@
-import { intervalsOverlap, timeToMinutes } from "@/lib/domain/slots";
 import type { Row, Store } from "@/lib/dev/fake-db";
 
 type Filter = { col: string; op: "eq" | "neq" | "gte" | "lte" | "in" | "is" | "isnot"; val: unknown };
@@ -24,19 +23,6 @@ function hasDuplicate(table: string, payload: Row, rows: Row[]): boolean {
     return rows.some((r) => r.agenda === payload.agenda && String(r.name).toLowerCase() === String(payload.name).toLowerCase());
   }
   return false;
-}
-
-function hasOverlap(rows: Row[], candidate: Row, excludeId: string | null): boolean {
-  const start = timeToMinutes(String(candidate.start_time).slice(0, 5));
-  const end = start + Number(candidate.duration_minutes);
-  return rows.some((r) => {
-    if (excludeId && r.id === excludeId) return false;
-    if (r.agenda !== candidate.agenda || r.date !== candidate.date) return false;
-    if (r.status === "cancelada") return false;
-    const rStart = timeToMinutes(String(r.start_time).slice(0, 5));
-    const rEnd = rStart + Number(r.duration_minutes);
-    return intervalsOverlap(start, end, rStart, rEnd);
-  });
 }
 
 // Reimplementa, en memoria, el subconjunto de la API de supabase-js que usa esta app
@@ -214,9 +200,6 @@ export class FakeQueryBuilder implements PromiseLike<Result> {
       const payload = Array.isArray(op.payload) ? op.payload : [op.payload];
       for (const p of payload) {
         if (hasDuplicate(this.table, p, table)) return { data: null, error: { code: "23505", message: "duplicate" } };
-        if (this.table === "appointments" && hasOverlap(table, p, null)) {
-          return { data: null, error: { code: "23P01", message: "overlap" } };
-        }
       }
       const now = new Date().toISOString();
       const created = payload.map((p) => ({ id: randomId(), created_at: now, updated_at: now, ...defaultsFor(this.table), ...p }));
@@ -226,12 +209,6 @@ export class FakeQueryBuilder implements PromiseLike<Result> {
 
     if (op.type === "update") {
       const targets = table.filter((r) => this.matches(r));
-      if (this.table === "appointments") {
-        for (const t of targets) {
-          const merged = { ...t, ...op.payload };
-          if (hasOverlap(table, merged, t.id as string)) return { data: null, error: { code: "23P01", message: "overlap" } };
-        }
-      }
       const now = new Date().toISOString();
       for (const t of targets) Object.assign(t, op.payload, { updated_at: now });
       return this.shape(targets.map((r) => this.embed(r)));

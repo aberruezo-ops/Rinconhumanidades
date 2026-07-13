@@ -81,6 +81,7 @@ export default async function EditarCitaPage({ params }: { params: Promise<{ id:
               }
             : null,
           particular_label: appointment.particular_label ?? "",
+          particular_phone: appointment.particular_phone ?? "",
           insurance_company_id: appointment.insurance_company_id ?? "",
           appointment_type_id: appointment.appointment_type_id ?? "",
           status: normalizeStatus(appointment.status),
