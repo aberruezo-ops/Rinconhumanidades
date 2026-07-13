@@ -1,3 +1,12 @@
+// Un <input type="time"> solo acepta "HH:MM" exacto: si el valor recibido trae segundos,
+// espacios u otro formato, el navegador lo descarta y el campo se ve vacío aunque el estado
+// interno no lo esté. Se usa siempre que una hora venga de la base de datos o de la URL.
+export function normalizeTimeInput(value: string | null | undefined): string {
+  if (!value) return "";
+  const match = value.trim().match(/^(\d{2}):(\d{2})/);
+  return match ? `${match[1]}:${match[2]}` : "";
+}
+
 export function timeToMinutes(time: string): number {
   const [h, m] = time.split(":").map(Number);
   return h * 60 + m;

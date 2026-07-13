@@ -21,8 +21,8 @@ const STATUSES: AppointmentStatus[] = [
 const formSchema = z.object({
   agenda: z.string().refine(isAgendaType),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  start_time: z.string().regex(/^\d{2}:\d{2}$/).optional(),
-  end_time: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+  start_time: z.union([z.string().regex(/^\d{2}:\d{2}$/), z.literal("")]).optional(),
+  end_time: z.union([z.string().regex(/^\d{2}:\d{2}$/), z.literal("")]).optional(),
   patient_mode: z.enum(["registrado", "particular"]),
   patient_id: z.string().optional(),
   new_first_name: z.string().optional(),
@@ -39,6 +39,24 @@ const formSchema = z.object({
 });
 
 export type AppointmentFormState = { error?: string } | undefined;
+
+// Traduce el error de Postgres a un mensaje entendible, incluyendo el código/detalle
+// original para poder diagnosticar si vuelve a pasar (antes quedaba oculto tras un
+// único mensaje genérico y era imposible saber qué había fallado de verdad).
+function describeSaveError(error: { code?: string; message?: string; details?: string }): string {
+  switch (error.code) {
+    case "23P01":
+      return "Esa franja ya está ocupada por otra cita.";
+    case "23514":
+      return `No se cumple una condición obligatoria de la cita (${error.message ?? "revisa los datos"}).`;
+    case "23502":
+      return `Falta un dato obligatorio para guardar la cita (${error.message ?? "revisa los datos"}).`;
+    case "23503":
+      return "El paciente o la aseguradora seleccionados ya no existen. Recarga la página e inténtalo de nuevo.";
+    default:
+      return `No se ha podido guardar la cita (${error.code ?? "sin código"}: ${error.message ?? "error desconocido"}).`;
+  }
+}
 
 function readForm(formData: FormData) {
   const parsed = formSchema.safeParse(Object.fromEntries(formData.entries()));
@@ -200,10 +218,7 @@ export async function createAppointmentAction(
   });
 
   if (error) {
-    if (error.code === "23P01") {
-      return { error: "Esa franja ya está ocupada por otra cita." };
-    }
-    return { error: "No se ha podido guardar la cita." };
+    return { error: describeSaveError(error) };
   }
 
   revalidatePath(`/agenda/${agenda}`);
@@ -261,10 +276,7 @@ export async function updateAppointmentAction(
     .eq("id", id);
 
   if (error) {
-    if (error.code === "23P01") {
-      return { error: "Esa franja ya está ocupada por otra cita." };
-    }
-    return { error: "No se ha podido guardar la cita." };
+    return { error: describeSaveError(error) };
   }
 
   revalidatePath(`/agenda/${agenda}`);

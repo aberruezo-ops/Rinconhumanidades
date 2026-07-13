@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { isAgendaType, agendaLabel, DEFAULT_NEW_APPOINTMENT_STATUS } from "@/lib/domain/agendas";
 import { todayYmd } from "@/lib/domain/dates";
 import { createAppointmentAction } from "@/lib/actions/appointments";
-import { minutesToTime, timeToMinutes } from "@/lib/domain/slots";
+import { minutesToTime, normalizeTimeInput, timeToMinutes } from "@/lib/domain/slots";
 import { AppointmentForm } from "../_components/appointment-form";
 import type { AgendaType } from "@/lib/supabase/database.types";
 
@@ -21,7 +21,7 @@ export default async function NuevaCitaPage({
   const agenda: AgendaType = agendaParam;
 
   const supabase = await createClient();
-  const [{ data: companies }, { data: types }, { data: config }] = await Promise.all([
+  const [{ data: companies }, { data: types }, { data: config }, { data: dayRow }] = await Promise.all([
     supabase.from("insurance_companies").select("id, name, duration_minutes").eq("active", true).order("name"),
     supabase
       .from("appointment_types")
@@ -30,10 +30,18 @@ export default async function NuevaCitaPage({
       .eq("active", true)
       .order("name"),
     supabase.from("agenda_config").select("default_duration_minutes, start_time").eq("agenda", agenda).single(),
+    fecha
+      ? supabase.from("agenda_days").select("start_time_override").eq("agenda", agenda).eq("date", fecha).maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
 
   const isEnfermeria = agenda === "enfermeria";
-  const startTime = isEnfermeria ? "" : (hora ?? config?.start_time.slice(0, 5) ?? "09:00");
+  const startTime = isEnfermeria
+    ? ""
+    : normalizeTimeInput(hora) ||
+      normalizeTimeInput(dayRow?.start_time_override) ||
+      normalizeTimeInput(config?.start_time) ||
+      "09:00";
   const endTime =
     isEnfermeria || !startTime
       ? ""

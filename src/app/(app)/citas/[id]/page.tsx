@@ -3,7 +3,7 @@ import { requireAdmin, requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { agendaLabel, normalizeStatus } from "@/lib/domain/agendas";
 import { updateAppointmentAction, cancelAppointmentAction } from "@/lib/actions/appointments";
-import { minutesToTime, timeToMinutes } from "@/lib/domain/slots";
+import { minutesToTime, normalizeTimeInput, timeToMinutes } from "@/lib/domain/slots";
 import { AppointmentForm } from "../_components/appointment-form";
 import { ConfirmSubmitButton } from "@/app/(app)/_components/confirm-submit-button";
 
@@ -40,10 +40,10 @@ export default async function EditarCitaPage({ params }: { params: Promise<{ id:
   const boundUpdate = updateAppointmentAction.bind(null, appointment.id);
   const boundCancel = cancelAppointmentAction.bind(null, appointment.id, appointment.agenda, appointment.date);
 
-  const startTime = appointment.start_time?.slice(0, 5) ?? "";
+  const startTime = normalizeTimeInput(appointment.start_time);
   const endTime =
-    appointment.start_time && appointment.duration_minutes
-      ? minutesToTime(timeToMinutes(appointment.start_time.slice(0, 5)) + appointment.duration_minutes)
+    startTime && appointment.duration_minutes
+      ? minutesToTime(timeToMinutes(startTime) + appointment.duration_minutes)
       : "";
 
   return (

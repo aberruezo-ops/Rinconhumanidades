@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { PatientPicker } from "./patient-picker";
 import { checkOverlapAction, type AppointmentFormState } from "@/lib/actions/appointments";
 import { statusesForAgenda } from "@/lib/domain/agendas";
-import { timeToMinutes, minutesToTime } from "@/lib/domain/slots";
+import { timeToMinutes, minutesToTime, normalizeTimeInput } from "@/lib/domain/slots";
 import type { AgendaType, AppointmentStatus } from "@/lib/supabase/database.types";
 import type { PatientSearchResult } from "@/lib/actions/patients";
 
@@ -49,8 +49,8 @@ export function AppointmentForm({
     defaults.patient || !defaults.particular_label ? "registrado" : "particular",
   );
   const [date, setDate] = useState(defaults.date);
-  const [startTime, setStartTime] = useState(defaults.start_time);
-  const [endTime, setEndTime] = useState(defaults.end_time);
+  const [startTime, setStartTime] = useState(normalizeTimeInput(defaults.start_time));
+  const [endTime, setEndTime] = useState(normalizeTimeInput(defaults.end_time));
   const [insuranceCompanyId, setInsuranceCompanyId] = useState(defaults.insurance_company_id);
   const [status, setStatus] = useState<AppointmentStatus>(defaults.status);
   const [observations, setObservations] = useState(defaults.observations);
