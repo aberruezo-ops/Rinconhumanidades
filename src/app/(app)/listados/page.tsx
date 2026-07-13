@@ -1,11 +1,13 @@
+import type { Metadata } from "next";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { AGENDAS, agendaLabel, APPOINTMENT_STATUSES, isAgendaType, statusLabel, statusStyle, reminderUrgency } from "@/lib/domain/agendas";
 import { formatDateEs, formatTimeEs, hoursUntilAppointment, todayYmd } from "@/lib/domain/dates";
 import { buildReminderMessage } from "@/lib/domain/whatsapp";
-import { PrintButton } from "./print-button";
+import { PrintButton, type PrintableRow } from "./print-button";
 import { WhatsappButton } from "../_components/whatsapp-button";
 import { markWhatsappSentAction } from "@/lib/actions/appointments";
+import type { AgendaType } from "@/lib/supabase/database.types";
 
 type Filters = { fecha?: string; agenda?: string; estado?: string; aviso?: string };
 
@@ -17,6 +19,23 @@ function presetHref(filters: Filters): string {
   if (filters.aviso) params.set("aviso", filters.aviso);
   const qs = params.toString();
   return qs ? `/listados?${qs}` : "/listados";
+}
+
+// Título del listado a partir de los filtros activos (agenda y fecha) — se usa como <title>
+// de la página (nombre sugerido por el navegador al imprimir/guardar como PDF), como nombre
+// del fichero al descargar el PDF en iOS standalone, y como cabecera dentro del propio PDF.
+function buildListadoLabel(agenda: AgendaType | undefined, date: string | undefined): string {
+  const agendaPart = agenda ? agendaLabel(agenda) : "todas las agendas";
+  const datePart = date ? formatDateEs(date, { day: "numeric", month: "long", year: "numeric" }) : "próximas citas";
+  return `Listado - ${agendaPart} - ${datePart}`;
+}
+
+export async function generateMetadata({ searchParams }: { searchParams: Promise<Filters> }): Promise<Metadata> {
+  const { fecha, agenda: agendaParam } = await searchParams;
+  const date = fecha && /^\d{4}-\d{2}-\d{2}$/.test(fecha) ? fecha : undefined;
+  const agenda = agendaParam && isAgendaType(agendaParam) ? agendaParam : undefined;
+
+  return { title: buildListadoLabel(agenda, date) };
 }
 
 export default async function ListadosPage({
@@ -68,11 +87,22 @@ export default async function ListadosPage({
     (filters.estado ?? "") === (estado ?? "") &&
     (filters.aviso ?? "") === (aviso ?? "");
 
+  const listadoLabel = buildListadoLabel(agenda, date);
+  const printableRows: PrintableRow[] = (appointments ?? []).map((a) => ({
+    fecha: date ? undefined : formatDateEs(a.date, { day: "numeric", month: "short" }),
+    hora: a.start_time ? formatTimeEs(a.start_time) : "—",
+    agenda: agendaLabel(a.agenda),
+    paciente: a.particular_label ?? (a.patients ? `${a.patients.first_name} ${a.patients.last_name}` : "—"),
+    telefono: (a.patients?.phone ?? a.particular_phone) || "—",
+    compania: a.insurance_companies?.name ?? "Particular",
+    estado: statusLabel(a.status),
+  }));
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between print:hidden">
         <h1 className="text-lg font-semibold text-slate-900">Listados</h1>
-        <PrintButton />
+        <PrintButton title={listadoLabel} filename={listadoLabel} rows={printableRows} showFecha={!date} />
       </div>
 
       <div className="flex flex-wrap gap-2 print:hidden">
