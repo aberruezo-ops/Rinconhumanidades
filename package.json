@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "graph": "madge --extensions ts,tsx --ts-config tsconfig.json --exclude '\\.d\\.ts$' --rankdir LR --image docs/dependency-graph.svg src"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
@@ -27,6 +28,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "madge": "^8.0.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

@@ -3,8 +3,10 @@
 Aplicación interna para gestionar la agenda de una consulta privada de
 traumatología (Jaén): tres agendas (traumatólogo, enfermería, quirófano),
 apertura/cierre de días, alta de citas con detección de solapes y listados
-imprimibles. Ver **ESPECIFICACION.md** para el producto completo y
-**CLAUDE.md** para las reglas de dominio que no hay que romper.
+imprimibles. Ver **ESPECIFICACION.md** para el producto completo,
+**CLAUDE.md** para las reglas de dominio que no hay que romper, y
+**CONTEXTO.md** para retomar el proyecto desde cero (estado actual, migraciones
+pendientes de verificar, limitaciones conocidas).
 
 Fase 1 (MVP), sin reserva online de pacientes: una única usuaria
 administrativa (Olga) con acceso completo.
@@ -69,6 +71,7 @@ variables de entorno en el proyecto de Vercel y despliega.
 npm run dev     # servidor de desarrollo
 npm run build   # build de producción (falla si hay errores de tipos)
 npm run lint    # ESLint
+npm run graph   # regenera docs/dependency-graph.svg (requiere Graphviz instalado)
 ```
 
 ## Migraciones futuras
