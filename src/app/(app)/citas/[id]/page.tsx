@@ -96,15 +96,17 @@ export default async function EditarCitaPage({ params }: { params: Promise<{ id:
       <div className="space-y-2 rounded-xl border border-red-200 bg-red-50 p-4">
         <p className="text-sm font-medium text-red-800">Zona de peligro</p>
         <p className="text-sm text-red-700">
-          Elimina la cita por completo, sin dejar registro. Para un paciente que no viene, mejor usa "Cancelar
-          cita" arriba: esa sí conserva el historial. Esto es para citas dadas de alta por error.
+          Elimina la cita por completo, sin dejar registro (si es un paciente particular, también desaparecen sus
+          datos; si está registrado, su ficha y el resto de su historial no se tocan). Para un paciente que no
+          viene, mejor usa "Cancelar cita" arriba: esa sí conserva el historial. Esto es para citas dadas de alta
+          por error.
         </p>
         <form action={boundDelete}>
           <ConfirmSubmitButton
-            confirmMessage="¿Eliminar esta cita definitivamente? No se puede deshacer y no queda ningún registro, a diferencia de cancelar."
+            confirmMessage="¿Eliminar esta cita y paciente definitivamente? No se puede deshacer y no queda ningún registro, a diferencia de cancelar."
             className="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100"
           >
-            Eliminar cita
+            Eliminar cita y paciente
           </ConfirmSubmitButton>
         </form>
       </div>
