@@ -10,6 +10,8 @@ export function buildWhatsappLink(phone: string, message: string): string {
   return `https://wa.me/${toWhatsappPhone(phone)}?text=${encodeURIComponent(message)}`;
 }
 
+const DIRECCION_CONSULTA = "Paseo de la Estación, 58, escalera derecha, 3ºE";
+
 export function buildReminderMessage(params: {
   patientFirstName: string;
   agendaLabel: string;
@@ -18,5 +20,5 @@ export function buildReminderMessage(params: {
 }): string {
   const { patientFirstName, agendaLabel, dateLabel, timeLabel } = params;
   const horaTxt = timeLabel ? ` a las ${timeLabel}` : "";
-  return `Hola ${patientFirstName}, le recordamos su cita de ${agendaLabel} el ${dateLabel}${horaTxt} en la consulta. Por favor, confirme su asistencia. Gracias.`;
+  return `Hola ${patientFirstName}, le recordamos su cita de ${agendaLabel} el ${dateLabel}${horaTxt} en la consulta (${DIRECCION_CONSULTA}). Por favor, confirme su asistencia. Gracias.`;
 }
