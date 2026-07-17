@@ -34,7 +34,10 @@ export const requireUser = cache(async (): Promise<CurrentUser> => {
     id: user.id,
     email: user.email ?? null,
     fullName: profile?.full_name ?? null,
-    role: profile?.role ?? "admin",
+    // Si por lo que sea no hay fila de perfil (no debería pasar: el trigger la crea siempre
+    // al dar de alta el usuario), se trata como el rol menos privilegiado en vez de "admin"
+    // — un fallo aquí debe significar "no puede editar todavía", nunca "acceso total".
+    role: profile?.role ?? "readonly",
   };
 });
 

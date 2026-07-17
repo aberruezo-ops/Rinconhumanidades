@@ -59,7 +59,7 @@ de Supabase (no hay CI que las aplique sola). Antes de dar nada por hecho, compr
 propio Supabase (Table Editor / SQL Editor) qué se ha aplicado realmente:
 
 ```sql
--- Comprobación rápida de las dos últimas migraciones:
+-- Comprobación rápida de las últimas migraciones:
 select column_name from information_schema.columns
 where table_name = 'appointments' and column_name = 'particular_phone';
 select column_name from information_schema.columns
@@ -67,11 +67,17 @@ where table_name = 'quirofano_candidatos' and column_name = 'particular_phone';
 select conname from pg_constraint where conname = 'appointments_agenda_tsrange_excl';
 -- Si esta última devuelve una fila, el EXCLUDE de solapes todavía existe y hay que
 -- quitarlo (migración 0009) para que se puedan guardar citas solapadas a propósito.
+select privilege_type from information_schema.column_privileges
+where table_name = 'profiles' and grantee = 'authenticated';
+-- Debe devolver privilegios de UPDATE solo para la columna full_name, nunca para toda la fila
+-- (migración 0011 — ver "Auditoría de seguridad" más abajo). Si aparece un UPDATE sin columna
+-- asociada (a nivel de tabla completa), la 0011 no se ha aplicado todavía.
 ```
 
 `0009` y `0010` (teléfono obligatorio en particulares + solapes ya no bloquean) se añadieron
 en esta sesión; en algún momento dieron error `PGRST204` en producción porque no se habían
-ejecutado todavía. Verificar con la consulta de arriba antes de asumir que ya están aplicadas.
+ejecutado todavía. `0011` (auditoría de seguridad, ver más abajo) es igual de importante —
+verificar con las consultas de arriba antes de asumir que ya están aplicadas.
 
 `0006` (estados `confirmada_sin_avisar`/`confirmada_avisada`) tiene una particularidad: hay
 que ejecutarla en **dos pasos separados** en el editor de Supabase — ver el comentario dentro
@@ -97,6 +103,38 @@ navegador no funcionan ahí y ya se evitaron a propósito:
 Si se añade cualquier funcionalidad nueva que dependa de un diálogo nativo del navegador
 (`alert`, `confirm`, `prompt`, `print`, selectors de fichero nativos, etc.), asumir que hay
 que probarla en modo standalone o replicarla sin depender de la API nativa.
+
+## Auditoría de seguridad (última pasada completa)
+
+Encontrado y corregido en esta sesión — no reintroducir:
+
+- **Escalada de privilegios vía RLS de `profiles`** (migración `0011`, requiere ejecutarse en
+  Supabase — ver arriba). `profiles_update_own` solo restringía qué fila se puede tocar (la
+  propia), no qué columnas: cualquier usuario autenticado podía llamar directamente a la API
+  REST de Supabase con su propia sesión (sin pasar por la app) y subirse a sí mismo de
+  `readonly` a `admin`. Arreglado con permiso de UPDATE a nivel de columna (`full_name`
+  solamente). De paso, `handle_new_user()` creaba todo usuario nuevo como `admin` por
+  defecto — se cambió a `readonly`, así que subir a alguien a `admin` (incluida la primera
+  cuenta) requiere ahora un paso manual explícito. Ver README.md, sección "Crear el proyecto
+  de Supabase".
+- **Redirección abierta en el login** (`src/lib/redirect.ts`). El parámetro `?redirectTo=` no
+  se validaba lo suficiente: `redirectTo.startsWith("/")` deja pasar `//evil.com`, que el
+  navegador interpreta como otro dominio. Cualquiera podía mandar un enlace de login
+  legítimo que, tras iniciar sesión, redirigiera a un sitio de phishing. Ahora se exige que
+  la ruta empiece por un único `/`.
+- **Rol por defecto inseguro si falla la carga del perfil** (`src/lib/auth.ts`,
+  `requireUser()`): si por lo que fuera no se podía leer el perfil, el código asumía
+  `role: "admin"` en vez de fallar cerrado. Cambiado a `"readonly"`.
+- Sin `dangerouslySetInnerHTML`, `eval` ni claves reales commiteadas (solo `.env.example`).
+  Todas las Server Actions comprueban `requireAdmin`/`requireUser` de forma consistente; las
+  páginas de solo lectura (agendas, Inicio, Listados) permiten `readonly` a propósito.
+- Cabeceras de seguridad básicas añadidas en `next.config.ts` (`X-Frame-Options`,
+  `Content-Security-Policy: frame-ancestors 'none'`, `X-Content-Type-Options`,
+  `Referrer-Policy`) — no había ninguna antes.
+- Pendiente de valorar, no urgente: `describeSaveError` (en `src/lib/actions/appointments.ts`)
+  devuelve el código/mensaje bruto de Postgres a la interfaz — solo lo ve la propia admin ya
+  autenticada, así que el riesgo es bajo, pero si se abre acceso a más usuarios convendría
+  revisar qué tan detallado debe ser ese mensaje.
 
 ## Reglas de negocio que cambiaron respecto al diseño original
 

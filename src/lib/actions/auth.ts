@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isSafeRedirect } from "@/lib/redirect";
 
 export type SignInState = { error?: string } | undefined;
 
@@ -24,7 +25,7 @@ export async function signInAction(_prevState: SignInState, formData: FormData):
     return { error: `Correo o contraseña incorrectos (${error.code ?? error.message}).` };
   }
 
-  redirect(redirectTo.startsWith("/") ? redirectTo : "/");
+  redirect(isSafeRedirect(redirectTo) ? redirectTo : "/");
 }
 
 export async function signOutAction() {

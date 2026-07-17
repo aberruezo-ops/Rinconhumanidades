@@ -21,14 +21,17 @@ administrativa (Olga) con acceso completo.
 ### 1. Crear el proyecto de Supabase
 
 1. Crea un proyecto en [supabase.com](https://supabase.com) (elige una región de la UE, ej. Frankfurt, por RGPD).
-2. En **SQL Editor**, pega y ejecuta el contenido de `supabase/migrations/0001_init.sql`.
-   Crea las tablas, los roles, el trigger de perfil automático, las políticas RLS
-   y los datos semilla (agendas, tipos de cita de enfermería, algunas aseguradoras
-   habituales).
+2. En **SQL Editor**, pega y ejecuta el contenido de `supabase/migrations/0001_init.sql`,
+   y a continuación el resto de ficheros de `supabase/migrations/` en orden numérico
+   (crean las tablas, los roles, el trigger de perfil automático, las políticas RLS,
+   los datos semilla y los ajustes posteriores).
 3. En **Authentication → Users**, pulsa "Add user" y crea el usuario de Olga
-   (correo + contraseña). El trigger `on_auth_user_created` le crea
-   automáticamente un perfil con rol `admin` — no hace falta tocar la tabla
-   `profiles` a mano. No hay pantalla de registro en la aplicación a propósito.
+   (correo + contraseña). El trigger `on_auth_user_created` le crea automáticamente
+   un perfil, pero **con rol `readonly` por defecto** (a propósito, para que un
+   usuario nuevo nunca tenga acceso de más sin que alguien lo decida explícitamente).
+   Súbela a `admin` a mano, una sola vez, desde **Table Editor → profiles** (o con
+   `update profiles set role = 'admin' where id = '<uuid del usuario>';` en el SQL
+   Editor). No hay pantalla de registro en la aplicación a propósito.
 4. En **Project Settings → API**, copia la `Project URL` y la `anon public key`.
 
 ### 2. Variables de entorno
